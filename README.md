@@ -1,2 +1,4 @@
-# dse_capstone
-MAS DSE Capstone
+# MAS DSE Capstone Project
+
+* Smart Energy
+* Traffic
