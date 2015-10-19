@@ -13,7 +13,7 @@ FORMAT = '%(asctime)s [%(levelname)-8s] %(message)s'
 formatter = logging.Formatter(FORMAT)
 handler = logging.StreamHandler(stream=sys.stdout)
 handler.setFormatter(formatter)
-handler.setLevel(logging.DEBUG)
+handler.setLevel(logging.INFO)
 log = logging.Logger("scraper")
 log.addHandler(handler)
 
@@ -21,6 +21,7 @@ BASE_URL = "http://pems.dot.ca.gov"
 START_YEAR = 2015
 END_YEAR = 2015
 PICKLE_FILENAME = "completed_files.pkl"
+BASE_DIR = "/video/dse_traffic"
 
 # define the types of files we want
 FILE_TYPES = {'station_5min','station_hour'}
@@ -108,7 +109,7 @@ try:
                 json_response =  br.response().read()
                 data = json.loads(json_response)['data']
                 for month in data.keys():
-                    destDir = "%s/%s/" % (fileType, year)
+                    destDir = "%s/%s/%s/" % (BASE_DIR, fileType, year)
                     if not os.path.exists(destDir):
                         os.makedirs(destDir)
 
