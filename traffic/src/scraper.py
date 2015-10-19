@@ -13,7 +13,7 @@ FORMAT = '%(asctime)s [%(levelname)-8s] %(message)s'
 formatter = logging.Formatter(FORMAT)
 handler = logging.StreamHandler(stream=sys.stdout)
 handler.setFormatter(formatter)
-handler.setLevel(logging.INFO)
+handler.setLevel(logging.DEBUG)
 log = logging.Logger("scraper")
 log.addHandler(handler)
 
@@ -25,6 +25,10 @@ PICKLE_FILENAME = BASE_DIR + "/completed_files.pkl"
 
 # define the types of files we want
 FILE_TYPES = {'station_5min','station_hour'}
+
+# Setup download location
+if not os.path.exists(BASE_DIR):
+    os.makedirs(BASE_DIR)
 
 # Browser
 br = mechanize.Browser()
@@ -108,7 +112,7 @@ try:
                 json_response =  br.response().read()
                 data = json.loads(json_response)['data']
                 for month in data.keys():
-                    destDir = "%s/%s/%s/" % (BASE_DIR, fileType, year)
+                    destDir = "%s/%s/%s/d%s/" % (BASE_DIR, fileType, year, d)
                     if not os.path.exists(destDir):
                         os.makedirs(destDir)
 
