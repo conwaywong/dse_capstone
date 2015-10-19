@@ -20,12 +20,11 @@ log.addHandler(handler)
 BASE_URL = "http://pems.dot.ca.gov"
 START_YEAR = 2015
 END_YEAR = 2015
-PICKLE_FILENAME = "completed_files.pkl"
 BASE_DIR = "/video/dse_traffic"
+PICKLE_FILENAME = BASE_DIR + "/completed_files.pkl"
 
 # define the types of files we want
 FILE_TYPES = {'station_5min','station_hour'}
-#FILE_TYPES = {'station_hour'}
 
 # Browser
 br = mechanize.Browser()
