@@ -1,0 +1,12 @@
+D1 : Northwest
+D2 : Northeast
+D3 : North Central
+D4 : Bay Area
+D5 : Central Coast
+D6 : South Central
+D7 : LA/Ventura
+D8 : San Bernardino/Riverside
+D9 : Eastern Sierra
+D10: Central
+D11: San Diego/Imperial
+D12: Orange County

@@ -18,7 +18,7 @@ log = logging.Logger("scraper")
 log.addHandler(handler)
 
 BASE_URL = "http://pems.dot.ca.gov"
-START_YEAR = 2015
+START_YEAR = 2012
 END_YEAR = 2015
 BASE_DIR = "/video/dse_traffic"
 PICKLE_FILENAME = BASE_DIR + "/completed_files.pkl"
@@ -69,6 +69,7 @@ br.submit()
 
 return_html = br.response().read()
 soup = BeautifulSoup(return_html)
+log.debug(soup)
 
 log.info("Logged in.")
 
