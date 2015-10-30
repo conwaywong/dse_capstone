@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Fri Oct 30 15:57:58 PDT 2015" modifiedBy="johngill" name="traffic_5min" revision="1.51" showComponentDetails="true">
+<Global>
+<Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="Lanes" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="Observation_ID" nullable="false" type="integer"/>
+<Field name="Samples" type="integer">
+<attr name="description"><![CDATA[Number of good samples received for lane N. 
+N ranges from 1 to the number of lanes at the location.]]></attr>
+</Field>
+<Field name="Flow" type="number">
+<attr name="description"><![CDATA[Total flow for lane N over the 5-minute period normalized by the number of good samples.
+
+Units: Veh/5-min]]></attr>
+</Field>
+<Field label="Avg Occ" name="Avg_Occ" type="number">
+<attr name="description"><![CDATA[Average occupancy for lane N expressed as a decimal number between 0 and 1.
+
+N ranges from 1 to the number of lanes at the location.
+
+Units: %]]></attr>
+</Field>
+<Field name="Avg_Speed" type="number">
+<attr name="description"><![CDATA[Flow-weighted average of lane N speeds. If flow is 0, mathematical average of 5-minute lane speeds. 
+N ranges from 1 to the number of lanes.
+
+Units: Mph]]></attr>
+</Field>
+<Field name="Observed" type="integer">
+<attr name="description"><![CDATA[1 indicates observed data, 0 indicates imputed.]]></attr>
+</Field>
+</Record>
+</Metadata>
+<Metadata id="Metadata0" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="Observation" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="ID" nullable="false" type="long"/>
+<Field format="MM/DD/YYYY HH:mm:SS" name="Timestamp" type="date">
+<attr name="description"><![CDATA[The date and time of the beginning of the summary interval. 
+For example, a time of 08:00:00 indicates that the aggregate(s) contain measurements collected between 08:00:00 and 08:04:59. 
+Note that second values are always 0 for five-minute aggregations. 
+The format is MM/DD/YYYY HH24:MI:SS.]]></attr>
+</Field>
+<Field name="Station" nullable="false" type="long">
+<attr name="description"><![CDATA[Unique station identifier. 
+Use this value to cross-reference with Metadata files.]]></attr>
+</Field>
+<Field name="Samples" type="integer">
+<attr name="description"><![CDATA[Total number of samples received for all lanes.]]></attr>
+</Field>
+<Field label="% Observed" name="Percent_Observed" type="number">
+<attr name="description"><![CDATA[Percentage of individual lane points at this location that were observed (e.g. not imputed).
+
+Units: %]]></attr>
+</Field>
+<Field label="Total Flow" name="Total_Flow" type="number">
+<attr name="description"><![CDATA[Sum of flows over the 5-minute period across all lanes. 
+Note that the basic 5-minute rollup normalizes flow by the number of good samples received from the controller.	
+
+Units: Veh/5-min]]></attr>
+</Field>
+<Field label="Avg Occupancy" name="Avg_Occupancy" type="number">
+<attr name="description"><![CDATA[Average occupancy across all lanes over the 5-minute period expressed as a decimal number between 0 and 1.]]></attr>
+</Field>
+<Field delimiter="\n" label="Avg Speed" name="Avg_Speed" type="number">
+<attr name="description"><![CDATA[Flow-weighted average speed over the 5-minute period across all lanes. 
+
+If flow is 0, mathematical average of 5-minute station speeds.
+
+Units: MPH]]></attr>
+</Field>
+</Record>
+</Metadata>
+<Metadata id="Metadata2" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="Station" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="Station" type="long">
+<attr name="description"><![CDATA[Unique station identifier. 
+Use this value to cross-reference with Metadata files.]]></attr>
+</Field>
+<Field name="District" type="integer">
+<attr name="description"><![CDATA[District #]]></attr>
+</Field>
+<Field label="Freeway #" name="Freeway_No" type="integer">
+<attr name="description"><![CDATA[Freeway #]]></attr>
+</Field>
+<Field label="Direction of Travel" name="Direction_of_Travel" type="string">
+<attr name="description"><![CDATA[N | S | E | W]]></attr>
+</Field>
+<Field label="Lane Type" name="Lane_Type" type="string">
+<attr name="description"><![CDATA[A string indicating the type of lane. 
+
+Possible values (and their meaning are:
+CD (Coll/Dist)
+CH (Conventional Highway)
+FF (Fwy-Fwy connector)
+FR (Off Ramp)
+HV (HOV)
+ML (Mainline)
+OR (On Ramp)]]></attr>
+</Field>
+<Field label="Station Length" name="Station_Length" type="number">
+<attr name="description"><![CDATA[Segment length covered by the station in miles/km.]]></attr>
+</Field>
+</Record>
+</Metadata>
+<MetadataGroup name="Implicit metadata" type="implicit">
+<Metadata id="__static_metadata_VALIDATOR_Validator_InvalidRecords">
+<Record fieldDelimiter="|" name="Validator_ValidationResult" recordDelimiter="\n" type="delimited">
+<Field name="recordNo" trim="true" type="long"/>
+<Field name="validationMessage" type="string"/>
+<Field name="ruleStatusCode" trim="true" type="integer"/>
+<Field name="ruleName" type="string"/>
+<Field name="ruleType" type="string"/>
+<Field containerType="list" name="rulePath" type="string"/>
+<Field containerType="list" name="validatedFieldNames" type="string"/>
+<Field containerType="map" name="validatedValues" type="string"/>
+<Field containerType="map" name="ruleParameters" type="string"/>
+<Field name="validationDate" trim="true" type="date"/>
+<Field name="componentID" type="string"/>
+<Field name="componentName" type="string"/>
+<Field name="graphURL" type="string"/>
+</Record>
+</Metadata>
+</MetadataGroup>
+<GraphParameters>
+<GraphParameterFile fileURL="workspace.prm"/>
+</GraphParameters>
+<Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note0" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Lanes" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="975" y="284"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Bad Data" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="975" y="398"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note2" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Stations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="975" y="33"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note3" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Observations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="975" y="158"/>
+<Dictionary/>
+</Global>
+<Phase number="0">
+<Node InputFile="${DATAIN_DIR}/d06_text_station_5min_2010_01_01.txt" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="CustomJavaReader" guiX="51" guiY="68" id="CUSTOM_JAVA_READER" type="GENERIC_READER"/>
+<Node dedupKey="Station(a)" guiName="Dedup" guiX="763" guiY="68" id="DEDUP" type="DEDUP"/>
+<Node guiName="ExtFilter" guiX="355" guiY="319" id="EXT_FILTER" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.Samples != 0]]></attr>
+</Node>
+<Node guiName="FastSort" guiX="562" guiY="67" id="FAST_SORT" sortKey="Station(a)" type="FAST_SORT"/>
+<Node guiName="Trash" guiX="975" guiY="68" id="TRASH" type="TRASH"/>
+<Node guiName="Trash" guiX="975" guiY="319" id="TRASH1" type="TRASH"/>
+<Node guiName="Trash" guiX="975" guiY="433" id="TRASH2" type="TRASH"/>
+<Node guiName="Trash" guiX="975" guiY="193" id="TRASH3" type="TRASH"/>
+<Node guiName="Validator" guiX="355" guiY="68" id="VALIDATOR" type="VALIDATOR">
+<attr name="errorMapping"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.1.recordNo = $in.1.recordNo;
+	$out.1.validationMessage = $in.1.validationMessage;
+	$out.1.ruleStatusCode = $in.1.ruleStatusCode;
+	$out.1.ruleName = $in.1.ruleName;
+	$out.1.ruleType = $in.1.ruleType;
+	$out.1.rulePath = $in.1.rulePath;
+	$out.1.validatedFieldNames = $in.1.validatedFieldNames;
+	$out.1.validatedValues = $in.1.validatedValues;
+	$out.1.ruleParameters = $in.1.ruleParameters;
+	$out.1.validationDate = $in.1.validationDate;
+	$out.1.componentID = $in.1.componentID;
+	$out.1.componentName = $in.1.componentName;
+	$out.1.graphURL = $in.1.graphURL;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
+    <children>
+        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="District" name="Comparison" operator="E" outputField="" useType="DEFAULT" value="6">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </comparison>
+        <enumMatch acceptEmpty="false" customRejectMessage="" description="" enabled="true" ignoreCase="true" inputField="Lane_Type" name="Enum Match" outputField="" trimInput="false" useType="DEFAULT">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+            <values>
+                <value>CD</value>
+                <value>CH</value>
+                <value>FF</value>
+                <value>FR</value>
+                <value>HV</value>
+                <value>ML</value>
+                <value>OR</value>
+            </values>
+        </enumMatch>
+        <enumMatch acceptEmpty="false" customRejectMessage="" description="" enabled="true" ignoreCase="true" inputField="Direction_of_Travel" name="Enum Match" outputField="" trimInput="false" useType="DEFAULT">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+            <values>
+                <value>N</value>
+                <value>E</value>
+                <value>S</value>
+                <value>W</value>
+            </values>
+        </enumMatch>
+    </children>
+    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+    <imports/>
+</group>
+]]></attr>
+</Node>
+<Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="VALIDATOR:0"/>
+<Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 1 (out)" toNode="EXT_FILTER:0"/>
+<Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:2" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 2 (out)" toNode="TRASH3:0"/>
+<Edge debugMode="true" fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata2" toNode="TRASH:0"/>
+<Edge debugMode="true" fromNode="EXT_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="TRASH1:0"/>
+<Edge debugMode="true" fromNode="EXT_FILTER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 1 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata1" toNode="TRASH2:1"/>
+<Edge debugMode="true" fromNode="FAST_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata2" toNode="DEDUP:0"/>
+<Edge debugMode="true" fromNode="VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (valid)" toNode="FAST_SORT:0"/>
+<Edge debugMode="true" fromNode="VALIDATOR:1" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" outPort="Port 1 (invalid)" persistedImplicitMetadata="__static_metadata_VALIDATOR_Validator_InvalidRecords" toNode="TRASH2:0"/>
+</Phase>
+</Graph>

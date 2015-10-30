@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GraphParameters>
+<GraphParameter name="PROJECT" value=".">
+<attr name="description"><![CDATA[Project root path]]></attr>
+</GraphParameter>
+<GraphParameter name="CONN_DIR" value="${PROJECT}/conn">
+<attr name="description"><![CDATA[Default folder for external connections]]></attr>
+</GraphParameter>
+<GraphParameter name="DATAIN_DIR" value="${PROJECT}/data-in">
+<attr name="description"><![CDATA[Default folder for input data files]]></attr>
+</GraphParameter>
+<GraphParameter name="DATAOUT_DIR" value="${PROJECT}/data-out">
+<attr name="description"><![CDATA[Default folder for output data files]]></attr>
+</GraphParameter>
+<GraphParameter name="DATATMP_DIR" value="${PROJECT}/data-tmp">
+<attr name="description"><![CDATA[Default folder for temporary data files]]></attr>
+</GraphParameter>
+<GraphParameter name="GRAPH_DIR" value="${PROJECT}/graph">
+<attr name="description"><![CDATA[Default folder for transformation graphs (grf)]]></attr>
+</GraphParameter>
+<GraphParameter name="SUBGRAPH_DIR" value="${GRAPH_DIR}/subgraph">
+<attr name="description"><![CDATA[Default folder for transformation subgraphs (sgrf)]]></attr>
+</GraphParameter>
+<GraphParameter name="JOBFLOW_DIR" value="${PROJECT}/jobflow">
+<attr name="description"><![CDATA[Default folder for jobflows (jbf)]]></attr>
+</GraphParameter>
+<GraphParameter name="LIB_DIR" value="${PROJECT}/lib">
+<attr name="description"><![CDATA[Default folder for java libraries (*.jar)]]></attr>
+</GraphParameter>
+<GraphParameter name="LOOKUP_DIR" value="${PROJECT}/lookup">
+<attr name="description"><![CDATA[Default folder for external lookup tables]]></attr>
+</GraphParameter>
+<GraphParameter name="META_DIR" value="${PROJECT}/meta">
+<attr name="description"><![CDATA[Default folder for external metadata (fmt)]]></attr>
+</GraphParameter>
+<GraphParameter name="PROFILE_DIR" value="${PROJECT}/profile">
+<attr name="description"><![CDATA[Default folder for data profiler jobs (cpj)]]></attr>
+</GraphParameter>
+<GraphParameter name="SEQ_DIR" value="${PROJECT}/seq">
+<attr name="description"><![CDATA[Default folder for external sequences (seq)]]></attr>
+</GraphParameter>
+<GraphParameter name="TRANS_DIR" value="${PROJECT}/trans">
+<attr name="description"><![CDATA[Default folder for java and CTL transformations]]></attr>
+</GraphParameter>
+</GraphParameters>
