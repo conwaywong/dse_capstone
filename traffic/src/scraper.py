@@ -112,7 +112,11 @@ try:
                 url = "%s/?srq=clearinghouse&district_id=%s&yy=%s&type=%s&returnformat=text" % (BASE_URL, d, year, fileType)
                 br.open(url)
                 json_response =  br.response().read()
-                data = json.loads(json_response)['data']
+                responseDict = json.loads(json_response)
+                if not responseDict:
+                    log.info("No data available for district: %s, year:%s, filetype: %s" % d, year, fileType)
+                    continue
+                data = responseDict['data']
                 for month in data.keys():
                     destDir = "%s/%s/%s/d%s/" % (BASE_DIR, fileType, year, d)
                     if not os.path.exists(destDir):
