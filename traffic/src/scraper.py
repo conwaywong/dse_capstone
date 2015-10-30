@@ -8,6 +8,7 @@ import os
 import logging
 import pickle
 import sys
+import traceback
 
 FORMAT = '%(asctime)s [%(levelname)-8s] %(message)s'
 formatter = logging.Formatter(FORMAT)
@@ -18,7 +19,7 @@ log = logging.Logger("scraper")
 log.addHandler(handler)
 
 BASE_URL = "http://pems.dot.ca.gov"
-START_YEAR = 2012
+START_YEAR = 2010
 END_YEAR = 2015
 BASE_DIR = "/video/dse_traffic"
 PICKLE_FILENAME = BASE_DIR + "/completed_files.pkl"
@@ -128,9 +129,9 @@ try:
                             time.sleep(5)
                         else:
                             log.debug("Already downloaded %s.", filename)
-            copySet.remove(fileType)
+        copySet.remove(fileType)
 except:
-    log.error(sys.exc_info())
+    log.error(traceback.format_exc())
 finally:
     pickle.dump(completedFiles, open(PICKLE_FILENAME, "wb"), 2)
 
