@@ -1,6 +1,8 @@
 '''
 Created on Oct 30, 2015
 
+To execute: bin/spark-submit --master local[4] MyFirstSparkJob.py
+
 @author: dyerke
 '''
 from pyspark.context import SparkContext
