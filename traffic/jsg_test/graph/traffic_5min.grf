@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Oct 31 11:45:12 PDT 2015" modifiedBy="johngill" name="traffic_5min" revision="1.82" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Oct 31 11:59:24 PDT 2015" modifiedBy="johngill" name="traffic_5min" revision="1.85" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="Lanes" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
@@ -29,28 +29,6 @@ Units: Mph]]></attr>
 <Field name="Observed" type="integer">
 <attr name="description"><![CDATA[1 indicates observed data, 0 indicates imputed.]]></attr>
 </Field>
-</Record>
-</Metadata>
-<Metadata id="Metadata3" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="\t" label="d06_text_meta_2009_12_04.txt" name="Meta" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
-<Field name="ID" type="long"/>
-<Field name="Fwy" type="integer"/>
-<Field name="Dir" type="string"/>
-<Field name="District" type="integer"/>
-<Field name="County" type="integer"/>
-<Field name="City" type="string"/>
-<Field name="State_PM" type="string"/>
-<Field name="Abs_PM" scale="3" type="string"/>
-<Field name="Latitude" type="number"/>
-<Field name="Longitude" type="number"/>
-<Field name="Length" type="number"/>
-<Field name="Type" type="string"/>
-<Field name="Lanes" type="integer"/>
-<Field name="Name" type="string"/>
-<Field name="User_ID_1" type="string"/>
-<Field name="User_ID_2" type="string"/>
-<Field name="User_ID_3" type="string"/>
-<Field eofAsDelimiter="true" name="User_ID_4" type="string"/>
 </Record>
 </Metadata>
 <Metadata id="Metadata0" previewAttachmentCharset="ISO-8859-1">
@@ -124,6 +102,50 @@ OR (On Ramp)]]></attr>
 </Field>
 </Record>
 </Metadata>
+<Metadata id="Metadata3" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="\t" label="d06_text_meta_2009_12_04.txt" name="StationMeta" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Field name="ID" type="long"/>
+<Field name="Fwy" type="integer"/>
+<Field name="Dir" type="string"/>
+<Field name="District" type="integer"/>
+<Field name="County" type="integer"/>
+<Field name="City" type="string"/>
+<Field name="State_PM" type="string"/>
+<Field name="Abs_PM" scale="3" type="string"/>
+<Field name="Latitude" type="number"/>
+<Field name="Longitude" type="number"/>
+<Field name="Length" type="number"/>
+<Field name="Type" type="string"/>
+<Field name="Lanes" type="integer"/>
+<Field name="Name" type="string"/>
+<Field name="User_ID_1" type="string"/>
+<Field name="User_ID_2" type="string"/>
+<Field name="User_ID_3" type="string"/>
+<Field eofAsDelimiter="true" name="User_ID_4" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata4" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="StationMeta_out" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Field name="ID" type="long"/>
+<Field name="Fwy" type="integer"/>
+<Field name="Dir" type="string"/>
+<Field name="District" type="integer"/>
+<Field name="County" type="integer"/>
+<Field name="City" type="string"/>
+<Field name="State_PM" type="string"/>
+<Field name="Abs_PM" scale="3" type="string"/>
+<Field name="Latitude" type="number"/>
+<Field name="Longitude" type="number"/>
+<Field name="Length" type="number"/>
+<Field name="Type" type="string"/>
+<Field name="Lanes" type="integer"/>
+<Field name="Name" type="string"/>
+<Field name="User_ID_1" type="string"/>
+<Field name="User_ID_2" type="string"/>
+<Field name="User_ID_3" type="string"/>
+<Field eofAsDelimiter="true" name="User_ID_4" type="string"/>
+</Record>
+</Metadata>
 <MetadataGroup name="Implicit metadata" type="implicit">
 <Metadata id="__static_metadata_VALIDATOR_Validator_InvalidRecords">
 <Record fieldDelimiter="|" name="Validator_ValidationResult" recordDelimiter="\n" type="delimited">
@@ -157,14 +179,16 @@ OR (On Ramp)]]></attr>
 </GraphParameters>
 <Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note0" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Lanes" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="284"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Bad Data" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="500"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note2" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Stations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="1205" y="33"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Bad Data" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="656"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note2" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Valid Station" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="1205" y="33"/>
 <Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note3" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Observations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="1205" y="158"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note4" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Stations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="524"/>
 <Dictionary/>
 </Global>
 <Phase number="0">
 <Node defaultForeignKey=";" foreignKey="$Station=$ID" guiName="CheckForeignKey" guiX="992" guiY="68" id="CHECK_FOREIGN_KEY" type="CHECK_FOREIGN_KEY"/>
 <Node defaultForeignKey="0;" foreignKey="$Observation_ID=$ID" guiName="CheckForeignKey" guiX="992" guiY="319" id="CHECK_FOREIGN_KEY1" type="CHECK_FOREIGN_KEY"/>
+<Node defaultForeignKey=";" foreignKey="$Station=$ID" guiName="CheckForeignKey" guiX="991" guiY="193" id="CHECK_FOREIGN_KEY2" type="CHECK_FOREIGN_KEY"/>
 <Node InputFile="${DATAIN_DIR}/" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="CustomJavaReader" guiX="51" guiY="68" id="CUSTOM_JAVA_READER" type="GENERIC_READER"/>
 <Node dedupKey="Station(a)" guiName="Dedup" guiX="743" guiY="68" id="DEDUP" type="DEDUP"/>
 <Node guiName="ExtFilter" guiX="355" guiY="319" id="EXT_FILTER" type="EXT_FILTER">
@@ -173,11 +197,13 @@ $in.0.Samples != 0]]></attr>
 </Node>
 <Node guiName="FastSort" guiX="577" guiY="67" id="FAST_SORT" sortKey="Station(a)" type="FAST_SORT"/>
 <Node guiName="SimpleCopy" guiX="743" guiY="193" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
+<Node guiName="SimpleCopy" guiX="355" guiY="566" id="SIMPLE_COPY1" type="SIMPLE_COPY"/>
 <Node guiName="Trash" guiX="1205" guiY="68" id="TRASH" type="TRASH"/>
-<Node guiName="Trash" guiX="1205" guiY="535" id="TRASH2" type="TRASH"/>
+<Node guiName="Trash" guiX="1205" guiY="691" id="TRASH2" type="TRASH"/>
 <Node dataPolicy="controlled" fileURL="${META_DIR}/*" guiName="UniversalDataReader" guiX="47" guiY="563" id="UNIVERSAL_DATA_READER" type="DATA_READER"/>
 <Node fileURL="${DATAOUT_DIR}/Observations.csv" guiName="UniversalDataWriter" guiX="1205" guiY="193" id="UNIVERSAL_DATA_WRITER" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
 <Node fileURL="${DATAOUT_DIR}/Lanes.csv" guiName="UniversalDataWriter" guiX="1205" guiY="319" id="UNIVERSAL_DATA_WRITER1" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
+<Node fileURL="${DATAOUT_DIR}/Stations.csv" guiName="UniversalDataWriter" guiX="1205" guiY="559" id="UNIVERSAL_DATA_WRITER2" outputFieldNames="true" quotedStrings="true" type="DATA_WRITER"/>
 <Node guiName="Validator" guiX="355" guiY="68" id="VALIDATOR" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -378,6 +404,8 @@ function integer transform() {
 <Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge17" inPort="Port 5 (in)" metadata="Metadata2" outPort="Port 1 (invalid foreign records)" toNode="TRASH2:5"/>
 <Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge22" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (foreign records)" toNode="UNIVERSAL_DATA_WRITER1:0"/>
 <Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge23" inPort="Port 6 (in)" metadata="Metadata1" outPort="Port 1 (invalid foreign records)" toNode="TRASH2:6"/>
+<Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge25" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (foreign records)" toNode="UNIVERSAL_DATA_WRITER:0"/>
+<Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge27" inPort="Port 7 (in)" metadata="Metadata0" outPort="Port 1 (invalid foreign records)" toNode="TRASH2:7"/>
 <Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="VALIDATOR:0"/>
 <Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 1 (out)" toNode="EXT_FILTER:0"/>
 <Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:2" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 2 (out)" toNode="VALIDATOR1:0"/>
@@ -385,9 +413,12 @@ function integer transform() {
 <Edge debugMode="true" fromNode="EXT_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="VALIDATOR2:0"/>
 <Edge debugMode="true" fromNode="EXT_FILTER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 1 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata1" toNode="TRASH2:1"/>
 <Edge debugMode="true" fromNode="FAST_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata2" toNode="DEDUP:0"/>
-<Edge debugMode="true" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="UNIVERSAL_DATA_WRITER:0"/>
+<Edge debugMode="true" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (foreign records)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="CHECK_FOREIGN_KEY2:0"/>
 <Edge debugMode="true" fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge21" inPort="Port 1 (primary records)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata0" toNode="CHECK_FOREIGN_KEY1:1"/>
-<Edge debugMode="true" fromNode="UNIVERSAL_DATA_READER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 1 (primary records)" metadata="Metadata3" outPort="Port 0 (output)" toNode="CHECK_FOREIGN_KEY:1"/>
+<Edge debugMode="true" fromNode="SIMPLE_COPY1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge24" inPort="Port 1 (primary records)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata3" toNode="CHECK_FOREIGN_KEY:1"/>
+<Edge debugMode="true" fromNode="SIMPLE_COPY1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge26" inPort="Port 1 (primary records)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata3" toNode="CHECK_FOREIGN_KEY2:1"/>
+<Edge debugMode="true" fromNode="SIMPLE_COPY1:2" guiBendpoints="" guiRouter="Manhattan" id="Edge28" inPort="Port 0 (in)" metadata="Metadata4" outPort="Port 2 (out)" toNode="UNIVERSAL_DATA_WRITER2:0"/>
+<Edge debugMode="true" fromNode="UNIVERSAL_DATA_READER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (output)" toNode="SIMPLE_COPY1:0"/>
 <Edge debugMode="true" fromNode="UNIVERSAL_DATA_READER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 3 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="TRASH2:3"/>
 <Edge debugMode="true" fromNode="VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (valid)" toNode="FAST_SORT:0"/>
 <Edge debugMode="true" fromNode="VALIDATOR:1" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" outPort="Port 1 (invalid)" persistedImplicitMetadata="__static_metadata_VALIDATOR_Validator_InvalidRecords" toNode="TRASH2:0"/>
