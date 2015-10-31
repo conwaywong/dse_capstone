@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Fri Oct 30 15:57:58 PDT 2015" modifiedBy="johngill" name="traffic_5min" revision="1.51" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Oct 31 11:45:12 PDT 2015" modifiedBy="johngill" name="traffic_5min" revision="1.82" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="Lanes" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
-<Field name="Observation_ID" nullable="false" type="integer"/>
+<Field name="Observation_ID" nullable="true" type="long"/>
 <Field name="Samples" type="integer">
 <attr name="description"><![CDATA[Number of good samples received for lane N. 
 N ranges from 1 to the number of lanes at the location.]]></attr>
@@ -31,16 +31,38 @@ Units: Mph]]></attr>
 </Field>
 </Record>
 </Metadata>
+<Metadata id="Metadata3" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="\t" label="d06_text_meta_2009_12_04.txt" name="Meta" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Field name="ID" type="long"/>
+<Field name="Fwy" type="integer"/>
+<Field name="Dir" type="string"/>
+<Field name="District" type="integer"/>
+<Field name="County" type="integer"/>
+<Field name="City" type="string"/>
+<Field name="State_PM" type="string"/>
+<Field name="Abs_PM" scale="3" type="string"/>
+<Field name="Latitude" type="number"/>
+<Field name="Longitude" type="number"/>
+<Field name="Length" type="number"/>
+<Field name="Type" type="string"/>
+<Field name="Lanes" type="integer"/>
+<Field name="Name" type="string"/>
+<Field name="User_ID_1" type="string"/>
+<Field name="User_ID_2" type="string"/>
+<Field name="User_ID_3" type="string"/>
+<Field eofAsDelimiter="true" name="User_ID_4" type="string"/>
+</Record>
+</Metadata>
 <Metadata id="Metadata0" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="Observation" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
-<Field name="ID" nullable="false" type="long"/>
+<Field name="ID" nullable="true" type="long"/>
 <Field format="MM/DD/YYYY HH:mm:SS" name="Timestamp" type="date">
 <attr name="description"><![CDATA[The date and time of the beginning of the summary interval. 
 For example, a time of 08:00:00 indicates that the aggregate(s) contain measurements collected between 08:00:00 and 08:04:59. 
 Note that second values are always 0 for five-minute aggregations. 
 The format is MM/DD/YYYY HH24:MI:SS.]]></attr>
 </Field>
-<Field name="Station" nullable="false" type="long">
+<Field name="Station" nullable="true" type="long">
 <attr name="description"><![CDATA[Unique station identifier. 
 Use this value to cross-reference with Metadata files.]]></attr>
 </Field>
@@ -61,7 +83,7 @@ Units: Veh/5-min]]></attr>
 <Field label="Avg Occupancy" name="Avg_Occupancy" type="number">
 <attr name="description"><![CDATA[Average occupancy across all lanes over the 5-minute period expressed as a decimal number between 0 and 1.]]></attr>
 </Field>
-<Field delimiter="\n" label="Avg Speed" name="Avg_Speed" type="number">
+<Field label="Avg Speed" name="Avg_Speed" type="number">
 <attr name="description"><![CDATA[Flow-weighted average speed over the 5-minute period across all lanes. 
 
 If flow is 0, mathematical average of 5-minute station speeds.
@@ -120,29 +142,42 @@ OR (On Ramp)]]></attr>
 <Field name="graphURL" type="string"/>
 </Record>
 </Metadata>
+<Metadata id="__static_metadata_DATA_READER_UniversalDataReader_Error">
+<Record fieldDelimiter="|" name="UniversalDataReader_Error" recordDelimiter="\n" type="delimited">
+<Field name="recordNo" trim="true" type="long"/>
+<Field name="fieldNo" trim="true" type="integer"/>
+<Field name="originalData" type="string"/>
+<Field name="errorMessage" type="string"/>
+<Field name="fileURL" type="string"/>
+</Record>
+</Metadata>
 </MetadataGroup>
 <GraphParameters>
 <GraphParameterFile fileURL="workspace.prm"/>
 </GraphParameters>
 <Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note0" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Lanes" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="975" y="284"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Bad Data" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="975" y="398"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note2" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Stations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="975" y="33"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note3" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Observations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="975" y="158"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note0" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Lanes" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="284"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Bad Data" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="500"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note2" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Stations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="1205" y="33"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note3" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Observations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="1205" y="158"/>
 <Dictionary/>
 </Global>
 <Phase number="0">
-<Node InputFile="${DATAIN_DIR}/d06_text_station_5min_2010_01_01.txt" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="CustomJavaReader" guiX="51" guiY="68" id="CUSTOM_JAVA_READER" type="GENERIC_READER"/>
-<Node dedupKey="Station(a)" guiName="Dedup" guiX="763" guiY="68" id="DEDUP" type="DEDUP"/>
+<Node defaultForeignKey=";" foreignKey="$Station=$ID" guiName="CheckForeignKey" guiX="992" guiY="68" id="CHECK_FOREIGN_KEY" type="CHECK_FOREIGN_KEY"/>
+<Node defaultForeignKey="0;" foreignKey="$Observation_ID=$ID" guiName="CheckForeignKey" guiX="992" guiY="319" id="CHECK_FOREIGN_KEY1" type="CHECK_FOREIGN_KEY"/>
+<Node InputFile="${DATAIN_DIR}/" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="CustomJavaReader" guiX="51" guiY="68" id="CUSTOM_JAVA_READER" type="GENERIC_READER"/>
+<Node dedupKey="Station(a)" guiName="Dedup" guiX="743" guiY="68" id="DEDUP" type="DEDUP"/>
 <Node guiName="ExtFilter" guiX="355" guiY="319" id="EXT_FILTER" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $in.0.Samples != 0]]></attr>
 </Node>
-<Node guiName="FastSort" guiX="562" guiY="67" id="FAST_SORT" sortKey="Station(a)" type="FAST_SORT"/>
-<Node guiName="Trash" guiX="975" guiY="68" id="TRASH" type="TRASH"/>
-<Node guiName="Trash" guiX="975" guiY="319" id="TRASH1" type="TRASH"/>
-<Node guiName="Trash" guiX="975" guiY="433" id="TRASH2" type="TRASH"/>
-<Node guiName="Trash" guiX="975" guiY="193" id="TRASH3" type="TRASH"/>
+<Node guiName="FastSort" guiX="577" guiY="67" id="FAST_SORT" sortKey="Station(a)" type="FAST_SORT"/>
+<Node guiName="SimpleCopy" guiX="743" guiY="193" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
+<Node guiName="Trash" guiX="1205" guiY="68" id="TRASH" type="TRASH"/>
+<Node guiName="Trash" guiX="1205" guiY="535" id="TRASH2" type="TRASH"/>
+<Node dataPolicy="controlled" fileURL="${META_DIR}/*" guiName="UniversalDataReader" guiX="47" guiY="563" id="UNIVERSAL_DATA_READER" type="DATA_READER"/>
+<Node fileURL="${DATAOUT_DIR}/Observations.csv" guiName="UniversalDataWriter" guiX="1205" guiY="193" id="UNIVERSAL_DATA_WRITER" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
+<Node fileURL="${DATAOUT_DIR}/Lanes.csv" guiName="UniversalDataWriter" guiX="1205" guiY="319" id="UNIVERSAL_DATA_WRITER1" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
 <Node guiName="Validator" guiX="355" guiY="68" id="VALIDATOR" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -187,7 +222,7 @@ function integer transform() {
 <group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
     <children>
         <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
-        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="District" name="Comparison" operator="E" outputField="" useType="DEFAULT" value="6">
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="false" inputField="District" name="Comparison" operator="E" outputField="" useType="DEFAULT" value="11">
             <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
         </comparison>
         <enumMatch acceptEmpty="false" customRejectMessage="" description="" enabled="true" ignoreCase="true" inputField="Lane_Type" name="Enum Match" outputField="" trimInput="false" useType="DEFAULT">
@@ -211,20 +246,154 @@ function integer transform() {
                 <value>W</value>
             </values>
         </enumMatch>
+        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="Station" name="Empty/Nonempty field" outputField="" trimInput="false"/>
     </children>
     <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
     <imports/>
 </group>
 ]]></attr>
 </Node>
+<Node guiName="Validator" guiX="355" guiY="193" id="VALIDATOR1" type="VALIDATOR">
+<attr name="errorMapping"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.1.recordNo = $in.1.recordNo;
+	$out.1.validationMessage = $in.1.validationMessage;
+	$out.1.ruleStatusCode = $in.1.ruleStatusCode;
+	$out.1.ruleName = $in.1.ruleName;
+	$out.1.ruleType = $in.1.ruleType;
+	$out.1.rulePath = $in.1.rulePath;
+	$out.1.validatedFieldNames = $in.1.validatedFieldNames;
+	$out.1.validatedValues = $in.1.validatedValues;
+	$out.1.ruleParameters = $in.1.ruleParameters;
+	$out.1.validationDate = $in.1.validationDate;
+	$out.1.componentID = $in.1.componentID;
+	$out.1.componentName = $in.1.componentName;
+	$out.1.graphURL = $in.1.graphURL;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
+    <children>
+        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
+        <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="false" from="2010-01-01 00:00:00" inputField="Timestamp" name="Interval" outputField="" to="2010-01-05 23:59:59" useType="DEFAULT">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </interval>
+        <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="0" inputField="Avg_Occupancy" name="Interval" outputField="" to="1" useType="DEFAULT">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </interval>
+        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="ID" name="Empty/Nonempty field" outputField="" trimInput="false"/>
+    </children>
+    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+    <imports/>
+</group>
+]]></attr>
+</Node>
+<Node guiName="Validator" guiX="577" guiY="319" id="VALIDATOR2" type="VALIDATOR">
+<attr name="errorMapping"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.1.recordNo = $in.1.recordNo;
+	$out.1.validationMessage = $in.1.validationMessage;
+	$out.1.ruleStatusCode = $in.1.ruleStatusCode;
+	$out.1.ruleName = $in.1.ruleName;
+	$out.1.ruleType = $in.1.ruleType;
+	$out.1.rulePath = $in.1.rulePath;
+	$out.1.validatedFieldNames = $in.1.validatedFieldNames;
+	$out.1.validatedValues = $in.1.validatedValues;
+	$out.1.ruleParameters = $in.1.ruleParameters;
+	$out.1.validationDate = $in.1.validationDate;
+	$out.1.componentID = $in.1.componentID;
+	$out.1.componentName = $in.1.componentName;
+	$out.1.graphURL = $in.1.graphURL;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
+    <children>
+        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
+        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="Observation_ID" name="Empty/Nonempty field" outputField="" trimInput="false"/>
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="Samples" name="Comparison" operator="GE" outputField="" useType="DEFAULT" value="1">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </comparison>
+        <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="0" inputField="Avg_Occ" name="Interval" outputField="" to="1" useType="DEFAULT">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </interval>
+        <enumMatch acceptEmpty="false" customRejectMessage="" description="" enabled="true" ignoreCase="false" inputField="Observed" name="Enum Match" outputField="" trimInput="false" useType="DEFAULT">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+            <values>
+                <value>0</value>
+                <value>1</value>
+            </values>
+        </enumMatch>
+    </children>
+    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+    <imports/>
+</group>
+]]></attr>
+</Node>
+<Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge19" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (foreign records)" toNode="TRASH:0"/>
+<Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge17" inPort="Port 5 (in)" metadata="Metadata2" outPort="Port 1 (invalid foreign records)" toNode="TRASH2:5"/>
+<Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge22" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (foreign records)" toNode="UNIVERSAL_DATA_WRITER1:0"/>
+<Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge23" inPort="Port 6 (in)" metadata="Metadata1" outPort="Port 1 (invalid foreign records)" toNode="TRASH2:6"/>
 <Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="VALIDATOR:0"/>
 <Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 1 (out)" toNode="EXT_FILTER:0"/>
-<Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:2" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 2 (out)" toNode="TRASH3:0"/>
-<Edge debugMode="true" fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata2" toNode="TRASH:0"/>
-<Edge debugMode="true" fromNode="EXT_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="TRASH1:0"/>
+<Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:2" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 2 (out)" toNode="VALIDATOR1:0"/>
+<Edge debugMode="true" fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge18" inPort="Port 0 (foreign records)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata2" toNode="CHECK_FOREIGN_KEY:0"/>
+<Edge debugMode="true" fromNode="EXT_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="VALIDATOR2:0"/>
 <Edge debugMode="true" fromNode="EXT_FILTER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 1 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata1" toNode="TRASH2:1"/>
 <Edge debugMode="true" fromNode="FAST_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata2" toNode="DEDUP:0"/>
+<Edge debugMode="true" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="UNIVERSAL_DATA_WRITER:0"/>
+<Edge debugMode="true" fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge21" inPort="Port 1 (primary records)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata0" toNode="CHECK_FOREIGN_KEY1:1"/>
+<Edge debugMode="true" fromNode="UNIVERSAL_DATA_READER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 1 (primary records)" metadata="Metadata3" outPort="Port 0 (output)" toNode="CHECK_FOREIGN_KEY:1"/>
+<Edge debugMode="true" fromNode="UNIVERSAL_DATA_READER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 3 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="TRASH2:3"/>
 <Edge debugMode="true" fromNode="VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (valid)" toNode="FAST_SORT:0"/>
 <Edge debugMode="true" fromNode="VALIDATOR:1" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" outPort="Port 1 (invalid)" persistedImplicitMetadata="__static_metadata_VALIDATOR_Validator_InvalidRecords" toNode="TRASH2:0"/>
+<Edge debugMode="true" fromNode="VALIDATOR1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (valid)" toNode="SIMPLE_COPY:0"/>
+<Edge debugMode="true" fromNode="VALIDATOR1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 2 (in)" outPort="Port 1 (invalid)" persistedImplicitMetadata="__static_metadata_VALIDATOR_Validator_InvalidRecords" toNode="TRASH2:2"/>
+<Edge debugMode="true" fromNode="VALIDATOR2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (foreign records)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata1" toNode="CHECK_FOREIGN_KEY1:0"/>
+<Edge debugMode="true" fromNode="VALIDATOR2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 4 (in)" outPort="Port 1 (invalid)" persistedImplicitMetadata="__static_metadata_VALIDATOR_Validator_InvalidRecords" toNode="TRASH2:4"/>
 </Phase>
 </Graph>
