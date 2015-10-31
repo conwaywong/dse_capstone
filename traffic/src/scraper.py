@@ -21,11 +21,11 @@ log.addHandler(handler)
 BASE_URL = "http://pems.dot.ca.gov"
 START_YEAR = 2010
 END_YEAR = 2015
-BASE_DIR = "/video/dse_traffic"
+BASE_DIR = "/video/dse_capstone/traffic"
 PICKLE_FILENAME = BASE_DIR + "/completed_files.pkl"
 
 # define the types of files we want
-FILE_TYPES = {'station_5min','station_hour','meta'}
+FILE_TYPES = {'station_5min','station_hour', 'meta'}
 
 # Setup download location
 if not os.path.exists(BASE_DIR):
