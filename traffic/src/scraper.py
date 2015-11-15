@@ -25,7 +25,7 @@ BASE_DIR = "/video/dse_capstone/traffic"
 PICKLE_FILENAME = BASE_DIR + "/completed_files.pkl"
 
 # define the types of files we want
-FILE_TYPES = {'station_5min','station_hour', 'meta'}
+FILE_TYPES = {'station_5min','station_hour', 'meta', 'chp_incidents_day'}
 
 # Setup download location
 if not os.path.exists(BASE_DIR):
