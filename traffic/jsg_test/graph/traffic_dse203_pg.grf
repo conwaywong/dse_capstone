@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Nov 21 09:36:33 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.161" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Nov 21 13:31:51 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.168" showComponentDetails="true">
 <Global>
+<Metadata id="Metadata12" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="CHPInc" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="ID" type="integer"/>
+<Field name="CC_Code" type="string"/>
+<Field name="Incident_Num" type="string"/>
+<Field format="MM/dd/yyyy HH:mm:ss" name="Timestamp" type="date"/>
+<Field name="Description" type="string"/>
+<Field name="Location" type="string"/>
+<Field name="Area" type="string"/>
+<Field name="Zoom_Map" type="string"/>
+<Field name="TB_xy" type="string"/>
+<Field name="Latitude" type="number"/>
+<Field name="Longitude" type="number"/>
+<Field name="District" type="integer"/>
+<Field name="County_FIPS_ID" type="integer"/>
+<Field name="City_FIPS_ID" type="integer"/>
+<Field name="Freeway_Num" type="integer"/>
+<Field name="Freeway_Dir" type="string"/>
+<Field name="State_PM" type="string"/>
+<Field name="Absolute_PM" type="number"/>
+<Field name="Severity" type="string"/>
+<Field name="Duration" type="integer"/>
+</Record>
+</Metadata>
 <Metadata id="Metadata7" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="County_City" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
 <Field name="ID" type="integer"/>
@@ -259,6 +283,15 @@ OR (On Ramp)]]></attr>
 </Record>
 </Metadata>
 <MetadataGroup name="Implicit metadata" type="implicit">
+<Metadata id="__static_metadata_DATA_READER_UniversalDataReader_Error">
+<Record fieldDelimiter="|" name="UniversalDataReader_Error" recordDelimiter="\n" type="delimited">
+<Field name="recordNo" trim="true" type="long"/>
+<Field name="fieldNo" trim="true" type="integer"/>
+<Field name="originalData" type="string"/>
+<Field name="errorMessage" type="string"/>
+<Field name="fileURL" type="string"/>
+</Record>
+</Metadata>
 <Metadata id="__static_metadata_VALIDATOR_Validator_InvalidRecords">
 <Record fieldDelimiter="|" name="Validator_ValidationResult" recordDelimiter="\n" type="delimited">
 <Field name="recordNo" trim="true" type="long"/>
@@ -276,15 +309,6 @@ OR (On Ramp)]]></attr>
 <Field name="graphURL" type="string"/>
 </Record>
 </Metadata>
-<Metadata id="__static_metadata_DATA_READER_UniversalDataReader_Error">
-<Record fieldDelimiter="|" name="UniversalDataReader_Error" recordDelimiter="\n" type="delimited">
-<Field name="recordNo" trim="true" type="long"/>
-<Field name="fieldNo" trim="true" type="integer"/>
-<Field name="originalData" type="string"/>
-<Field name="errorMessage" type="string"/>
-<Field name="fileURL" type="string"/>
-</Record>
-</Metadata>
 </MetadataGroup>
 <GraphParameters>
 <GraphParameterFile fileURL="workspace.prm"/>
@@ -293,7 +317,7 @@ OR (On Ramp)]]></attr>
 <Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <Sequence cached="0" id="Sequence1" name="Fwy_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <LookupTable charset="ISO-8859-1" fileURL="${LOOKUP_DIR}/station_type.csv" id="LookupTable0" initialSize="512" key="Type" metadata="Metadata5" name="simpleLookup0" type="simpleLookup"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note0" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Lane_Observation" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="157" x="1927" y="248"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note0" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Lane_Observation" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="157" x="1936" y="248"/>
 <Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Bad Data" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1941" y="795"/>
 <Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note2" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Valid Station" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="1936" y="38"/>
 <Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note3" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Observations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="1936" y="143"/>
@@ -303,8 +327,8 @@ OR (On Ramp)]]></attr>
 <Dictionary/>
 </Global>
 <Phase number="0">
-<Node database="johngill" failOnError="true" guiName="Couty_City Table" guiX="1941" guiY="688" host="localhost" id="COUTY_CITY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="johngill"/>
-<Node InputFile="${DATAIN_DIR}/" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="CustomJavaReader" guiX="51" guiY="68" id="CUSTOM_JAVA_READER" type="GENERIC_READER"/>
+<Node database="johngill" enabled="trash" failOnError="true" guiName="Couty_City Table" guiX="1941" guiY="688" host="localhost" id="COUTY_CITY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="johngill"/>
+<Node InputFile="${DATAIN_DIR}/station_5min" SeqName="Sequence0" enabled="trash" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="CustomJavaReader" guiX="51" guiY="68" id="CUSTOM_JAVA_READER" type="GENERIC_READER"/>
 <Node dedupKey="Station(a)" guiName="Dedup" guiX="743" guiY="68" id="DEDUP" type="DEDUP"/>
 <Node dedupKey="Num(a);Direction(a)" guiName="Dedup" guiX="677" guiY="567" id="DEDUP1" type="DEDUP"/>
 <Node dedupKey="County_FIPS_ID(a);City_FIPS_ID(a)" guiName="Dedup" guiX="677" guiY="688" id="DEDUP2" type="DEDUP"/>
@@ -316,7 +340,11 @@ $in.0.Samples != 0]]></attr>
 <Node guiName="FastSort" guiX="506" guiY="567" id="FAST_SORT1" sortKey="Num(a);Direction(a)" type="FAST_SORT"/>
 <Node guiName="FastSort" guiX="506" guiY="688" id="FAST_SORT2" sortKey="County_FIPS_ID(a);City_FIPS_ID(a)" type="FAST_SORT"/>
 <Node guiName="FastSort" guiX="689" guiY="430" id="FAST_SORT3" sortKey="Fwy(a);Dir(a)" type="FAST_SORT"/>
-<Node database="johngill" guiName="Freeway Table" guiX="1941" guiY="570" host="localhost" id="FREEWAY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="johngill"/>
+<Node guiName="Filter D11" guiX="255" guiY="970" id="FILTER_D11" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.District == 11]]></attr>
+</Node>
+<Node database="johngill" enabled="trash" guiName="Freeway Table" guiX="1941" guiY="570" host="localhost" id="FREEWAY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="johngill"/>
 <Node guiName="LookupJoin" guiX="506" guiY="430" id="LOOKUP_JOIN" joinKey="Type" leftOuterJoin="true" lookupTable="LookupTable0" type="LOOKUP_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -501,7 +529,9 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node dataPolicy="controlled" fileURL="${META_DIR}/*" guiName="UniversalDataReader" guiX="51" guiY="430" id="UNIVERSAL_DATA_READER" type="DATA_READER"/>
+<Node guiName="Trash" guiX="653" guiY="917" id="TRASH1" type="TRASH"/>
+<Node dataPolicy="controlled" fileURL="${DATAIN_DIR}/station_meta/*.txt" guiName="UniversalDataReader" guiX="51" guiY="430" id="UNIVERSAL_DATA_READER" type="DATA_READER"/>
+<Node dataPolicy="controlled" enabled="trash" fileURL="gzip:(${DATAIN_DIR}/chp_incidents/all_text_chp_incident_day_*gz)" guiName="UniversalDataReader" guiX="47" guiY="970" id="UNIVERSAL_DATA_READER1" type="DATA_READER"/>
 <Node guiName="Validator" guiX="355" guiY="68" id="VALIDATOR" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -753,18 +783,20 @@ function integer transform() {
 <Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="VALIDATOR:0"/>
 <Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 1 (out)" toNode="EXT_FILTER:0"/>
 <Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:2" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 2 (out)" toNode="VALIDATOR1:0"/>
-<Edge debugMode="true" fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge18" inPort="Port 0 (foreign records)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata2" toNode="CHECK_FOREIGN_KEY:0"/>
-<Edge debugMode="true" fromNode="DEDUP:1" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 8 (in)" outPort="Port 1 (duplicate)" persistedImplicitMetadata="Metadata2" toNode="TRASH2:8"/>
+<Edge debugMode="true" fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge18" inPort="Port 0 (foreign records)" outPort="Port 0 (unique)" toNode="CHECK_FOREIGN_KEY:0"/>
+<Edge debugMode="true" fromNode="DEDUP:1" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 8 (in)" outPort="Port 1 (duplicate)" toNode="TRASH2:8"/>
 <Edge debugMode="true" fromNode="DEDUP1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge34" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata6" toNode="VALIDATOR4:0"/>
 <Edge debugMode="true" fromNode="DEDUP1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge35" inPort="Port 10 (in)" outPort="Port 1 (duplicate)" persistedImplicitMetadata="Metadata6" toNode="TRASH2:10"/>
 <Edge debugMode="true" fromNode="DEDUP2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge40" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata7" toNode="SET_CC_ID:0"/>
 <Edge debugMode="true" fromNode="DEDUP2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge43" inPort="Port 12 (in)" outPort="Port 1 (duplicate)" persistedImplicitMetadata="Metadata7" toNode="TRASH2:12"/>
-<Edge debugMode="true" fromNode="EXT_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="VALIDATOR2:0"/>
-<Edge debugMode="true" fromNode="EXT_FILTER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 1 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata1" toNode="TRASH2:1"/>
-<Edge debugMode="true" fromNode="FAST_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata2" toNode="DEDUP:0"/>
+<Edge debugMode="true" fromNode="EXT_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" toNode="VALIDATOR2:0"/>
+<Edge debugMode="true" fromNode="EXT_FILTER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 1 (in)" outPort="Port 1 (rejected)" toNode="TRASH2:1"/>
+<Edge debugMode="true" fromNode="FAST_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="DEDUP:0"/>
 <Edge debugMode="true" fromNode="FAST_SORT1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge33" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata6" toNode="DEDUP1:0"/>
 <Edge debugMode="true" fromNode="FAST_SORT2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge39" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata7" toNode="DEDUP2:0"/>
 <Edge debugMode="true" fromNode="FAST_SORT3:0" guiBendpoints="" guiRouter="Manhattan" id="Edge49" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata4" toNode="EXT_MERGE_JOIN:0"/>
+<Edge debugMode="true" fromNode="FILTER_D11:0" guiBendpoints="" guiRouter="Manhattan" id="Edge61" inPort="Port 0 (in)" outPort="Port 0 (accepted)" toNode="TRASH1:0"/>
+<Edge debugMode="true" fromNode="FILTER_D11:1" guiBendpoints="" guiRouter="Manhattan" id="Edge62" inPort="Port 16 (in)" outPort="Port 1 (rejected)" toNode="TRASH2:16"/>
 <Edge debugMode="true" fromNode="LOOKUP_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (in)" metadata="Metadata4" outPort="Port 0 (joined records)" toNode="FAST_SORT3:0"/>
 <Edge debugMode="true" fromNode="REFORMAT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge31" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata3" toNode="LOOKUP_JOIN:0"/>
 <Edge debugMode="true" fromNode="REFORMAT:1" guiBendpoints="" guiRouter="Manhattan" id="Edge32" inPort="Port 0 (in)" metadata="Metadata6" outPort="Port 1 (out)" toNode="FAST_SORT1:0"/>
@@ -775,12 +807,14 @@ function integer transform() {
 <Edge debugMode="true" fromNode="SET_FWY_ID:1" guiBendpoints="" guiRouter="Manhattan" id="Edge46" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata6" toNode="EXT_MERGE_JOIN:1"/>
 <Edge debugMode="true" fromNode="UNIVERSAL_DATA_READER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (output)" toNode="REFORMAT:0"/>
 <Edge debugMode="true" fromNode="UNIVERSAL_DATA_READER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 3 (in)" outPort="Port 1 (logs)" persistedImplicitMetadata="__static_metadata_DATA_READER_UniversalDataReader_Error" toNode="TRASH2:3"/>
+<Edge debugMode="true" fromNode="UNIVERSAL_DATA_READER1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge59" inPort="Port 0 (in)" metadata="Metadata12" outPort="Port 0 (output)" toNode="FILTER_D11:0"/>
+<Edge debugMode="true" fromNode="UNIVERSAL_DATA_READER1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge60" inPort="Port 15 (in)" outPort="Port 1 (logs)" toNode="TRASH2:15"/>
 <Edge debugMode="true" fromNode="VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (valid)" toNode="FAST_SORT:0"/>
-<Edge debugMode="true" fromNode="VALIDATOR:1" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" outPort="Port 1 (invalid)" persistedImplicitMetadata="__static_metadata_VALIDATOR_Validator_InvalidRecords" toNode="TRASH2:0"/>
+<Edge debugMode="true" fromNode="VALIDATOR:1" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (in)" outPort="Port 1 (invalid)" toNode="TRASH2:0"/>
 <Edge debugMode="true" fromNode="VALIDATOR1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (foreign records)" metadata="Metadata0" outPort="Port 0 (valid)" toNode="CHECK_FOREIGN_KEY2:0"/>
-<Edge debugMode="true" fromNode="VALIDATOR1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 2 (in)" outPort="Port 1 (invalid)" persistedImplicitMetadata="__static_metadata_VALIDATOR_Validator_InvalidRecords" toNode="TRASH2:2"/>
-<Edge debugMode="true" fromNode="VALIDATOR2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (foreign records)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata1" toNode="CHECK_FOREIGN_KEY1:0"/>
-<Edge debugMode="true" fromNode="VALIDATOR2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 4 (in)" outPort="Port 1 (invalid)" persistedImplicitMetadata="__static_metadata_VALIDATOR_Validator_InvalidRecords" toNode="TRASH2:4"/>
+<Edge debugMode="true" fromNode="VALIDATOR1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 2 (in)" outPort="Port 1 (invalid)" toNode="TRASH2:2"/>
+<Edge debugMode="true" fromNode="VALIDATOR2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (foreign records)" outPort="Port 0 (valid)" toNode="CHECK_FOREIGN_KEY1:0"/>
+<Edge debugMode="true" fromNode="VALIDATOR2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 4 (in)" outPort="Port 1 (invalid)" toNode="TRASH2:4"/>
 <Edge debugMode="true" fromNode="VALIDATOR4:0" guiBendpoints="" guiRouter="Manhattan" id="Edge30" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata6" toNode="SET_FWY_ID:0"/>
 <Edge debugMode="true" fromNode="VALIDATOR4:1" guiBendpoints="" guiRouter="Manhattan" id="Edge37" inPort="Port 11 (in)" outPort="Port 1 (invalid)" persistedImplicitMetadata="__static_metadata_VALIDATOR_Validator_InvalidRecords" toNode="TRASH2:11"/>
 </Phase>
@@ -917,7 +951,7 @@ function integer transform() {
 ]]></attr>
 </Node>
 <Node guiName="SimpleCopy" guiX="1583" guiY="426" id="SIMPLE_COPY1" type="SIMPLE_COPY"/>
-<Node database="johngill" guiName="Stations Table" guiX="1937" guiY="459" host="localhost" id="STATIONS_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Station" type="POSTGRESQL_DATA_WRITER" username="johngill"/>
+<Node database="johngill" enabled="trash" guiName="Stations Table" guiX="1937" guiY="459" host="localhost" id="STATIONS_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Station" type="POSTGRESQL_DATA_WRITER" username="johngill"/>
 <Node guiName="Trash" guiX="1936" guiY="73" id="TRASH" type="TRASH"/>
 <Node guiName="Validator" guiX="1394" guiY="429" id="VALIDATOR3" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
@@ -990,14 +1024,14 @@ function integer transform() {
 <attr name="filterExpression"><![CDATA[//#CTL2
 NOT ($in.0.Station_ID == -1)]]></attr>
 </Node>
-<Node database="johngill" guiName="PostgreSQLDataWriter" guiX="1936" guiY="178" host="localhost" id="POSTGRE_SQLDATA_WRITER" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="johngill"/>
+<Node database="johngill" enabled="trash" guiName="PostgreSQLDataWriter" guiX="1936" guiY="178" host="localhost" id="POSTGRE_SQLDATA_WRITER" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="johngill"/>
 <Node guiName="SimpleCopy" guiX="1195" guiY="178" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
 <Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge25" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (foreign records)" toNode="EXT_FILTER1:0"/>
 <Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge27" inPort="Port 7 (in)" metadata="Metadata0" outPort="Port 1 (invalid foreign records)" toNode="TRASH2:7"/>
-<Edge debugMode="true" fromNode="EXT_FILTER1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge51" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata0" toNode="SIMPLE_COPY:0"/>
-<Edge debugMode="true" fromNode="EXT_FILTER1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge55" inPort="Port 13 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata0" toNode="TRASH2:13"/>
-<Edge debugMode="true" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="POSTGRE_SQLDATA_WRITER:0"/>
-<Edge debugMode="true" fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge21" inPort="Port 1 (primary records)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata0" toNode="CHECK_FOREIGN_KEY1:1"/>
+<Edge debugMode="true" fromNode="EXT_FILTER1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge51" inPort="Port 0 (in)" outPort="Port 0 (accepted)" toNode="SIMPLE_COPY:0"/>
+<Edge debugMode="true" fromNode="EXT_FILTER1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge55" inPort="Port 13 (in)" outPort="Port 1 (rejected)" toNode="TRASH2:13"/>
+<Edge debugMode="true" fromNode="SIMPLE_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="POSTGRE_SQLDATA_WRITER:0"/>
+<Edge debugMode="true" fromNode="SIMPLE_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge21" inPort="Port 1 (primary records)" outPort="Port 1 (out)" toNode="CHECK_FOREIGN_KEY1:1"/>
 </Phase>
 <Phase number="3">
 <Node defaultForeignKey="-1" foreignKey="$Observation_ID=$ID" guiName="CheckForeignKey" guiX="1409" guiY="283" id="CHECK_FOREIGN_KEY1" type="CHECK_FOREIGN_KEY"/>
@@ -1005,7 +1039,7 @@ NOT ($in.0.Station_ID == -1)]]></attr>
 <attr name="filterExpression"><![CDATA[//#CTL2
 NOT (isnull($in.0.Observation_ID) OR $in.0.Observation_ID == -1)]]></attr>
 </Node>
-<Node database="johngill" guiName="PostgreSQLDataWriter" guiX="1927" guiY="283" host="localhost" id="POSTGRE_SQLDATA_WRITER3" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="johngill"/>
+<Node database="johngill" enabled="trash" guiName="PostgreSQLDataWriter" guiX="1936" guiY="283" host="localhost" id="POSTGRE_SQLDATA_WRITER3" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="johngill"/>
 <Node guiName="Set Field order" guiX="1758" guiY="283" id="SET_FIELD_ORDER" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -1045,8 +1079,8 @@ function integer transform() {
 <Node guiName="Trash" guiX="1941" guiY="830" id="TRASH2" type="TRASH"/>
 <Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge22" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 0 (foreign records)" toNode="EXT_FILTER2:0"/>
 <Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge23" inPort="Port 6 (in)" metadata="Metadata1" outPort="Port 1 (invalid foreign records)" toNode="TRASH2:6"/>
-<Edge debugMode="true" fromNode="EXT_FILTER2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge54" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="SET_FIELD_ORDER:0"/>
-<Edge debugMode="true" fromNode="EXT_FILTER2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge56" inPort="Port 14 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata1" toNode="TRASH2:14"/>
+<Edge debugMode="true" fromNode="EXT_FILTER2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge54" inPort="Port 0 (in)" outPort="Port 0 (accepted)" toNode="SET_FIELD_ORDER:0"/>
+<Edge debugMode="true" fromNode="EXT_FILTER2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge56" inPort="Port 14 (in)" outPort="Port 1 (rejected)" toNode="TRASH2:14"/>
 <Edge debugMode="true" fromNode="SET_FIELD_ORDER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge53" inPort="Port 0 (in)" metadata="Metadata11" outPort="Port 0 (out)" toNode="POSTGRE_SQLDATA_WRITER3:0"/>
 </Phase>
 </Graph>

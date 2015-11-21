@@ -1,4 +1,7 @@
 -- PEMS Schema
+-- Random Sampling: 
+--		http://stackoverflow.com/questions/8674718/best-way-to-select-random-rows-postgresql/8675160#8675160
+--		http://dba.stackexchange.com/questions/96610/sampling-in-postgresql
 
 -- Phase 0
 DROP TABLE IF EXISTS District CASCADE;
@@ -42,6 +45,8 @@ CREATE TABLE Freeways (
 	Direction TEXT NOT NULL
 );
 
+CREATE INDEX Fwy_Num_Dir ON Freeways(Num, Direction);
+
 DROP TABLE IF EXISTS County_City CASCADE;
 CREATE TABLE County_City (
 	ID INTEGER PRIMARY KEY,
@@ -51,8 +56,9 @@ CREATE TABLE County_City (
 
 -- Phase 1
 DROP TABLE IF EXISTS Station CASCADE;
-CREATE TABLE Station (
-	ID INTEGER PRIMARY KEY,
+CREATE TABLE Traffic_Station (
+	ID INTEGER,
+	Upd_Date Date,
 	Name TEXT,
 	Fwy_ID INTEGER NOT NULL REFERENCES Freeways(ID),
 	CCID_ID INTEGER NOT NULL REFERENCES County_City(ID),
@@ -65,14 +71,17 @@ CREATE TABLE Station (
 	Type_ID INTEGER NOT NULL REFERENCES ST_Type(ID),
 	Num_Lanes INTEGER NOT NULL
 	-- USER_ID DELETE
+	PRIMARY KEY (ID, Upd_Date)
 );
+
+CREATE INDEX Traffic_Station_Idx ON Traffic_Station(ID);
 
 -- Phase 2
 DROP TABLE IF EXISTS Observation CASCADE;
 CREATE TABLE Observation (
 	ID BIGINT PRIMARY KEY,
 	Time Timestamp NOT NULL,
-	Station_ID INTEGER NOT NULL REFERENCES Station(ID),
+	Station_ID INTEGER NOT NULL REFERENCES Traffic_Station(ID),
 	Samples INTEGER,
 	Perc_Observed FLOAT,
 	Total_Flow INTEGER,
@@ -84,7 +93,7 @@ CREATE TABLE Observation (
 DROP TABLE IF EXISTS Lane_Observation CASCADE;
 CREATE TABLE Lane_Observation (
 	Observation_ID BIGINT NOT NULL REFERENCES Observation(ID),
-	Station_ID INTEGER NOT NULL REFERENCES Station(ID),
+	Station_ID INTEGER NOT NULL REFERENCES Traffic_Station(ID),
 	L_Num INTEGER NOT NULL,
 	Samples INTEGER,
 	Flow INTEGER,
@@ -96,7 +105,7 @@ CREATE TABLE Lane_Observation (
 CREATE UNIQUE INDEX L_Obso_PriIdx ON Lane_Observation (Observation_ID, Station_ID, L_Num);
 CREATE INDEX L_Obos_SecIdx ON Lane_Observation(Station_ID, L_Num);
 
--- Phase N
+-- CHP Data
 DROP TABLE IF EXISTS CHP_INC CASCADE;
 CREATE TABLE CHP_INC (
 	ID INTEGER PRIMARY KEY,
@@ -117,4 +126,31 @@ CREATE TABLE CHP_INC (
 	ABS_PM FLOAT NOT NULL,
 	Severity INTEGER,
 	Duration INTEGER
+);
+
+-- Weather Data
+DROP TABLE IF EXISTS Weather_Station CASCADE;
+CREATE TABLE Weather_Station (
+	ID INTEGER PRIMARY KEY,
+	Name TEXT NOT NULL,
+	Latitude FLOAT NOT NULL,
+	Longitude FLOAT NOT NULL,
+	Elevation FLOAT NOT NULL
+	--CCID_ID INTEGER NOT NULL REFERENCES County_City(ID)
+);
+
+DROP TABLE IF EXISTS Precipitation_Hourly_Observation CASCADE;
+CREATE TABLE Precipitation_Hourly_Observation (
+	ID INTEGER PRIMARY KEY,
+	Station_ID INTEGER NOT NULL REFERENCES Weather_Station(ID),
+	Time Timestamp NOT NULL,
+	Amount FLOAT NOT NULL
+);
+
+DROP TABLE Precipitation_Daily_Total CASCADE;
+CREATE TABLE Precipitation_Daily_Total (
+	ID INTEGER PRIMARY KEY,
+	Station_ID INTEGER NOT NULL REFERENCES Weather_Station(ID),
+	Day Date NOT NULL,
+	Amount FLOAT NOT NULL
 );
