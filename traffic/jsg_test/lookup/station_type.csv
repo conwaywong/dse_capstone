@@ -1,0 +1,8 @@
+ID,Type,Description
+1,CD,Coll/Dist
+2,CH,Conventional Highway
+3,FF,Fwy-Fwy connector
+4,FR,Off Ramp
+5,HV,HOV
+6,ML,Mainline
+7,OR,On Ramp

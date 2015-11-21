@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Oct 31 11:59:24 PDT 2015" modifiedBy="johngill" name="traffic_5min" revision="1.85" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Fri Nov 20 09:05:47 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.98" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="Lanes" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
@@ -34,7 +34,7 @@ Units: Mph]]></attr>
 <Metadata id="Metadata0" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="Observation" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
 <Field name="ID" nullable="true" type="long"/>
-<Field format="MM/DD/YYYY HH:mm:SS" name="Timestamp" type="date">
+<Field format="MM/dd/yyyy HH:mm:ss" name="Timestamp" type="date">
 <attr name="description"><![CDATA[The date and time of the beginning of the summary interval. 
 For example, a time of 08:00:00 indicates that the aggregate(s) contain measurements collected between 08:00:00 and 08:04:59. 
 Note that second values are always 0 for five-minute aggregations. 
@@ -178,32 +178,35 @@ OR (On Ramp)]]></attr>
 <GraphParameterFile fileURL="workspace.prm"/>
 </GraphParameters>
 <Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note0" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Lanes" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="284"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Bad Data" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="656"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note0" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Lanes" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="269"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Bad Data" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="688"/>
 <Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note2" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Valid Station" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="1205" y="33"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note3" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Observations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="1205" y="158"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note4" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Stations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="524"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note3" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Observations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="1205" y="143"/>
+<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note4" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Stations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1205" y="556"/>
 <Dictionary/>
 </Global>
 <Phase number="0">
 <Node defaultForeignKey=";" foreignKey="$Station=$ID" guiName="CheckForeignKey" guiX="992" guiY="68" id="CHECK_FOREIGN_KEY" type="CHECK_FOREIGN_KEY"/>
-<Node defaultForeignKey="0;" foreignKey="$Observation_ID=$ID" guiName="CheckForeignKey" guiX="992" guiY="319" id="CHECK_FOREIGN_KEY1" type="CHECK_FOREIGN_KEY"/>
-<Node defaultForeignKey=";" foreignKey="$Station=$ID" guiName="CheckForeignKey" guiX="991" guiY="193" id="CHECK_FOREIGN_KEY2" type="CHECK_FOREIGN_KEY"/>
-<Node InputFile="${DATAIN_DIR}/" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="CustomJavaReader" guiX="51" guiY="68" id="CUSTOM_JAVA_READER" type="GENERIC_READER"/>
+<Node defaultForeignKey="0;" foreignKey="$Observation_ID=$ID" guiName="CheckForeignKey" guiX="992" guiY="304" id="CHECK_FOREIGN_KEY1" type="CHECK_FOREIGN_KEY"/>
+<Node defaultForeignKey=";" foreignKey="$Station=$ID" guiName="CheckForeignKey" guiX="991" guiY="178" id="CHECK_FOREIGN_KEY2" type="CHECK_FOREIGN_KEY"/>
+<Node genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="CustomJavaReader" guiX="51" guiY="68" id="CUSTOM_JAVA_READER" type="GENERIC_READER">
+<attr name="InputFile"><![CDATA[${DATAIN_DIR}/]]></attr>
+<attr name="SeqName"><![CDATA[Sequence0]]></attr>
+</Node>
 <Node dedupKey="Station(a)" guiName="Dedup" guiX="743" guiY="68" id="DEDUP" type="DEDUP"/>
-<Node guiName="ExtFilter" guiX="355" guiY="319" id="EXT_FILTER" type="EXT_FILTER">
+<Node guiName="ExtFilter" guiX="355" guiY="304" id="EXT_FILTER" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $in.0.Samples != 0]]></attr>
 </Node>
-<Node guiName="FastSort" guiX="577" guiY="67" id="FAST_SORT" sortKey="Station(a)" type="FAST_SORT"/>
-<Node guiName="SimpleCopy" guiX="743" guiY="193" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
+<Node concurrencyLimit="10" guiName="FastSort" guiX="577" guiY="67" id="FAST_SORT" runSize="50000" sortKey="Station(a)" tempFilesLimit="2000" type="FAST_SORT"/>
+<Node guiName="SimpleCopy" guiX="743" guiY="178" id="SIMPLE_COPY" type="SIMPLE_COPY"/>
 <Node guiName="SimpleCopy" guiX="355" guiY="566" id="SIMPLE_COPY1" type="SIMPLE_COPY"/>
 <Node guiName="Trash" guiX="1205" guiY="68" id="TRASH" type="TRASH"/>
-<Node guiName="Trash" guiX="1205" guiY="691" id="TRASH2" type="TRASH"/>
-<Node dataPolicy="controlled" fileURL="${META_DIR}/*" guiName="UniversalDataReader" guiX="47" guiY="563" id="UNIVERSAL_DATA_READER" type="DATA_READER"/>
-<Node fileURL="${DATAOUT_DIR}/Observations.csv" guiName="UniversalDataWriter" guiX="1205" guiY="193" id="UNIVERSAL_DATA_WRITER" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
-<Node fileURL="${DATAOUT_DIR}/Lanes.csv" guiName="UniversalDataWriter" guiX="1205" guiY="319" id="UNIVERSAL_DATA_WRITER1" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
-<Node fileURL="${DATAOUT_DIR}/Stations.csv" guiName="UniversalDataWriter" guiX="1205" guiY="559" id="UNIVERSAL_DATA_WRITER2" outputFieldNames="true" quotedStrings="true" type="DATA_WRITER"/>
+<Node guiName="Trash" guiX="1205" guiY="723" id="TRASH2" type="TRASH"/>
+<Node dataPolicy="controlled" fileURL="${META_DIR}/*" guiName="UniversalDataReader" guiX="47" guiY="565" id="UNIVERSAL_DATA_READER" type="DATA_READER"/>
+<Node fileURL="${DATAOUT_DIR}/Observations.csv" guiName="UniversalDataWriter" guiX="1205" guiY="178" id="UNIVERSAL_DATA_WRITER" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
+<Node fileURL="${DATAOUT_DIR}/Lanes.csv" guiName="UniversalDataWriter" guiX="1205" guiY="304" id="UNIVERSAL_DATA_WRITER1" outputFieldNames="true" quotedStrings="false" type="DATA_WRITER"/>
+<Node fileURL="${DATAOUT_DIR}/Stations.csv" guiName="UniversalDataWriter" guiX="1205" guiY="591" id="UNIVERSAL_DATA_WRITER2" outputFieldNames="true" quotedStrings="true" type="DATA_WRITER"/>
 <Node guiName="Validator" guiX="355" guiY="68" id="VALIDATOR" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -279,7 +282,7 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Node guiName="Validator" guiX="355" guiY="193" id="VALIDATOR1" type="VALIDATOR">
+<Node guiName="Validator" guiX="355" guiY="178" id="VALIDATOR1" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -336,7 +339,7 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Node guiName="Validator" guiX="577" guiY="319" id="VALIDATOR2" type="VALIDATOR">
+<Node guiName="Validator" guiX="577" guiY="304" id="VALIDATOR2" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -410,6 +413,7 @@ function integer transform() {
 <Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 1 (out)" toNode="EXT_FILTER:0"/>
 <Edge debugMode="true" fromNode="CUSTOM_JAVA_READER:2" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 2 (out)" toNode="VALIDATOR1:0"/>
 <Edge debugMode="true" fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge18" inPort="Port 0 (foreign records)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata2" toNode="CHECK_FOREIGN_KEY:0"/>
+<Edge debugMode="true" fromNode="DEDUP:1" guiBendpoints="" guiRouter="Manhattan" id="Edge7" inPort="Port 8 (in)" outPort="Port 1 (duplicate)" persistedImplicitMetadata="Metadata2" toNode="TRASH2:8"/>
 <Edge debugMode="true" fromNode="EXT_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="VALIDATOR2:0"/>
 <Edge debugMode="true" fromNode="EXT_FILTER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 1 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata1" toNode="TRASH2:1"/>
 <Edge debugMode="true" fromNode="FAST_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata2" toNode="DEDUP:0"/>

@@ -12,6 +12,7 @@ import org.jetel.data.sequence.*;
 import java.io.*;
 import java.util.*;
 import java.text.*;
+import java.util.zip.GZIPInputStream;
 
 /**
  * This is an example custom reader. It shows how you can
@@ -31,8 +32,8 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 		Sequence oidseq = getGraph().getSequence(getProperties().getStringProperty("SeqName"));
 		File folder = getFile(fUrl);
 
-		int rcnt = 0, tcnt, scnt, lcnt, ocnt;
-		long oid;
+		int rcnt = 0, fcnt, sfcnt, lfcnt, ofcnt, lcnt;
+		long oid, sid = -1;
 
 		DataField field;
 
@@ -44,25 +45,27 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 		
 		for(final File file : folder.listFiles())
 		{
-			if(file.isDirectory())
+			if(file.isDirectory() || !file.toString().endsWith(".gz"))
 				continue;
+
 			outlog.log(Level.INFO, "Inputfile = " + file.getName());
-			try (BufferedReader br = new BufferedReader(new FileReader(file)))
+
+			//try (BufferedReader br = new BufferedReader(new FileReader(file)))
+			try(BufferedReader br = new BufferedReader(new InputStreamReader(new GZIPInputStream(new FileInputStream(file)))))
 			{
 				while((input = br.readLine()) != null)// && rcnt < 3)
 				{
 					rcnt++;
 					
-					tcnt = scnt = lcnt = ocnt = 0;
+					fcnt = sfcnt = lfcnt = lcnt = ofcnt = 0;
 					
 					oid = oidseq.nextValueLong();
-					robso.getField(0).setValue(oid);
-					rlane.getField(0).setValue(oid);
-					ocnt++; lcnt++;
+					robso.getField(ofcnt++).setValue(oid);
+					rlane.getField(lfcnt++).setValue(oid);
 					
 					for (String fval: input.split(","))
 					{
-						switch(tcnt)
+						switch(fcnt)
 						{
 							// Time Stamp
 							case 0:
@@ -77,8 +80,7 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 							// Avg Speed
 							case 11:
 								rtype = "Observation";
-								field = robso.getField(ocnt);
-								ocnt++;
+								field = robso.getField(ofcnt++);
 								break;
 							// Station
 							case 1:
@@ -93,25 +95,24 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 							// Station Length
 							case 6:
 								rtype = "Station";
-								field = rstation.getField(scnt);
-								scnt++;
+								field = rstation.getField(sfcnt++);
 								break;
 							default:
 								rtype = "Lane";
-								field = rlane.getField(lcnt);
-								lcnt++;
+								field = rlane.getField(lfcnt++);
 								break;
 						}
 						
 						if(fval == null || fval.isEmpty())
 							fval = "0";
 						
-						outlog.log(Level.DEBUG, rtype + " - Field: " + tcnt + ", Type: " + field.getMetadata().getDataType().toString() + ", Val: '" + fval + "'");
+						outlog.log(Level.DEBUG, rtype + " - Field: " + fcnt + ", Type: " + field.getMetadata().getDataType().toString() + ", Val: '" + fval + "'");
 						switch(field.getMetadata().getDataType())
 						{
 							case DATE:
 								Date dval = format.parse(fval);
 								field.setValue(dval);
+								outlog.log(Level.DEBUG, "ParseDate: " + dval.toString() + " FieldDate: " + field.getValue().toString());
 								break;
 							case NUMBER:
 								double nval = Double.parseDouble(fval);
@@ -128,41 +129,46 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 							default:
 								field.setValue(fval);
 						}
-						// Station Field needs to go into two tables
-						if(tcnt == 1)
+						
+						// Station Field needs to go into multiple tables
+						if(fcnt == 1)
 						{
-							robso.getField(ocnt).setValue(field.getValue());
-							ocnt++;
+							sid = (long)field.getValue();
+							robso.getField(ofcnt++).setValue(sid);
+							rlane.getField(lfcnt++).setValue(sid);
 						}
 	
-						if(scnt == rstation.getNumFields())
+						if(sfcnt == rstation.getNumFields())
 						{
 							writeRecordToPort(0, rstation);
 							rstation.reset();
-							scnt = 0;
+							sfcnt = 0;
 						}
 						
-						if(lcnt == rlane.getNumFields())
+						if((lfcnt+1) == rlane.getNumFields())
 						{
+							rlane.getField(lfcnt).setValue(lcnt++);
 							writeRecordToPort(1, rlane);
 							rlane.reset();
-							rlane.getField(0).setValue(oid);
-							lcnt = 1;
+							
+							lfcnt = 0;
+							rlane.getField(lfcnt++).setValue(oid);
+							rlane.getField(lfcnt++).setValue(sid);
 						}
 						
-						if(ocnt == robso.getNumFields())
+						if(ofcnt == robso.getNumFields())
 						{
-	
 							writeRecordToPort(2, robso);
 							robso.reset();
-							ocnt = 1;
+							ofcnt = 0;
 						}
 						
-						tcnt++;
+						fcnt++;
 					}
 					rlane.reset();
 				}
-			} catch (IOException | ParseException e)
+			}
+			catch (IOException | ParseException e)
 			{
 				throw new JetelRuntimeException(e);
 			}
