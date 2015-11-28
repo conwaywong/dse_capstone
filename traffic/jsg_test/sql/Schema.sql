@@ -3,6 +3,13 @@
 --		http://stackoverflow.com/questions/8674718/best-way-to-select-random-rows-postgresql/8675160#8675160
 --		http://dba.stackexchange.com/questions/96610/sampling-in-postgresql
 
+-- Sunrise/Sunset:
+--		https://en.wikipedia.org/wiki/Sunrise_equation
+--		https://pypi.python.org/pypi/astral
+--		http://michelanders.blogspot.ru/2010/12/calulating-sunrise-and-sunset-in-python.html
+--		http://rhodesmill.org/pyephem/
+--		https://github.com/mikereedell/sunrisesunsetlib-java
+
 -- Phase 0
 DROP TABLE IF EXISTS District CASCADE;
 CREATE TABLE District (
@@ -55,10 +62,12 @@ CREATE TABLE County_City (
 );
 
 -- Phase 1
-DROP TABLE IF EXISTS Station CASCADE;
+DROP TABLE IF EXISTS Traffic_Station CASCADE;
 CREATE TABLE Traffic_Station (
-	ID INTEGER,
-	Upd_Date Date,
+	ID INTEGER PRIMARY KEY,
+	PEMS_ID INTEGER,
+	Effective_Start Date NOT NULL,
+	Effective_End Date,
 	Name TEXT,
 	Fwy_ID INTEGER NOT NULL REFERENCES Freeways(ID),
 	CCID_ID INTEGER NOT NULL REFERENCES County_City(ID),
@@ -71,7 +80,6 @@ CREATE TABLE Traffic_Station (
 	Type_ID INTEGER NOT NULL REFERENCES ST_Type(ID),
 	Num_Lanes INTEGER NOT NULL
 	-- USER_ID DELETE
-	PRIMARY KEY (ID, Upd_Date)
 );
 
 CREATE INDEX Traffic_Station_Idx ON Traffic_Station(ID);
@@ -147,7 +155,7 @@ CREATE TABLE Precipitation_Hourly_Observation (
 	Amount FLOAT NOT NULL
 );
 
-DROP TABLE Precipitation_Daily_Total CASCADE;
+DROP TABLE IF EXISTS Precipitation_Daily_Total CASCADE;
 CREATE TABLE Precipitation_Daily_Total (
 	ID INTEGER PRIMARY KEY,
 	Station_ID INTEGER NOT NULL REFERENCES Weather_Station(ID),

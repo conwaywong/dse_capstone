@@ -32,7 +32,8 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 		Sequence oidseq = getGraph().getSequence(getProperties().getStringProperty("SeqName"));
 		File folder = getFile(fUrl);
 
-		int rcnt = 0, fcnt, sfcnt, lfcnt, ofcnt, lcnt;
+		//int rcnt = 0; 
+		int fcnt, sfcnt, lfcnt, ofcnt, lcnt;
 		long oid, sid = -1;
 
 		DataField field;
@@ -55,7 +56,7 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 			{
 				while((input = br.readLine()) != null)// && rcnt < 3)
 				{
-					rcnt++;
+					//rcnt++;
 					
 					fcnt = sfcnt = lfcnt = lcnt = ofcnt = 0;
 					
@@ -198,17 +199,12 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 			return status;
 		}
 
-		DataRecordMetadata outMetadata2 = getComponent().getOutputPort(1).getMetadata();
+		DataRecordMetadata outMetadata2 = getComponent().getOutputPort(2).getMetadata();
 		if (outMetadata2 == null) {
 			status.add("Metadata on output port 2 not specified!", Severity.ERROR, getComponent(), Priority.NORMAL);
 			return status;
 		}
-		
-		/*
-		if (outMetadata.getFieldPosition("myMetadataFieldName") == -1) {
-			status.add("Incompatible output metadata!", Severity.ERROR, getComponent(), Priority.NORMAL);
-		}
-		*/
+
 		return status;
 	}
 
