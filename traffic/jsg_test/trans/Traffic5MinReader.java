@@ -183,7 +183,7 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 		/** This way you can check connected edges and their metadata. */
 		
 		if (getComponent().getOutPorts().size() < 3) {
-			status.add("Two Output port must be connected!", Severity.ERROR, getComponent(), Priority.NORMAL);
+			status.add("Three Output port must be connected!", Severity.ERROR, getComponent(), Priority.NORMAL);
 			return status;
 		}
 		

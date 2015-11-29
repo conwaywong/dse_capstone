@@ -1,8 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Nov 28 14:25:15 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.225" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Nov 28 23:46:44 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.240" showComponentDetails="true">
 <Global>
+<Metadata id="Metadata17" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="CHPInc_Final" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="ID" type="integer"/>
+<Field name="CC_Code" type="string"/>
+<Field name="Incident_Num" type="string"/>
+<Field format="MM/dd/yyyy HH:mm:ss" name="Timestamp" type="date"/>
+<Field name="Description" type="string"/>
+<Field name="Latitude" type="number"/>
+<Field name="Longitude" type="number"/>
+<Field name="District" type="integer"/>
+<Field name="CC_ID" type="integer"/>
+<Field name="Fwy_ID" type="integer"/>
+<Field name="State_PM" type="string"/>
+<Field name="Absolute_PM" type="number"/>
+<Field name="Severity" type="string"/>
+<Field name="Duration" type="integer"/>
+</Record>
+</Metadata>
 <Metadata id="Metadata12" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," name="CHPInc" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Record fieldDelimiter="," name="CHPInc0" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
 <Field name="ID" type="integer"/>
 <Field name="CC_Code" type="string"/>
 <Field name="Incident_Num" type="string"/>
@@ -19,6 +37,51 @@
 <Field name="City_FIPS_ID" type="integer"/>
 <Field name="Freeway_Num" type="integer"/>
 <Field name="Freeway_Dir" type="string"/>
+<Field name="State_PM" type="string"/>
+<Field name="Absolute_PM" type="number"/>
+<Field name="Severity" type="string"/>
+<Field name="Duration" type="integer"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata15" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="CHPInc1" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="ID" type="integer"/>
+<Field name="CC_Code" type="string"/>
+<Field name="Incident_Num" type="string"/>
+<Field format="MM/dd/yyyy HH:mm:ss" name="Timestamp" type="date"/>
+<Field name="Description" type="string"/>
+<Field name="Location" type="string"/>
+<Field name="Area" type="string"/>
+<Field name="Zoom_Map" type="string"/>
+<Field name="TB_xy" type="string"/>
+<Field name="Latitude" type="number"/>
+<Field name="Longitude" type="number"/>
+<Field name="District" type="integer"/>
+<Field name="County_FIPS_ID" type="integer"/>
+<Field name="City_FIPS_ID" type="integer"/>
+<Field name="Fwy_ID" type="integer"/>
+<Field name="State_PM" type="string"/>
+<Field name="Absolute_PM" type="number"/>
+<Field name="Severity" type="string"/>
+<Field name="Duration" type="integer"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata16" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="CHPInc2" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="ID" type="integer"/>
+<Field name="CC_Code" type="string"/>
+<Field name="Incident_Num" type="string"/>
+<Field format="MM/dd/yyyy HH:mm:ss" name="Timestamp" type="date"/>
+<Field name="Description" type="string"/>
+<Field name="Location" type="string"/>
+<Field name="Area" type="string"/>
+<Field name="Zoom_Map" type="string"/>
+<Field name="TB_xy" type="string"/>
+<Field name="Latitude" type="number"/>
+<Field name="Longitude" type="number"/>
+<Field name="District" type="integer"/>
+<Field name="CC_ID" type="integer"/>
+<Field name="Fwy_ID" type="integer"/>
 <Field name="State_PM" type="string"/>
 <Field name="Absolute_PM" type="number"/>
 <Field name="Severity" type="string"/>
@@ -354,12 +417,6 @@ OR (On Ramp)]]></attr>
 <Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <Sequence cached="0" id="Sequence1" name="Fwy_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <LookupTable charset="ISO-8859-1" fileURL="${LOOKUP_DIR}/station_type.csv" id="LookupTable0" initialSize="512" key="Type" metadata="Metadata5" name="simpleLookup0" type="simpleLookup"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note0" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Lane_Observation" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="157" x="2815" y="145"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note3" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Observations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="2815" y="241"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note4" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Stations" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="2815" y="373"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note5" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Freeways" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="98" x="1229" y="473"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note6" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="County_City" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="114" x="1229" y="578"/>
-<Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="36" id="Note2" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Valid Station" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="128" x="2815" y="33"/>
 <Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="72" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Disabled" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="403" x="443" y="-3">
 <attr name="text"><![CDATA[Station information from 5min reading is disabled, it can be enabled if the Station information from 5min readings needs to be used.]]></attr>
 </Note>
@@ -411,28 +468,10 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node defaultForeignKey=";" foreignKey="$Station=$PEMS_ID" guiName="CheckForeignKey" guiX="2270" guiY="68" id="CHECK_FOREIGN_KEY" type="CHECK_FOREIGN_KEY"/>
 <Node database="dse_traffic" failOnError="true" guiName="Couty_City Table" guiX="1229" guiY="613" host="oswald" id="COUTY_CITY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
-<Node dedupKey="Station(a)" guiName="Dedup" guiX="754" guiY="68" id="DEDUP" type="DEDUP"/>
 <Node genericTransformClass="DedupEffEnd" guiName="Dedup Eff_End" guiX="2143" guiY="370" id="DEDUP_EFF_END" type="GENERIC_TRANSFORMER"/>
 <Node guiName="Dup Stations 1" guiX="1685" guiY="370" id="DUP_STATIONS_1" type="SIMPLE_COPY"/>
 <Node guiName="Dup Stations 2" guiX="2455" guiY="371" id="DUP_STATIONS_2" type="SIMPLE_COPY"/>
-<Node concurrencyLimit="10" guiName="FastSort" guiX="599" guiY="67" id="FAST_SORT" runSize="50000" sortKey="Station(a)" tempFilesLimit="2000" type="FAST_SORT"/>
-<Node guiName="Filter D11" guiX="255" guiY="970" id="FILTER_D11" type="EXT_FILTER">
-<attr name="filterExpression"><![CDATA[//#CTL2
-$in.0.District == 11]]></attr>
-</Node>
-<Node guiName="Filter NA Lane" guiX="255" guiY="180" id="FILTER_NA_LANE" type="EXT_FILTER">
-<attr name="filterExpression"><![CDATA[//#CTL2
-$in.0.Samples != 0]]></attr>
-</Node>
-<Node guiName="Filter Station_ID" guiX="910" guiY="276" id="FILTER_STATION_ID" type="EXT_FILTER">
-<attr name="filterExpression"><![CDATA[//#CTL2
-(isnull($in.0.s_Eff_End) AND (extractDate($in.0.Timestamp) >= extractDate($in.0.s_Eff_Start)))
-OR
-(extractDate($in.0.s_Eff_Start) <= extractDate($in.0.Timestamp) AND extractDate($in.0.Timestamp) < extractDate($in.0.s_Eff_End))
-]]></attr>
-</Node>
 <Node database="dse_traffic" guiName="Freeway Table" guiX="1229" guiY="508" host="oswald" id="FREEWAY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node dedupKey="Num(a);Direction(a)" guiName="Fwy DeDup" guiX="599" guiY="508" id="FWY_DE_DUP" type="DEDUP"/>
 <Node guiName="Fwy Dup Sort" guiX="443" guiY="508" id="FWY_DUP_SORT" sortKey="Num(a);Direction(a)" type="FAST_SORT"/>
@@ -535,209 +574,8 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Node guiName="Lane Obso ID Sort" guiX="1381" guiY="180" id="LANE_OBSO_ID_SORT" sortKey="Observation_ID(a)" type="FAST_SORT"/>
-<Node guiName="Lane Obso Join" guiX="1685" guiY="180" id="LANE_OBSO_JOIN" joinKey="$Observation_ID(a)#$ID(a);" type="EXT_MERGE_JOIN">
-<attr name="transform"><![CDATA[//#CTL2
-
-// Transforms input record into output record.
-function integer transform() {
-	$out.0.Observation_ID = $in.0.Observation_ID;
-	$out.0.Station_ID = $in.1.Station_ID;
-	$out.0.Samples = $in.0.Samples;
-	$out.0.Flow = $in.0.Flow;
-	$out.0.Occupancy = $in.0.Occupancy;
-	$out.0.Avg_Speed = $in.0.Avg_Speed;
-	$out.0.Observed = $in.0.Observed;
-	$out.0.L_Num = $in.0.L_Num;
-
-	return ALL;
-}
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
-]]></attr>
-</Node>
-<Node guiName="Lane Validator" guiX="443" guiY="180" id="LANE_VALIDATOR" type="VALIDATOR">
-<attr name="errorMapping"><![CDATA[//#CTL2
-
-// Transforms input record into output record.
-function integer transform() {
-	$out.1.recordNo = $in.1.recordNo;
-	$out.1.validationMessage = $in.1.validationMessage;
-	$out.1.ruleStatusCode = $in.1.ruleStatusCode;
-	$out.1.ruleName = $in.1.ruleName;
-	$out.1.ruleType = $in.1.ruleType;
-	$out.1.rulePath = $in.1.rulePath;
-	$out.1.validatedFieldNames = $in.1.validatedFieldNames;
-	$out.1.validatedValues = $in.1.validatedValues;
-	$out.1.ruleParameters = $in.1.ruleParameters;
-	$out.1.validationDate = $in.1.validationDate;
-	$out.1.componentID = $in.1.componentID;
-	$out.1.componentName = $in.1.componentName;
-	$out.1.graphURL = $in.1.graphURL;
-
-	return ALL;
-}
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
-]]></attr>
-<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
-    <children>
-        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
-        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="Observation_ID" name="Empty/Nonempty field" outputField="" trimInput="false"/>
-        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="Samples" name="Comparison" operator="GE" outputField="" useType="DEFAULT" value="1">
-            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
-        </comparison>
-        <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="0" inputField="Occupancy" name="Interval" outputField="" to="1" useType="DEFAULT">
-            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
-        </interval>
-        <enumMatch acceptEmpty="false" customRejectMessage="" description="" enabled="true" ignoreCase="false" inputField="Observed" name="Enum Match" outputField="" trimInput="false" useType="DEFAULT">
-            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
-            <values>
-                <value>0</value>
-                <value>1</value>
-            </values>
-        </enumMatch>
-    </children>
-    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
-    <imports/>
-</group>
-]]></attr>
-</Node>
-<Node guiName="Obso Copy" guiX="1381" guiY="276" id="OBSO_COPY" type="SIMPLE_COPY"/>
-<Node guiName="Obso ID Sort" guiX="1229" guiY="276" id="OBSO_ID_SORT" sortKey="ID(a)" type="FAST_SORT"/>
-<Node guiName="Obso Station Join" guiX="754" guiY="276" id="OBSO_STATION_JOIN" joinKey="$Station_ID(a)#$PEMS_ID(a);" type="EXT_MERGE_JOIN">
-<attr name="transform"><![CDATA[//#CTL2
-
-// Transforms input record into output record.
-function integer transform() {
-	$out.0.ID = $in.0.ID;
-	$out.0.Timestamp = $in.0.Timestamp;
-	$out.0.Station_ID = $in.0.Station_ID;
-	$out.0.Samples = $in.0.Samples;
-	$out.0.Percent_Observed = $in.0.Percent_Observed;
-	$out.0.Total_Flow = $in.0.Total_Flow;
-	$out.0.Avg_Occupancy = $in.0.Avg_Occupancy;
-	$out.0.Avg_Speed = $in.0.Avg_Speed;
-	$out.0.s_Station_ID = $in.1.ID;
-	$out.0.s_Eff_Start = $in.1.Eff_Start;
-	$out.0.s_Eff_End = $in.1.Eff_End;
-
-	return ALL;
-}
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
-]]></attr>
-</Node>
-<Node guiName="Obso Station Sort" guiX="599" guiY="276" id="OBSO_STATION_SORT" sortKey="Station_ID(a)" type="FAST_SORT"/>
-<Node guiName="Obso Validator" guiX="443" guiY="276" id="OBSO_VALIDATOR" type="VALIDATOR">
-<attr name="errorMapping"><![CDATA[//#CTL2
-
-// Transforms input record into output record.
-function integer transform() {
-	$out.1.recordNo = $in.1.recordNo;
-	$out.1.validationMessage = $in.1.validationMessage;
-	$out.1.ruleStatusCode = $in.1.ruleStatusCode;
-	$out.1.ruleName = $in.1.ruleName;
-	$out.1.ruleType = $in.1.ruleType;
-	$out.1.rulePath = $in.1.rulePath;
-	$out.1.validatedFieldNames = $in.1.validatedFieldNames;
-	$out.1.validatedValues = $in.1.validatedValues;
-	$out.1.ruleParameters = $in.1.ruleParameters;
-	$out.1.validationDate = $in.1.validationDate;
-	$out.1.componentID = $in.1.componentID;
-	$out.1.componentName = $in.1.componentName;
-	$out.1.graphURL = $in.1.graphURL;
-
-	return ALL;
-}
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
-]]></attr>
-<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
-    <children>
-        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
-        <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="0" inputField="Avg_Occupancy" name="Occupancy [0, 1]" outputField="" to="1" useType="DEFAULT">
-            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
-        </interval>
-        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="ID" name="ID NOT NULL" outputField="" trimInput="false"/>
-    </children>
-    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
-    <imports/>
-</group>
-]]></attr>
-</Node>
 <Node guiName="PEMS Sort" guiX="1531" guiY="369" id="PEMS_SORT" sortKey="PEMS_ID(a)" type="FAST_SORT"/>
-<Node genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="167" id="READ_STATION_5MIN" type="GENERIC_READER">
-<attr name="InputFile"><![CDATA[${DATAIN_DIR}/station_5min]]></attr>
-<attr name="SeqName"><![CDATA[Sequence0]]></attr>
-</Node>
-<Node dataPolicy="controlled" fileURL="${DATAIN_DIR}/station_meta/*.txt" guiName="Read Station Meta" guiX="51" guiY="370" id="READ_STATION_META" type="DATA_READER"/>
+<Node dataPolicy="controlled" fileURL="${DATAIN_DIR}/station_meta/*.txt" guiName="Read Station Meta" guiX="55" guiY="370" id="READ_STATION_META" type="DATA_READER"/>
 <Node guiName="Set CC_ID" guiX="910" guiY="613" id="SET_CC_ID" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -750,6 +588,10 @@ function integer transform() {
 	$out.1.ID = $out.0.ID;
 	$out.1.County_FIPS_ID = $in.0.County_FIPS_ID;
 	$out.1.City_FIPS_ID = $in.0.City_FIPS_ID;
+	
+	$out.2.ID = $out.0.ID;
+	$out.2.County_FIPS_ID = $in.0.County_FIPS_ID;
+	$out.2.City_FIPS_ID = $in.0.City_FIPS_ID;
 	
 	return ALL;
 }
@@ -833,6 +675,10 @@ function integer transform() {
 	$out.1.ID = $out.0.ID;
 	$out.1.Num = $in.0.Num;
 	$out.1.Direction = $in.0.Direction;
+	
+	$out.2.ID = $out.0.ID;
+	$out.2.Num = $in.0.Num;
+	$out.2.Direction = $in.0.Direction;
 
 	return ALL;
 }
@@ -878,42 +724,6 @@ function integer transform() {
 	$out.0.Name = $in.0.Name;
 	$out.0.Eff_Start = $in.0.Eff_Start;
 	$out.0.Eff_End = $in.0.Eff_End;
-
-	return ALL;
-}
-
-// Called during component initialization.
-// function boolean init() {}
-
-// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
-// required by the transform. All resources allocated within this method should be released
-// by the postExecute() method.
-// function void preExecute() {}
-
-// Called only if transform() throws an exception.
-// function integer transformOnError(string errorMessage, string stackTrace) {}
-
-// Called during each graph run after the entire transform was executed. Should be used to free any resources
-// allocated within the preExecute() method.
-// function void postExecute() {}
-
-// Called to return a user-defined error message when an error occurs.
-// function string getMessage() {}
-]]></attr>
-</Node>
-<Node guiName="Set Station_ID" guiX="1067" guiY="276" id="SET_STATION_ID1" type="REFORMAT">
-<attr name="transform"><![CDATA[//#CTL2
-
-// Transforms input record into output record.
-function integer transform() {
-	$out.0.ID = $in.0.ID;
-	$out.0.Timestamp = $in.0.Timestamp;
-	$out.0.Station_ID = $in.0.s_Station_ID;
-	$out.0.Samples = $in.0.Samples;
-	$out.0.Percent_Observed = $in.0.Percent_Observed;
-	$out.0.Total_Flow = $in.0.Total_Flow;
-	$out.0.Avg_Occupancy = $in.0.Avg_Occupancy;
-	$out.0.Avg_Speed = $in.0.Avg_Speed;
 
 	return ALL;
 }
@@ -1115,8 +925,6 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Node guiName="Trash" guiX="2815" guiY="68" id="TRASH" type="TRASH"/>
-<Node guiName="Trash" guiX="464" guiY="970" id="TRASH1" type="TRASH"/>
 <Node guiName="Type_ID Join" guiX="910" guiY="369" id="TYPE_ID_JOIN" joinKey="Type" leftOuterJoin="true" lookupTable="LookupTable0" type="LOOKUP_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -1162,7 +970,491 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node dataPolicy="controlled" enabled="trash" fileURL="gzip:(${DATAIN_DIR}/chp_incidents/all_text_chp_incident_day_*gz)" guiName="UniversalDataReader" guiX="47" guiY="970" id="UNIVERSAL_DATA_READER1" type="DATA_READER"/>
+<Edge debugMode="false" fromNode="CC_DE_DUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge40" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata7" toNode="SET_CC_ID:0"/>
+<Edge debugMode="false" fromNode="CC_DUP_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge39" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata7" toNode="CC_DE_DUP:0"/>
+<Edge debugMode="false" fromNode="CC_ID_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge45" inPort="Port 0 (in)" metadata="Metadata9" outPort="Port 0 (out)" toNode="STATION_VALID:0"/>
+<Edge debugMode="false" fromNode="DEDUP_EFF_END:0" guiBendpoints="" guiRouter="Manhattan" id="Edge84" inPort="Port 0 (in)" metadata="Metadata9" outPort="Port 0 (out)" toNode="SORT_PEMS_ID_2:0"/>
+<Edge debugMode="false" fromNode="DUP_STATIONS_1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge70" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="SET_EFF_END:0"/>
+<Edge debugMode="false" fromNode="DUP_STATIONS_1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge71" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata9" toNode="SET_EFF_END:1"/>
+<Edge debugMode="false" fromNode="DUP_STATIONS_2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge26" inPort="Port 1 (slave)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="OBSO_STATION_JOIN:1"/>
+<Edge debugMode="false" fromNode="DUP_STATIONS_2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge24" inPort="Port 1 (primary records)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata9" toNode="CHECK_FOREIGN_KEY:1"/>
+<Edge debugMode="false" fromNode="DUP_STATIONS_2:2" guiBendpoints="" guiRouter="Manhattan" id="Edge28" inPort="Port 0 (in)" outPort="Port 2 (out)" persistedImplicitMetadata="Metadata9" toNode="STATIONS_FINAL_FORMAT:0"/>
+<Edge debugMode="false" fromNode="FWY_DE_DUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge34" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata6" toNode="FWY_VALID:0"/>
+<Edge debugMode="false" fromNode="FWY_DUP_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge33" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata6" toNode="FWY_DE_DUP:0"/>
+<Edge debugMode="false" fromNode="FWY_ID_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge44" inPort="Port 0 (driver)" metadata="Metadata8" outPort="Port 0 (out)" toNode="CC_ID_JOIN:0"/>
+<Edge debugMode="false" fromNode="FWY_VALID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge30" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata6" toNode="SET_FWY_ID:0"/>
+<Edge debugMode="false" fromNode="PEMS_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge77" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="DUP_STATIONS_1:0"/>
+<Edge debugMode="false" fromNode="READ_STATION_META:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (output)" toNode="SPLIT_STATIONS:0"/>
+<Edge debugMode="false" fromNode="SET_CC_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge41" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata7" toNode="COUTY_CITY_TABLE:0"/>
+<Edge debugMode="false" fromNode="SET_CC_ID:1" guiBendpoints="" guiRouter="Manhattan" id="Edge47" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata7" toNode="CC_ID_JOIN:1"/>
+<Edge fromNode="SET_CC_ID:2" guiBendpoints="" guiRouter="Manhattan" id="Edge37" inPort="Port 1 (slave)" outPort="Port 2 (out)" persistedImplicitMetadata="Metadata7" toNode="CC_ID_JOIN1:1"/>
+<Edge debugMode="false" fromNode="SET_EFF_END:0" guiBendpoints="" guiRouter="Manhattan" id="Edge72" inPort="Port 0 (in)" metadata="Metadata9" outPort="Port 0 (out)" toNode="SORT_PEMS_ID_1:0"/>
+<Edge debugMode="false" fromNode="SET_FWY_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge36" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata6" toNode="FREEWAY_TABLE:0"/>
+<Edge debugMode="false" fromNode="SET_FWY_ID:1" guiBendpoints="" guiRouter="Manhattan" id="Edge46" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata6" toNode="FWY_ID_JOIN:1"/>
+<Edge debugMode="false" fromNode="SET_FWY_ID:2" guiBendpoints="" guiRouter="Manhattan" id="Edge29" inPort="Port 1 (slave)" outPort="Port 2 (out)" persistedImplicitMetadata="Metadata6" toNode="FWY_ID_JOIN1:1"/>
+<Edge debugMode="false" fromNode="SET_STATION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge58" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata13" toNode="TYPE_ID_JOIN:0"/>
+<Edge debugMode="false" fromNode="SORT_PEMS_ID_1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge83" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="DEDUP_EFF_END:0"/>
+<Edge debugMode="false" fromNode="SORT_PEMS_ID_2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge75" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="DUP_STATIONS_2:0"/>
+<Edge debugMode="false" fromNode="SPLIT_STATIONS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge31" inPort="Port 0 (in)" metadata="Metadata13" outPort="Port 0 (out)" toNode="STATION_DUP_SORT:0"/>
+<Edge debugMode="false" fromNode="SPLIT_STATIONS:1" guiBendpoints="" guiRouter="Manhattan" id="Edge32" inPort="Port 0 (in)" metadata="Metadata6" outPort="Port 1 (out)" toNode="FWY_DUP_SORT:0"/>
+<Edge debugMode="false" fromNode="SPLIT_STATIONS:2" guiBendpoints="" guiRouter="Manhattan" id="Edge42" inPort="Port 0 (in)" metadata="Metadata7" outPort="Port 2 (out)" toNode="CC_DUP_SORT:0"/>
+<Edge debugMode="false" fromNode="STATIONS_FINAL_FORMAT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge48" inPort="Port 0 (in)" metadata="Metadata10" outPort="Port 0 (out)" toNode="STATIONS_TABLE:0"/>
+<Edge debugMode="false" fromNode="STATION_DE_DUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge52" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata13" toNode="SET_STATION_ID:0"/>
+<Edge debugMode="false" fromNode="STATION_DUP_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge38" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata13" toNode="STATION_DE_DUP:0"/>
+<Edge debugMode="false" fromNode="STATION_VALID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata9" toNode="PEMS_SORT:0"/>
+<Edge debugMode="false" fromNode="TYPE_ID_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (driver)" metadata="Metadata4" outPort="Port 0 (joined records)" toNode="FWY_ID_JOIN:0"/>
+</Phase>
+<Phase number="1">
+<Node guiName="CC_ID Join" guiX="600" guiY="752" id="CC_ID_JOIN1" joinKey="$County_FIPS_ID=$County_FIPS_ID;$City_FIPS_ID=$City_FIPS_ID" type="EXT_HASH_JOIN">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.ID = $in.0.ID;
+	$out.0.CC_Code = $in.0.CC_Code;
+	$out.0.Incident_Num = $in.0.Incident_Num;
+	$out.0.Timestamp = $in.0.Timestamp;
+	$out.0.Description = $in.0.Description;
+	$out.0.Location = $in.0.Location;
+	$out.0.Area = $in.0.Area;
+	$out.0.Zoom_Map = $in.0.Zoom_Map;
+	$out.0.TB_xy = $in.0.TB_xy;
+	$out.0.Latitude = $in.0.Latitude;
+	$out.0.Longitude = $in.0.Longitude;
+	$out.0.District = $in.0.District;
+	$out.0.CC_ID = $in.1.ID;
+	$out.0.Fwy_ID = $in.0.Fwy_ID;
+	$out.0.State_PM = $in.0.State_PM;
+	$out.0.Absolute_PM = $in.0.Absolute_PM;
+	$out.0.Severity = $in.0.Severity;
+	$out.0.Duration = $in.0.Duration;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node defaultForeignKey=";" foreignKey="$Station=$PEMS_ID" guiName="CheckForeignKey" guiX="2270" guiY="68" id="CHECK_FOREIGN_KEY" type="CHECK_FOREIGN_KEY"/>
+<Node guiName="CHP Inc Final Order" guiX="910" guiY="752" id="CHP_INC_FINAL_ORDER1" type="REFORMAT">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.ID = $in.0.ID;
+	$out.0.CC_Code = $in.0.CC_Code;
+	$out.0.Incident_Num = $in.0.Incident_Num;
+	$out.0.Timestamp = $in.0.Timestamp;
+	$out.0.Description = $in.0.Description;
+	$out.0.Latitude = $in.0.Latitude;
+	$out.0.Longitude = $in.0.Longitude;
+	$out.0.District = $in.0.District;
+	$out.0.CC_ID = $in.0.CC_ID;
+	$out.0.Fwy_ID = $in.0.Fwy_ID;
+	$out.0.Absolute_PM = $in.0.Absolute_PM;
+	$out.0.Severity = $in.0.Severity;
+	$out.0.Duration = $in.0.Duration;
+
+	string st_pm = $in.0.State_PM;
+	while(length(st_pm) > 0 && !isNumber(st_pm))
+	{
+		st_pm = substring(st_pm, 1);
+	}
+	$out.0.State_PM = st_pm;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node database="dse_traffic" failOnError="true" guiName="CHP_INC Table" guiX="1229" guiY="752" host="oswald" id="CHP_INC_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_INC" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node guiName="CHP Inc Valid" guiX="754" guiY="752" id="CHP_INC_VALID" type="VALIDATOR">
+<attr name="errorMapping"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.1.recordNo = $in.1.recordNo;
+	$out.1.validationMessage = $in.1.validationMessage;
+	$out.1.ruleStatusCode = $in.1.ruleStatusCode;
+	$out.1.ruleName = $in.1.ruleName;
+	$out.1.ruleType = $in.1.ruleType;
+	$out.1.rulePath = $in.1.rulePath;
+	$out.1.validatedFieldNames = $in.1.validatedFieldNames;
+	$out.1.validatedValues = $in.1.validatedValues;
+	$out.1.ruleParameters = $in.1.ruleParameters;
+	$out.1.validationDate = $in.1.validationDate;
+	$out.1.componentID = $in.1.componentID;
+	$out.1.componentName = $in.1.componentName;
+	$out.1.graphURL = $in.1.graphURL;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
+    <children>
+        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
+        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="Longitude" name="Longitude NOT NULL" outputField="" trimInput="false"/>
+        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="Latitude" name="Latitude NOT NULL" outputField="" trimInput="false"/>
+        <nonEmptyField customRejectMessage="" description="" enabled="false" goal="NONEMPTY" inputField="State_PM" name="State_PM NOT NULL" outputField="" trimInput="false"/>
+    </children>
+    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+    <imports/>
+</group>
+]]></attr>
+</Node>
+<Node dedupKey="Station(a)" guiName="Dedup" guiX="754" guiY="68" id="DEDUP" type="DEDUP"/>
+<Node concurrencyLimit="10" guiName="FastSort" guiX="599" guiY="67" id="FAST_SORT" runSize="50000" sortKey="Station(a)" tempFilesLimit="2000" type="FAST_SORT"/>
+<Node guiName="Filter D11" guiX="238" guiY="752" id="FILTER_D11" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.District == 11]]></attr>
+</Node>
+<Node guiName="Filter NA Lane" guiX="255" guiY="186" id="FILTER_NA_LANE" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.Samples != 0]]></attr>
+</Node>
+<Node guiName="Filter Station_ID" guiX="910" guiY="276" id="FILTER_STATION_ID" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+(isnull($in.0.s_Eff_End) AND (extractDate($in.0.Timestamp) >= extractDate($in.0.s_Eff_Start)))
+OR
+(extractDate($in.0.s_Eff_Start) <= extractDate($in.0.Timestamp) AND extractDate($in.0.Timestamp) < extractDate($in.0.s_Eff_End))
+]]></attr>
+</Node>
+<Node guiName="Fwy_ID Join" guiX="443" guiY="752" id="FWY_ID_JOIN1" joinKey="$Freeway_Num=$Num;$Freeway_Dir=$Direction" type="EXT_HASH_JOIN">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.ID = $in.0.ID;
+	$out.0.CC_Code = $in.0.CC_Code;
+	$out.0.Incident_Num = $in.0.Incident_Num;
+	$out.0.Timestamp = $in.0.Timestamp;
+	$out.0.Description = $in.0.Description;
+	$out.0.Location = $in.0.Location;
+	$out.0.Area = $in.0.Area;
+	$out.0.Zoom_Map = $in.0.Zoom_Map;
+	$out.0.TB_xy = $in.0.TB_xy;
+	$out.0.Latitude = $in.0.Latitude;
+	$out.0.Longitude = $in.0.Longitude;
+	$out.0.District = $in.0.District;
+	$out.0.County_FIPS_ID = $in.0.County_FIPS_ID;
+	$out.0.City_FIPS_ID = $in.0.City_FIPS_ID;
+	$out.0.Fwy_ID = $in.1.ID;
+	$out.0.State_PM = $in.0.State_PM;
+	$out.0.Absolute_PM = $in.0.Absolute_PM;
+	$out.0.Severity = $in.0.Severity;
+	$out.0.Duration = $in.0.Duration;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node guiName="Lane Obso ID Sort" guiX="1381" guiY="186" id="LANE_OBSO_ID_SORT" sortKey="Observation_ID(a)" type="FAST_SORT"/>
+<Node guiName="Lane Obso Join" guiX="1685" guiY="186" id="LANE_OBSO_JOIN" joinKey="$Observation_ID(a)#$ID(a);" type="EXT_MERGE_JOIN">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.Observation_ID = $in.0.Observation_ID;
+	$out.0.Station_ID = $in.1.Station_ID;
+	$out.0.Samples = $in.0.Samples;
+	$out.0.Flow = $in.0.Flow;
+	$out.0.Occupancy = $in.0.Occupancy;
+	$out.0.Avg_Speed = $in.0.Avg_Speed;
+	$out.0.Observed = $in.0.Observed;
+	$out.0.L_Num = $in.0.L_Num;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node guiName="Lane Validator" guiX="442" guiY="186" id="LANE_VALIDATOR" type="VALIDATOR">
+<attr name="errorMapping"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.1.recordNo = $in.1.recordNo;
+	$out.1.validationMessage = $in.1.validationMessage;
+	$out.1.ruleStatusCode = $in.1.ruleStatusCode;
+	$out.1.ruleName = $in.1.ruleName;
+	$out.1.ruleType = $in.1.ruleType;
+	$out.1.rulePath = $in.1.rulePath;
+	$out.1.validatedFieldNames = $in.1.validatedFieldNames;
+	$out.1.validatedValues = $in.1.validatedValues;
+	$out.1.ruleParameters = $in.1.ruleParameters;
+	$out.1.validationDate = $in.1.validationDate;
+	$out.1.componentID = $in.1.componentID;
+	$out.1.componentName = $in.1.componentName;
+	$out.1.graphURL = $in.1.graphURL;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
+    <children>
+        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
+        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="Observation_ID" name="Empty/Nonempty field" outputField="" trimInput="false"/>
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="Samples" name="Comparison" operator="GE" outputField="" useType="DEFAULT" value="1">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </comparison>
+        <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="0" inputField="Occupancy" name="Interval" outputField="" to="1" useType="DEFAULT">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </interval>
+        <enumMatch acceptEmpty="false" customRejectMessage="" description="" enabled="true" ignoreCase="false" inputField="Observed" name="Enum Match" outputField="" trimInput="false" useType="DEFAULT">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+            <values>
+                <value>0</value>
+                <value>1</value>
+            </values>
+        </enumMatch>
+    </children>
+    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+    <imports/>
+</group>
+]]></attr>
+</Node>
+<Node guiName="Obso Copy" guiX="1381" guiY="276" id="OBSO_COPY" type="SIMPLE_COPY"/>
+<Node guiName="Obso ID Sort" guiX="1229" guiY="276" id="OBSO_ID_SORT" sortKey="ID(a)" type="FAST_SORT"/>
+<Node guiName="Obso Station Join" guiX="754" guiY="276" id="OBSO_STATION_JOIN" joinKey="$Station_ID(a)#$PEMS_ID(a);" type="EXT_MERGE_JOIN">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.ID = $in.0.ID;
+	$out.0.Timestamp = $in.0.Timestamp;
+	$out.0.Station_ID = $in.0.Station_ID;
+	$out.0.Samples = $in.0.Samples;
+	$out.0.Percent_Observed = $in.0.Percent_Observed;
+	$out.0.Total_Flow = $in.0.Total_Flow;
+	$out.0.Avg_Occupancy = $in.0.Avg_Occupancy;
+	$out.0.Avg_Speed = $in.0.Avg_Speed;
+	$out.0.s_Station_ID = $in.1.ID;
+	$out.0.s_Eff_Start = $in.1.Eff_Start;
+	$out.0.s_Eff_End = $in.1.Eff_End;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node guiName="Obso Station Sort" guiX="599" guiY="276" id="OBSO_STATION_SORT" sortKey="Station_ID(a)" type="FAST_SORT"/>
+<Node guiName="Obso Validator" guiX="443" guiY="276" id="OBSO_VALIDATOR" type="VALIDATOR">
+<attr name="errorMapping"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.1.recordNo = $in.1.recordNo;
+	$out.1.validationMessage = $in.1.validationMessage;
+	$out.1.ruleStatusCode = $in.1.ruleStatusCode;
+	$out.1.ruleName = $in.1.ruleName;
+	$out.1.ruleType = $in.1.ruleType;
+	$out.1.rulePath = $in.1.rulePath;
+	$out.1.validatedFieldNames = $in.1.validatedFieldNames;
+	$out.1.validatedValues = $in.1.validatedValues;
+	$out.1.ruleParameters = $in.1.ruleParameters;
+	$out.1.validationDate = $in.1.validationDate;
+	$out.1.componentID = $in.1.componentID;
+	$out.1.componentName = $in.1.componentName;
+	$out.1.graphURL = $in.1.graphURL;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
+    <children>
+        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
+        <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="0" inputField="Avg_Occupancy" name="Occupancy [0, 1]" outputField="" to="1" useType="DEFAULT">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </interval>
+        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="ID" name="ID NOT NULL" outputField="" trimInput="false"/>
+    </children>
+    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+    <imports/>
+</group>
+]]></attr>
+</Node>
+<Node InputFile="${DATAIN_DIR}/station_5min" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="170" id="READ_STATION_5MIN" type="GENERIC_READER"/>
+<Node guiName="Set Station_ID" guiX="1067" guiY="276" id="SET_STATION_ID1" type="REFORMAT">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.ID = $in.0.ID;
+	$out.0.Timestamp = $in.0.Timestamp;
+	$out.0.Station_ID = $in.0.s_Station_ID;
+	$out.0.Samples = $in.0.Samples;
+	$out.0.Percent_Observed = $in.0.Percent_Observed;
+	$out.0.Total_Flow = $in.0.Total_Flow;
+	$out.0.Avg_Occupancy = $in.0.Avg_Occupancy;
+	$out.0.Avg_Speed = $in.0.Avg_Speed;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node database="dse_traffic" guiName="Stations Table" guiX="2815" guiY="401" host="oswald" id="STATIONS_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Traffic_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node guiName="Trash" guiX="2815" guiY="68" id="TRASH" type="TRASH"/>
+<Node dataPolicy="controlled" fileURL="gzip:(${DATAIN_DIR}/chp_incidents/all_text_chp_incident_day_*gz)" guiName="UniversalDataReader" guiX="48" guiY="752" id="UNIVERSAL_DATA_READER1" type="DATA_READER"/>
 <Node enabled="trash" guiName="5min Station Trash" guiX="443" guiY="68" id="_5MIN_STATION_TRASH1" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -1238,66 +1530,36 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Edge debugMode="true" fromNode="CC_DE_DUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge40" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata7" toNode="SET_CC_ID:0"/>
-<Edge debugMode="true" fromNode="CC_DUP_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge39" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata7" toNode="CC_DE_DUP:0"/>
-<Edge debugMode="true" fromNode="CC_ID_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge45" inPort="Port 0 (in)" metadata="Metadata9" outPort="Port 0 (out)" toNode="STATION_VALID:0"/>
-<Edge debugMode="true" fromNode="CHECK_FOREIGN_KEY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge19" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (foreign records)" toNode="TRASH:0"/>
-<Edge debugMode="true" fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge18" inPort="Port 0 (foreign records)" outPort="Port 0 (unique)" toNode="CHECK_FOREIGN_KEY:0"/>
-<Edge debugMode="true" fromNode="DEDUP_EFF_END:0" guiBendpoints="" guiRouter="Manhattan" id="Edge84" inPort="Port 0 (in)" metadata="Metadata9" outPort="Port 0 (out)" toNode="SORT_PEMS_ID_2:0"/>
-<Edge debugMode="true" fromNode="DUP_STATIONS_1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge70" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="SET_EFF_END:0"/>
-<Edge debugMode="true" fromNode="DUP_STATIONS_1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge71" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata9" toNode="SET_EFF_END:1"/>
-<Edge debugMode="true" fromNode="DUP_STATIONS_2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge26" inPort="Port 1 (slave)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="OBSO_STATION_JOIN:1"/>
-<Edge debugMode="true" fromNode="DUP_STATIONS_2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge24" inPort="Port 1 (primary records)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata9" toNode="CHECK_FOREIGN_KEY:1"/>
-<Edge debugMode="true" fromNode="DUP_STATIONS_2:2" guiBendpoints="" guiRouter="Manhattan" id="Edge28" inPort="Port 0 (in)" outPort="Port 2 (out)" persistedImplicitMetadata="Metadata9" toNode="STATIONS_FINAL_FORMAT:0"/>
-<Edge debugMode="true" fromNode="FAST_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="DEDUP:0"/>
-<Edge debugMode="true" fromNode="FILTER_D11:0" guiBendpoints="" guiRouter="Manhattan" id="Edge61" inPort="Port 0 (in)" outPort="Port 0 (accepted)" toNode="TRASH1:0"/>
-<Edge debugMode="true" fromNode="FILTER_NA_LANE:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="LANE_VALIDATOR:0"/>
-<Edge debugMode="true" fromNode="FILTER_STATION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge51" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata14" toNode="SET_STATION_ID1:0"/>
-<Edge debugMode="true" fromNode="FWY_DE_DUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge34" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata6" toNode="FWY_VALID:0"/>
-<Edge debugMode="true" fromNode="FWY_DUP_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge33" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata6" toNode="FWY_DE_DUP:0"/>
-<Edge debugMode="true" fromNode="FWY_ID_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge44" inPort="Port 0 (driver)" metadata="Metadata8" outPort="Port 0 (out)" toNode="CC_ID_JOIN:0"/>
-<Edge debugMode="true" fromNode="FWY_VALID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge30" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata6" toNode="SET_FWY_ID:0"/>
-<Edge debugMode="true" fromNode="LANE_OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata1" toNode="LANE_OBSO_JOIN:0"/>
-<Edge debugMode="true" fromNode="LANE_OBSO_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" metadata="Metadata11" outPort="Port 0 (out)" toNode="LANE_OBSERVATION_TABLE:0"/>
-<Edge debugMode="true" fromNode="LANE_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata1" toNode="LANE_OBSO_ID_SORT:0"/>
-<Edge debugMode="true" fromNode="OBSO_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSERVATION_TABLE:0"/>
-<Edge debugMode="true" fromNode="OBSO_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge17" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata0" toNode="LANE_OBSO_JOIN:1"/>
-<Edge debugMode="true" fromNode="OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSO_COPY:0"/>
-<Edge debugMode="true" fromNode="OBSO_STATION_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge25" inPort="Port 0 (in)" metadata="Metadata14" outPort="Port 0 (out)" toNode="FILTER_STATION_ID:0"/>
-<Edge debugMode="true" fromNode="OBSO_STATION_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge76" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSO_STATION_JOIN:0"/>
-<Edge debugMode="true" fromNode="OBSO_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (valid)" toNode="OBSO_STATION_SORT:0"/>
-<Edge debugMode="true" fromNode="PEMS_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge77" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="DUP_STATIONS_1:0"/>
-<Edge debugMode="true" fromNode="READ_STATION_5MIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="_5MIN_STATION_TRASH1:0"/>
-<Edge debugMode="true" fromNode="READ_STATION_5MIN:1" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 1 (out)" toNode="FILTER_NA_LANE:0"/>
-<Edge debugMode="true" fromNode="READ_STATION_5MIN:2" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 2 (out)" toNode="OBSO_VALIDATOR:0"/>
-<Edge debugMode="true" fromNode="READ_STATION_META:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (output)" toNode="SPLIT_STATIONS:0"/>
-<Edge debugMode="true" fromNode="SET_CC_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge41" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata7" toNode="COUTY_CITY_TABLE:0"/>
-<Edge debugMode="true" fromNode="SET_CC_ID:1" guiBendpoints="" guiRouter="Manhattan" id="Edge47" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata7" toNode="CC_ID_JOIN:1"/>
-<Edge debugMode="true" fromNode="SET_EFF_END:0" guiBendpoints="" guiRouter="Manhattan" id="Edge72" inPort="Port 0 (in)" metadata="Metadata9" outPort="Port 0 (out)" toNode="SORT_PEMS_ID_1:0"/>
-<Edge debugMode="true" fromNode="SET_FWY_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge36" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata6" toNode="FREEWAY_TABLE:0"/>
-<Edge debugMode="true" fromNode="SET_FWY_ID:1" guiBendpoints="" guiRouter="Manhattan" id="Edge46" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata6" toNode="FWY_ID_JOIN:1"/>
-<Edge debugMode="true" fromNode="SET_STATION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge58" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata13" toNode="TYPE_ID_JOIN:0"/>
-<Edge debugMode="true" fromNode="SET_STATION_ID1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge74" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (out)" toNode="OBSO_ID_SORT:0"/>
-<Edge debugMode="true" fromNode="SORT_PEMS_ID_1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge83" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="DEDUP_EFF_END:0"/>
-<Edge debugMode="true" fromNode="SORT_PEMS_ID_2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge75" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="DUP_STATIONS_2:0"/>
-<Edge debugMode="true" fromNode="SPLIT_STATIONS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge31" inPort="Port 0 (in)" metadata="Metadata13" outPort="Port 0 (out)" toNode="STATION_DUP_SORT:0"/>
-<Edge debugMode="true" fromNode="SPLIT_STATIONS:1" guiBendpoints="" guiRouter="Manhattan" id="Edge32" inPort="Port 0 (in)" metadata="Metadata6" outPort="Port 1 (out)" toNode="FWY_DUP_SORT:0"/>
-<Edge debugMode="true" fromNode="SPLIT_STATIONS:2" guiBendpoints="" guiRouter="Manhattan" id="Edge42" inPort="Port 0 (in)" metadata="Metadata7" outPort="Port 2 (out)" toNode="CC_DUP_SORT:0"/>
-<Edge debugMode="true" fromNode="STATIONS_FINAL_FORMAT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge48" inPort="Port 0 (in)" metadata="Metadata10" outPort="Port 0 (out)" toNode="STATIONS_TABLE:0"/>
-<Edge debugMode="true" fromNode="STATION_DE_DUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge52" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata13" toNode="SET_STATION_ID:0"/>
-<Edge debugMode="true" fromNode="STATION_DUP_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge38" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata13" toNode="STATION_DE_DUP:0"/>
-<Edge debugMode="true" fromNode="STATION_VALID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata9" toNode="PEMS_SORT:0"/>
-<Edge debugMode="true" fromNode="TYPE_ID_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (driver)" metadata="Metadata4" outPort="Port 0 (joined records)" toNode="FWY_ID_JOIN:0"/>
-<Edge debugMode="true" fromNode="UNIVERSAL_DATA_READER1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge59" inPort="Port 0 (in)" metadata="Metadata12" outPort="Port 0 (output)" toNode="FILTER_D11:0"/>
-<Edge debugMode="true" fromNode="_5MIN_STATION_TRASH1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (valid)" toNode="FAST_SORT:0"/>
-</Phase>
-<Phase number="1">
-<Node database="dse_traffic" guiName="Stations Table" guiX="2815" guiY="401" host="oswald" id="STATIONS_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Traffic_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Edge debugMode="false" fromNode="CC_ID_JOIN1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge35" inPort="Port 0 (in)" metadata="Metadata16" outPort="Port 0 (out)" toNode="CHP_INC_VALID:0"/>
+<Edge debugMode="false" fromNode="CHECK_FOREIGN_KEY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge19" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (foreign records)" toNode="TRASH:0"/>
+<Edge debugMode="false" fromNode="CHP_INC_FINAL_ORDER1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge43" inPort="Port 0 (in)" metadata="Metadata17" outPort="Port 0 (out)" toNode="CHP_INC_TABLE:0"/>
+<Edge debugMode="false" fromNode="CHP_INC_VALID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge50" inPort="Port 0 (in)" metadata="Metadata16" outPort="Port 0 (valid)" toNode="CHP_INC_FINAL_ORDER1:0"/>
+<Edge debugMode="false" fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge18" inPort="Port 0 (foreign records)" outPort="Port 0 (unique)" toNode="CHECK_FOREIGN_KEY:0"/>
+<Edge debugMode="false" fromNode="FAST_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="DEDUP:0"/>
+<Edge debugMode="false" fromNode="FILTER_D11:0" guiBendpoints="" guiRouter="Manhattan" id="Edge61" inPort="Port 0 (driver)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata12" toNode="FWY_ID_JOIN1:0"/>
+<Edge debugMode="false" fromNode="FILTER_NA_LANE:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="LANE_VALIDATOR:0"/>
+<Edge debugMode="false" fromNode="FILTER_STATION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge51" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata14" toNode="SET_STATION_ID1:0"/>
+<Edge debugMode="false" fromNode="FWY_ID_JOIN1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge27" inPort="Port 0 (driver)" metadata="Metadata15" outPort="Port 0 (out)" toNode="CC_ID_JOIN1:0"/>
+<Edge debugMode="false" fromNode="LANE_OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata1" toNode="LANE_OBSO_JOIN:0"/>
+<Edge debugMode="false" fromNode="LANE_OBSO_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" metadata="Metadata11" outPort="Port 0 (out)" toNode="LANE_OBSERVATION_TABLE:0"/>
+<Edge debugMode="false" fromNode="LANE_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata1" toNode="LANE_OBSO_ID_SORT:0"/>
+<Edge debugMode="false" fromNode="OBSO_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSERVATION_TABLE:0"/>
+<Edge debugMode="false" fromNode="OBSO_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge17" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata0" toNode="LANE_OBSO_JOIN:1"/>
+<Edge debugMode="false" fromNode="OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSO_COPY:0"/>
+<Edge debugMode="false" fromNode="OBSO_STATION_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge25" inPort="Port 0 (in)" metadata="Metadata14" outPort="Port 0 (out)" toNode="FILTER_STATION_ID:0"/>
+<Edge debugMode="false" fromNode="OBSO_STATION_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge76" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSO_STATION_JOIN:0"/>
+<Edge debugMode="false" fromNode="OBSO_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (valid)" toNode="OBSO_STATION_SORT:0"/>
+<Edge debugMode="false" fromNode="READ_STATION_5MIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="_5MIN_STATION_TRASH1:0"/>
+<Edge debugMode="false" fromNode="READ_STATION_5MIN:1" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 1 (out)" toNode="FILTER_NA_LANE:0"/>
+<Edge debugMode="false" fromNode="READ_STATION_5MIN:2" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 2 (out)" toNode="OBSO_VALIDATOR:0"/>
+<Edge debugMode="false" fromNode="SET_STATION_ID1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge74" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (out)" toNode="OBSO_ID_SORT:0"/>
+<Edge debugMode="false" fromNode="UNIVERSAL_DATA_READER1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge59" inPort="Port 0 (in)" metadata="Metadata12" outPort="Port 0 (output)" toNode="FILTER_D11:0"/>
+<Edge debugMode="false" fromNode="_5MIN_STATION_TRASH1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (valid)" toNode="FAST_SORT:0"/>
 </Phase>
 <Phase number="2">
 <Node database="dse_traffic" guiName="Observation Table" guiX="2815" guiY="276" host="oswald" id="OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 </Phase>
 <Phase number="3">
-<Node database="dse_traffic" guiName="Lane_Observation Table" guiX="2815" guiY="180" host="oswald" id="LANE_OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" guiName="Lane_Observation Table" guiX="2815" guiY="186" host="oswald" id="LANE_OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 </Phase>
 </Graph>

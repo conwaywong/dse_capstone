@@ -20,4 +20,5 @@ SELECT * FROM Observation LIMIT 1;
 SELECT * FROM Lane_Observation LIMIT 1;
 SELECT * FROM CHP_INC LIMIT 1;
 SELECT * FROM Weather_Station LIMIT 1;
+SELECT * FROM Precipitation_Hourly_Observation LIMIT 1;
 SELECT * FROM Precipitation_Daily_Total LIMIT 1;

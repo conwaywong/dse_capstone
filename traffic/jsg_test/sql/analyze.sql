@@ -1,0 +1,11 @@
+ANALYZE District;
+ANALYZE ST_Type;
+ANALYZE Freeways;
+ANALYZE County_City;
+ANALYZE Traffic_Station;
+ANALYZE Observation;
+ANALYZE Lane_Observation;
+ANALYZE CHP_INC;
+ANALYZE Weather_Station;
+ANALYZE Precipitation_Hourly_Observation;
+ANALYZE Precipitation_Daily_Total;
