@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Nov 28 23:46:44 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.240" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Tue Dec 01 22:09:11 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.249" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata17" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="CHPInc_Final" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
@@ -468,11 +468,11 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="Couty_City Table" guiX="1229" guiY="613" host="oswald" id="COUTY_CITY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" enabled="trash" failOnError="true" guiName="Couty_City Table" guiX="1229" guiY="613" host="oswald" id="COUTY_CITY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node genericTransformClass="DedupEffEnd" guiName="Dedup Eff_End" guiX="2143" guiY="370" id="DEDUP_EFF_END" type="GENERIC_TRANSFORMER"/>
 <Node guiName="Dup Stations 1" guiX="1685" guiY="370" id="DUP_STATIONS_1" type="SIMPLE_COPY"/>
 <Node guiName="Dup Stations 2" guiX="2455" guiY="371" id="DUP_STATIONS_2" type="SIMPLE_COPY"/>
-<Node database="dse_traffic" guiName="Freeway Table" guiX="1229" guiY="508" host="oswald" id="FREEWAY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" enabled="trash" guiName="Freeway Table" guiX="1229" guiY="508" host="oswald" id="FREEWAY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node dedupKey="Num(a);Direction(a)" guiName="Fwy DeDup" guiX="599" guiY="508" id="FWY_DE_DUP" type="DEDUP"/>
 <Node guiName="Fwy Dup Sort" guiX="443" guiY="508" id="FWY_DUP_SORT" sortKey="Num(a);Direction(a)" type="FAST_SORT"/>
 <Node guiName="Fwy_ID Join" guiX="1067" guiY="370" id="FWY_ID_JOIN" joinKey="$Fwy=$Num;$Dir=$Direction" type="EXT_HASH_JOIN">
@@ -575,7 +575,7 @@ function integer transform() {
 ]]></attr>
 </Node>
 <Node guiName="PEMS Sort" guiX="1531" guiY="369" id="PEMS_SORT" sortKey="PEMS_ID(a)" type="FAST_SORT"/>
-<Node dataPolicy="controlled" fileURL="${DATAIN_DIR}/station_meta/*.txt" guiName="Read Station Meta" guiX="55" guiY="370" id="READ_STATION_META" type="DATA_READER"/>
+<Node dataPolicy="controlled" fileURL="${DATAIN_DIR}/meta/*.txt" guiName="Read Station Meta" guiX="55" guiY="370" id="READ_STATION_META" type="DATA_READER"/>
 <Node guiName="Set CC_ID" guiX="910" guiY="613" id="SET_CC_ID" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -1100,7 +1100,7 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="CHP_INC Table" guiX="1229" guiY="752" host="oswald" id="CHP_INC_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_INC" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" enabled="trash" failOnError="true" guiName="CHP_INC Table" guiX="1229" guiY="752" host="oswald" id="CHP_INC_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_INC" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node guiName="CHP Inc Valid" guiX="754" guiY="752" id="CHP_INC_VALID" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -1452,9 +1452,9 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" guiName="Stations Table" guiX="2815" guiY="401" host="oswald" id="STATIONS_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Traffic_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" enabled="trash" guiName="Stations Table" guiX="2815" guiY="401" host="oswald" id="STATIONS_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Traffic_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node guiName="Trash" guiX="2815" guiY="68" id="TRASH" type="TRASH"/>
-<Node dataPolicy="controlled" fileURL="gzip:(${DATAIN_DIR}/chp_incidents/all_text_chp_incident_day_*gz)" guiName="UniversalDataReader" guiX="48" guiY="752" id="UNIVERSAL_DATA_READER1" type="DATA_READER"/>
+<Node dataPolicy="controlled" fileURL="gzip:(${DATAIN_DIR}/chp_incidents/*gz)" guiName="UniversalDataReader" guiX="48" guiY="752" id="UNIVERSAL_DATA_READER1" type="DATA_READER"/>
 <Node enabled="trash" guiName="5min Station Trash" guiX="443" guiY="68" id="_5MIN_STATION_TRASH1" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -1557,9 +1557,9 @@ function integer transform() {
 <Edge debugMode="false" fromNode="_5MIN_STATION_TRASH1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (valid)" toNode="FAST_SORT:0"/>
 </Phase>
 <Phase number="2">
-<Node database="dse_traffic" guiName="Observation Table" guiX="2815" guiY="276" host="oswald" id="OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" enabled="trash" guiName="Observation Table" guiX="2815" guiY="276" host="oswald" id="OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 </Phase>
 <Phase number="3">
-<Node database="dse_traffic" guiName="Lane_Observation Table" guiX="2815" guiY="186" host="oswald" id="LANE_OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" enabled="trash" guiName="Lane_Observation Table" guiX="2815" guiY="186" host="oswald" id="LANE_OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 </Phase>
 </Graph>

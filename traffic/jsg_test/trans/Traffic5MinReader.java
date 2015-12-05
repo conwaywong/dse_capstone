@@ -32,7 +32,7 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 		Sequence oidseq = getGraph().getSequence(getProperties().getStringProperty("SeqName"));
 		File folder = getFile(fUrl);
 
-		//int rcnt = 0; 
+		//int rcnt = 0;
 		int fcnt, sfcnt, lfcnt, ofcnt, lcnt;
 		long oid, sid = -1;
 
@@ -48,7 +48,7 @@ public class Traffic5MinReader extends AbstractGenericTransform {
 		{
 			if(file.isDirectory() || !file.toString().endsWith(".gz"))
 				continue;
-
+			
 			outlog.log(Level.INFO, "Inputfile = " + file.getName());
 
 			//try (BufferedReader br = new BufferedReader(new FileReader(file)))

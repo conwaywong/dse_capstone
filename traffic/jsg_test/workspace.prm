@@ -42,5 +42,4 @@
 <GraphParameter name="TRANS_DIR" value="${PROJECT}/trans">
 <attr name="description"><![CDATA[Default folder for java and CTL transformations]]></attr>
 </GraphParameter>
-<GraphParameter name="REMOTE_DIR" value="/Volumes/video/dse_capstone/traffic/"/>
 </GraphParameters>
