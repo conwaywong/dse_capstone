@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Tue Dec 01 22:09:11 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.249" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Dec 05 14:03:34 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.258" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata17" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="CHPInc_Final" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
@@ -10,6 +10,7 @@
 <Field name="Description" type="string"/>
 <Field name="Latitude" type="number"/>
 <Field name="Longitude" type="number"/>
+<Field name="Location" type="string"/>
 <Field name="District" type="integer"/>
 <Field name="CC_ID" type="integer"/>
 <Field name="Fwy_ID" type="integer"/>
@@ -300,6 +301,7 @@ OR (On Ramp)]]></attr>
 <Field name="Abs_PM" scale="3" type="string"/>
 <Field name="Latitude" type="number"/>
 <Field name="Longitude" type="number"/>
+<Field name="Location" type="string"/>
 <Field name="Length" type="number"/>
 <Field name="Type_ID" type="integer"/>
 <Field name="Num_Lanes" type="integer"/>
@@ -412,10 +414,10 @@ OR (On Ramp)]]></attr>
 <GraphParameters>
 <GraphParameterFile fileURL="workspace.prm"/>
 </GraphParameters>
-<Sequence cached="0" id="Sequence3" name="Station_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Sequence cached="0" id="Sequence2" name="CCID_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <Sequence cached="0" id="Sequence1" name="Fwy_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence2" name="CCID_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence3" name="Station_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <LookupTable charset="ISO-8859-1" fileURL="${LOOKUP_DIR}/station_type.csv" id="LookupTable0" initialSize="512" key="Type" metadata="Metadata5" name="simpleLookup0" type="simpleLookup"/>
 <Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="72" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Disabled" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="403" x="443" y="-3">
 <attr name="text"><![CDATA[Station information from 5min reading is disabled, it can be enabled if the Station information from 5min readings needs to be used.]]></attr>
@@ -468,11 +470,11 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" enabled="trash" failOnError="true" guiName="Couty_City Table" guiX="1229" guiY="613" host="oswald" id="COUTY_CITY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Couty_City Table" guiX="1229" guiY="613" host="alvahouse322.mynetgear.com" id="COUTY_CITY_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node genericTransformClass="DedupEffEnd" guiName="Dedup Eff_End" guiX="2143" guiY="370" id="DEDUP_EFF_END" type="GENERIC_TRANSFORMER"/>
 <Node guiName="Dup Stations 1" guiX="1685" guiY="370" id="DUP_STATIONS_1" type="SIMPLE_COPY"/>
 <Node guiName="Dup Stations 2" guiX="2455" guiY="371" id="DUP_STATIONS_2" type="SIMPLE_COPY"/>
-<Node database="dse_traffic" enabled="trash" guiName="Freeway Table" guiX="1229" guiY="508" host="oswald" id="FREEWAY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" guiName="Freeway Table" guiX="1229" guiY="508" host="alvahouse322.mynetgear.com" id="FREEWAY_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node dedupKey="Num(a);Direction(a)" guiName="Fwy DeDup" guiX="599" guiY="508" id="FWY_DE_DUP" type="DEDUP"/>
 <Node guiName="Fwy Dup Sort" guiX="443" guiY="508" id="FWY_DUP_SORT" sortKey="Num(a);Direction(a)" type="FAST_SORT"/>
 <Node guiName="Fwy_ID Join" guiX="1067" guiY="370" id="FWY_ID_JOIN" joinKey="$Fwy=$Num;$Dir=$Direction" type="EXT_HASH_JOIN">
@@ -1100,7 +1102,7 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" enabled="trash" failOnError="true" guiName="CHP_INC Table" guiX="1229" guiY="752" host="oswald" id="CHP_INC_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_INC" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="CHP_INC Table" guiX="1229" guiY="752" host="alvahouse322.mynetgear.com" id="CHP_INC_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_INC" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node guiName="CHP Inc Valid" guiX="754" guiY="752" id="CHP_INC_VALID" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -1415,7 +1417,7 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Node InputFile="${DATAIN_DIR}/station_5min" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="170" id="READ_STATION_5MIN" type="GENERIC_READER"/>
+<Node InputFile="${DATAIN_DIR}/station_5min" SeqName="Sequence0" enabled="trash" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="170" id="READ_STATION_5MIN" type="GENERIC_READER"/>
 <Node guiName="Set Station_ID" guiX="1067" guiY="276" id="SET_STATION_ID1" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -1452,9 +1454,9 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" enabled="trash" guiName="Stations Table" guiX="2815" guiY="401" host="oswald" id="STATIONS_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Traffic_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" guiName="Stations Table" guiX="2815" guiY="401" host="alvahouse322.mynetgear.com" id="STATIONS_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Traffic_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node guiName="Trash" guiX="2815" guiY="68" id="TRASH" type="TRASH"/>
-<Node dataPolicy="controlled" fileURL="gzip:(${DATAIN_DIR}/chp_incidents/*gz)" guiName="UniversalDataReader" guiX="48" guiY="752" id="UNIVERSAL_DATA_READER1" type="DATA_READER"/>
+<Node dataPolicy="controlled" fileURL="gzip:(${DATAIN_DIR}/chp_incidents_day/*gz)" guiName="UniversalDataReader" guiX="48" guiY="752" id="UNIVERSAL_DATA_READER1" type="DATA_READER"/>
 <Node enabled="trash" guiName="5min Station Trash" guiX="443" guiY="68" id="_5MIN_STATION_TRASH1" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -1537,17 +1539,17 @@ function integer transform() {
 <Edge debugMode="false" fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge18" inPort="Port 0 (foreign records)" outPort="Port 0 (unique)" toNode="CHECK_FOREIGN_KEY:0"/>
 <Edge debugMode="false" fromNode="FAST_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="DEDUP:0"/>
 <Edge debugMode="false" fromNode="FILTER_D11:0" guiBendpoints="" guiRouter="Manhattan" id="Edge61" inPort="Port 0 (driver)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata12" toNode="FWY_ID_JOIN1:0"/>
-<Edge debugMode="false" fromNode="FILTER_NA_LANE:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="LANE_VALIDATOR:0"/>
-<Edge debugMode="false" fromNode="FILTER_STATION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge51" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata14" toNode="SET_STATION_ID1:0"/>
+<Edge debugMode="false" fromNode="FILTER_NA_LANE:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" toNode="LANE_VALIDATOR:0"/>
+<Edge debugMode="false" fromNode="FILTER_STATION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge51" inPort="Port 0 (in)" outPort="Port 0 (accepted)" toNode="SET_STATION_ID1:0"/>
 <Edge debugMode="false" fromNode="FWY_ID_JOIN1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge27" inPort="Port 0 (driver)" metadata="Metadata15" outPort="Port 0 (out)" toNode="CC_ID_JOIN1:0"/>
-<Edge debugMode="false" fromNode="LANE_OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata1" toNode="LANE_OBSO_JOIN:0"/>
+<Edge debugMode="false" fromNode="LANE_OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (driver)" outPort="Port 0 (out)" toNode="LANE_OBSO_JOIN:0"/>
 <Edge debugMode="false" fromNode="LANE_OBSO_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" metadata="Metadata11" outPort="Port 0 (out)" toNode="LANE_OBSERVATION_TABLE:0"/>
-<Edge debugMode="false" fromNode="LANE_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata1" toNode="LANE_OBSO_ID_SORT:0"/>
-<Edge debugMode="false" fromNode="OBSO_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSERVATION_TABLE:0"/>
-<Edge debugMode="false" fromNode="OBSO_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge17" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata0" toNode="LANE_OBSO_JOIN:1"/>
-<Edge debugMode="false" fromNode="OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSO_COPY:0"/>
+<Edge debugMode="false" fromNode="LANE_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (valid)" toNode="LANE_OBSO_ID_SORT:0"/>
+<Edge debugMode="false" fromNode="OBSO_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="OBSERVATION_TABLE:0"/>
+<Edge debugMode="false" fromNode="OBSO_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge17" inPort="Port 1 (slave)" outPort="Port 1 (out)" toNode="LANE_OBSO_JOIN:1"/>
+<Edge debugMode="false" fromNode="OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="OBSO_COPY:0"/>
 <Edge debugMode="false" fromNode="OBSO_STATION_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge25" inPort="Port 0 (in)" metadata="Metadata14" outPort="Port 0 (out)" toNode="FILTER_STATION_ID:0"/>
-<Edge debugMode="false" fromNode="OBSO_STATION_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge76" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSO_STATION_JOIN:0"/>
+<Edge debugMode="false" fromNode="OBSO_STATION_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge76" inPort="Port 0 (driver)" outPort="Port 0 (out)" toNode="OBSO_STATION_JOIN:0"/>
 <Edge debugMode="false" fromNode="OBSO_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (valid)" toNode="OBSO_STATION_SORT:0"/>
 <Edge debugMode="false" fromNode="READ_STATION_5MIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="_5MIN_STATION_TRASH1:0"/>
 <Edge debugMode="false" fromNode="READ_STATION_5MIN:1" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 1 (out)" toNode="FILTER_NA_LANE:0"/>
@@ -1557,9 +1559,9 @@ function integer transform() {
 <Edge debugMode="false" fromNode="_5MIN_STATION_TRASH1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (valid)" toNode="FAST_SORT:0"/>
 </Phase>
 <Phase number="2">
-<Node database="dse_traffic" enabled="trash" guiName="Observation Table" guiX="2815" guiY="276" host="oswald" id="OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" enabled="trash" guiName="Observation Table" guiX="2815" guiY="276" host="alvahouse322.mynetgear.com" id="OBSERVATION_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 </Phase>
 <Phase number="3">
-<Node database="dse_traffic" enabled="trash" guiName="Lane_Observation Table" guiX="2815" guiY="186" host="oswald" id="LANE_OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" enabled="trash" guiName="Lane_Observation Table" guiX="2815" guiY="186" host="alvahouse322.mynetgear.com" id="LANE_OBSERVATION_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 </Phase>
 </Graph>

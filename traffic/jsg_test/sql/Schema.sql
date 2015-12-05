@@ -1,5 +1,5 @@
 -- PEMS Schema
--- Random Sampling: 
+-- Random Sampling:
 --		http://stackoverflow.com/questions/8674718/best-way-to-select-random-rows-postgresql/8675160#8675160
 --		http://dba.stackexchange.com/questions/96610/sampling-in-postgresql
 
@@ -79,7 +79,7 @@ CREATE TABLE Traffic_Station (
 	Location geography(POINT,4326) NOT NULL,
 	Length FLOAT,
 	Type_ID INTEGER NOT NULL REFERENCES ST_Type(ID),
-	Num_Lanes INTEGER NOT NULL,
+	Num_Lanes INTEGER NOT NULL
 	-- USER_ID DELETE
 );
 
@@ -165,3 +165,32 @@ CREATE TABLE Precipitation_Daily_Total (
 	Day Date NOT NULL,
 	Amount FLOAT NOT NULL
 );
+
+CREATE OR REPLACE FUNCTION LocationTrigger()
+RETURNS trigger
+AS $loc_upd$
+	DECLARE
+		ins_txt text;
+	BEGIN
+		ins_txt := format('SRID=4326;POINT(%s %s)', NEW.Longitude, NEW.Latitude);
+		NEW.Location = ST_GeographyFromText(ins_txt);
+
+	RETURN NEW;
+
+	EXCEPTION
+	    WHEN data_exception THEN
+	        RAISE EXCEPTION 'Trigger ERROR [DATA EXCEPTION] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+	        RETURN NULL;
+	    WHEN unique_violation THEN
+	        RAISE EXCEPTION 'Trigger ERROR [UNIQUE] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+	        RETURN NULL;
+	    WHEN OTHERS THEN
+	        RAISE EXCEPTION 'Trigger ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+	        RETURN NULL;
+END;
+$loc_upd$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER InsLoc BEFORE INSERT ON Traffic_Station FOR EACH ROW EXECUTE PROCEDURE LocationTrigger();
+CREATE TRIGGER InsLoc BEFORE INSERT ON CHP_INC FOR EACH ROW EXECUTE PROCEDURE LocationTrigger();
+CREATE TRIGGER InsLoc BEFORE INSERT ON Weather_Station FOR EACH ROW EXECUTE PROCEDURE LocationTrigger();
