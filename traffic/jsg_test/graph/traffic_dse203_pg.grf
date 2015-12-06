@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sat Dec 05 14:03:34 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.258" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sun Dec 06 11:02:06 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.304" showComponentDetails="true">
 <Global>
+<Metadata id="Metadata18" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="CHPDesc0" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="ID" type="string"/>
+<Field name="Description" type="string"/>
+</Record>
+</Metadata>
 <Metadata id="Metadata17" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="CHPInc_Final" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
 <Field name="ID" type="integer"/>
 <Field name="CC_Code" type="string"/>
 <Field name="Incident_Num" type="string"/>
 <Field format="MM/dd/yyyy HH:mm:ss" name="Timestamp" type="date"/>
-<Field name="Description" type="string"/>
+<Field name="Desc_ID" type="string"/>
 <Field name="Latitude" type="number"/>
 <Field name="Longitude" type="number"/>
 <Field name="Location" type="string"/>
@@ -44,13 +50,37 @@
 <Field name="Duration" type="integer"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata15" previewAttachmentCharset="ISO-8859-1">
+<Metadata id="Metadata28" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="CHPInc1" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
 <Field name="ID" type="integer"/>
 <Field name="CC_Code" type="string"/>
 <Field name="Incident_Num" type="string"/>
 <Field format="MM/dd/yyyy HH:mm:ss" name="Timestamp" type="date"/>
-<Field name="Description" type="string"/>
+<Field name="Desc_ID" type="string"/>
+<Field name="Location" type="string"/>
+<Field name="Area" type="string"/>
+<Field name="Zoom_Map" type="string"/>
+<Field name="TB_xy" type="string"/>
+<Field name="Latitude" type="number"/>
+<Field name="Longitude" type="number"/>
+<Field name="District" type="integer"/>
+<Field name="County_FIPS_ID" type="integer"/>
+<Field name="City_FIPS_ID" type="integer"/>
+<Field name="Freeway_Num" type="integer"/>
+<Field name="Freeway_Dir" type="string"/>
+<Field name="State_PM" type="string"/>
+<Field name="Absolute_PM" type="number"/>
+<Field name="Severity" type="string"/>
+<Field name="Duration" type="integer"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata15" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="CHPInc2" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="ID" type="integer"/>
+<Field name="CC_Code" type="string"/>
+<Field name="Incident_Num" type="string"/>
+<Field format="MM/dd/yyyy HH:mm:ss" name="Timestamp" type="date"/>
+<Field name="Desc_ID" type="string"/>
 <Field name="Location" type="string"/>
 <Field name="Area" type="string"/>
 <Field name="Zoom_Map" type="string"/>
@@ -68,12 +98,12 @@
 </Record>
 </Metadata>
 <Metadata id="Metadata16" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," name="CHPInc2" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Record fieldDelimiter="," name="CHPInc3" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
 <Field name="ID" type="integer"/>
 <Field name="CC_Code" type="string"/>
 <Field name="Incident_Num" type="string"/>
 <Field format="MM/dd/yyyy HH:mm:ss" name="Timestamp" type="date"/>
-<Field name="Description" type="string"/>
+<Field name="Desc_ID" type="string"/>
 <Field name="Location" type="string"/>
 <Field name="Area" type="string"/>
 <Field name="Zoom_Map" type="string"/>
@@ -96,11 +126,79 @@
 <Field name="City_FIPS_ID" type="integer"/>
 </Record>
 </Metadata>
+<Metadata id="Metadata27" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="DPrecip0" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="id" nullable="true" type="integer"/>
+<Field format="yyyy-MM-dd HH:mm:ss" name="date" type="date"/>
+<Field name="amount" type="integer"/>
+<Field name="cnin" type="integer"/>
+<Field name="cndn" type="integer"/>
+</Record>
+</Metadata>
 <Metadata id="Metadata6" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="Freeway" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
 <Field name="ID" type="integer"/>
 <Field name="Num" type="integer"/>
 <Field name="Direction" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata25" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="HPrecip3" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="id" type="integer"/>
+<Field name="cnin" type="integer"/>
+<Field name="cndn" type="integer"/>
+<Field format="yyyy-MM-dd HH:mm:ss" name="end_hour" type="date"/>
+<Field name="amount" type="integer"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata26" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="Precip_Final" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="id" nullable="true" type="integer"/>
+<Field name="station_id" type="integer"/>
+<Field format="yyyy-MM-dd HH:mm:ss" name="date" type="date"/>
+<Field name="amount" type="integer"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata24" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="Precip2" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="cnin" type="integer"/>
+<Field name="cndn" type="integer"/>
+<Field name="element_units" type="string"/>
+<Field name="year" type="integer"/>
+<Field name="month" type="integer"/>
+<Field name="day" type="integer"/>
+<Field name="hour" type="integer"/>
+<Field name="amount" type="integer"/>
+<Field name="flag1" type="string"/>
+<Field name="flag2" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata23" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="Precip1" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="cnin" type="integer"/>
+<Field name="cndn" type="integer"/>
+<Field name="element_type" type="string"/>
+<Field name="element_units" type="string"/>
+<Field name="year" type="integer"/>
+<Field name="month" type="integer"/>
+<Field name="day" type="integer"/>
+<Field name="num_reported_values" type="integer"/>
+<Field name="values" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata22">
+<Record fieldDelimiter="," name="Precip0" recordDelimiter="\n" type="delimited">
+<Field name="record_type" type="string"/>
+<Field name="state_code" type="string"/>
+<Field name="cnin" type="string"/>
+<Field name="cndn" type="string"/>
+<Field name="element_type" type="string"/>
+<Field name="element_units" type="string"/>
+<Field name="year" type="string"/>
+<Field name="month" type="string"/>
+<Field name="day" type="string"/>
+<Field name="num_reported_values" type="string"/>
+<Field name="values" type="string"/>
 </Record>
 </Metadata>
 <Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
@@ -288,7 +386,7 @@ OR (On Ramp)]]></attr>
 </Record>
 </Metadata>
 <Metadata id="Metadata10" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="Stations_Final" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="TStations_Final" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
 <Field name="ID" type="long"/>
 <Field name="PEMS_ID" type="long"/>
 <Field format="MM/dd/YYYY" name="Eff_Start" type="date"/>
@@ -308,7 +406,7 @@ OR (On Ramp)]]></attr>
 </Record>
 </Metadata>
 <Metadata id="Metadata3" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="\t" label="d06_text_meta_2009_12_04.txt" name="Stations0" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Record fieldDelimiter="\t" label="d06_text_meta_2009_12_04.txt" name="TStations0" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
 <Field name="ID" type="long"/>
 <Field name="Fwy" type="integer"/>
 <Field name="Dir" type="string"/>
@@ -331,7 +429,7 @@ OR (On Ramp)]]></attr>
 </Record>
 </Metadata>
 <Metadata id="Metadata13" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="Stations1" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="TStations1" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
 <Field name="ID" type="long"/>
 <Field name="PEMS_ID" type="long"/>
 <Field format="MM/dd/YYYY" name="Eff_Start" type="date"/>
@@ -352,7 +450,7 @@ OR (On Ramp)]]></attr>
 </Record>
 </Metadata>
 <Metadata id="Metadata4" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="Stations2" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="TStations2" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
 <Field name="ID" type="long"/>
 <Field name="PEMS_ID" type="long"/>
 <Field format="MM/dd/YYYY" name="Eff_Start" type="date"/>
@@ -373,7 +471,7 @@ OR (On Ramp)]]></attr>
 </Record>
 </Metadata>
 <Metadata id="Metadata8" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="Stations3" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="TStations3" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
 <Field name="ID" type="long"/>
 <Field name="PEMS_ID" type="long"/>
 <Field format="MM/dd/YYYY" name="Eff_Start" type="date"/>
@@ -393,7 +491,7 @@ OR (On Ramp)]]></attr>
 </Record>
 </Metadata>
 <Metadata id="Metadata9" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="Stations4" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
+<Record fieldDelimiter="," label="d06_text_meta_2009_12_04.txt" name="TStations4" previewAttachment="${DATAIN_DIR}/d06_text_meta_2009_12_04.txt" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="false" recordDelimiter="\n" skipSourceRows="1" type="delimited">
 <Field name="ID" type="long"/>
 <Field name="PEMS_ID" type="long"/>
 <Field format="MM/dd/YYYY" name="Eff_Start" type="date"/>
@@ -411,10 +509,66 @@ OR (On Ramp)]]></attr>
 <Field name="Name" type="string"/>
 </Record>
 </Metadata>
+<Metadata id="Metadata21" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="WStation_Final" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="ID" type="integer"/>
+<Field name="NAME" type="string"/>
+<Field name="LATITUDE" type="decimal"/>
+<Field name="LONGITUDE" type="decimal"/>
+<Field name="LOCATION" type="string"/>
+<Field name="ELEVATION" type="decimal"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata20" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="WStation1" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="ID" type="integer"/>
+<Field name="NAME" type="string"/>
+<Field name="LATITUDE" type="decimal"/>
+<Field name="LONGITUDE" type="decimal"/>
+<Field name="ELEVATION" type="decimal"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata19" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="WStation0" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="STNIDNUM" type="string"/>
+<Field name="RECTYPE" type="string"/>
+<Field name="COOPID" type="string"/>
+<Field name="CLIMDIV" type="string"/>
+<Field name="WBANID" type="string"/>
+<Field name="WMOID" type="string"/>
+<Field name="FAAID" type="string"/>
+<Field name="NWSID" type="string"/>
+<Field name="ICAOID" type="string"/>
+<Field name="COUNTRYNAME" type="string"/>
+<Field name="STATEPROV" type="string"/>
+<Field name="COUNTY" type="string"/>
+<Field name="TIME_ZONE" type="string"/>
+<Field name="COOPNAME" type="string"/>
+<Field name="WBANNAME" type="string"/>
+<Field name="BEGINDATE" type="string"/>
+<Field name="ENDDATE" type="string"/>
+<Field name="LATDIR" type="string"/>
+<Field name="LAT_D" type="long"/>
+<Field name="LAT_M" type="long"/>
+<Field name="LAT_S" type="long"/>
+<Field name="LONDIR" type="string"/>
+<Field name="LON_D" type="long"/>
+<Field name="LON_M" type="long"/>
+<Field name="LON_S" type="long"/>
+<Field name="LATLONPREC" type="long"/>
+<Field name="EL_GROUND" type="long"/>
+<Field name="EL_OTHER" type="long"/>
+<Field name="ELEVOTHERTYPE" type="long"/>
+<Field name="RELOC" type="string"/>
+<Field name="STNTYPE" type="string"/>
+</Record>
+</Metadata>
 <GraphParameters>
 <GraphParameterFile fileURL="workspace.prm"/>
 </GraphParameters>
+<Sequence cached="0" id="Sequence5" name="Daily_Percip_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <Sequence cached="0" id="Sequence1" name="Fwy_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence4" name="Hourly_Percip_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <Sequence cached="0" id="Sequence2" name="CCID_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <Sequence cached="0" id="Sequence3" name="Station_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
@@ -425,6 +579,101 @@ OR (On Ramp)]]></attr>
 <Dictionary/>
 </Global>
 <Phase number="0">
+<Node aggregateKey="ID" guiName="Avg Weather Position" guiX="609" guiY="960" id="AVG_WEATHER_POSITION" mapping="$ID:=$ID;$NAME:=modus($NAME);$LATITUDE:=avg($LATITUDE);$LONGITUDE:=avg($LONGITUDE);$ELEVATION:=avg($ELEVATION);" type="AGGREGATE"/>
+<Node guiName="CA_Filter" guiX="232" guiY="1071" id="CA_Filter" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.state_code == '04']]></attr>
+</Node>
+<Node guiName="CA_Raw_Validator" guiX="442" guiY="1071" id="CA_RAW_VALIDATOR" type="VALIDATOR">
+<attr name="errorMapping"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.1.recordNo = $in.1.recordNo;
+	$out.1.validationMessage = $in.1.validationMessage;
+	$out.1.ruleStatusCode = $in.1.ruleStatusCode;
+	$out.1.ruleName = $in.1.ruleName;
+	$out.1.ruleType = $in.1.ruleType;
+	$out.1.rulePath = $in.1.rulePath;
+	$out.1.validatedFieldNames = $in.1.validatedFieldNames;
+	$out.1.validatedValues = $in.1.validatedValues;
+	$out.1.ruleParameters = $in.1.ruleParameters;
+	$out.1.validationDate = $in.1.validationDate;
+	$out.1.componentID = $in.1.componentID;
+	$out.1.componentName = $in.1.componentName;
+	$out.1.graphURL = $in.1.graphURL;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
+    <children>
+        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="record_type" name="Comparison" operator="E" outputField="" useType="DEFAULT" value="HPD">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </comparison>
+        <isNumber acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="cnin" name="Is Number" numberType="INTEGER" outputField="cnin" trimInput="false">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </isNumber>
+        <isNumber acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="cndn" name="Is Number" numberType="INTEGER" outputField="cndn" trimInput="false">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </isNumber>
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="state_code" name="Comparison" operator="E" outputField="" useType="DEFAULT" value="04">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </comparison>
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="element_type" name="Comparison" operator="E" outputField="" useType="DEFAULT" value="HPCP">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </comparison>
+        <enumMatch acceptEmpty="false" customRejectMessage="" description="" enabled="true" ignoreCase="false" inputField="element_units" name="Enum Match" outputField="" trimInput="false" useType="DEFAULT">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+            <values>
+                <value>HI</value>
+                <value>HT</value>
+            </values>
+        </enumMatch>
+        <group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="Date" statusCode="">
+            <children>
+                <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="1" inputField="month" name="Interval" outputField="month" to="12" useType="LONG">
+                    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+                </interval>
+                <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="year" name="Comparison" operator="G" outputField="year" useType="LONG" value="1900">
+                    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+                </comparison>
+                <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="1" inputField="day" name="Interval" outputField="day" to="31" useType="LONG">
+                    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+                </interval>
+            </children>
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+            <imports/>
+        </group>
+        <isNumber acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="num_reported_values" name="Is Number" numberType="INTEGER" outputField="num_reported_values" trimInput="false">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </isNumber>
+    </children>
+    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+    <imports/>
+</group>
+]]></attr>
+</Node>
 <Node dedupKey="County_FIPS_ID(a);City_FIPS_ID(a)" guiName="CC DeDup" guiX="599" guiY="613" id="CC_DE_DUP" type="DEDUP"/>
 <Node guiName="CC Dup Sort" guiX="443" guiY="613" id="CC_DUP_SORT" sortKey="County_FIPS_ID(a);City_FIPS_ID(a)" type="FAST_SORT"/>
 <Node guiName="CC_ID Join" guiX="1229" guiY="370" id="CC_ID_JOIN" joinKey="$County=$County_FIPS_ID;$City=$City_FIPS_ID" type="EXT_HASH_JOIN">
@@ -470,11 +719,143 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="Couty_City Table" guiX="1229" guiY="613" host="alvahouse322.mynetgear.com" id="COUTY_CITY_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="CHP_Desc" guiX="910" guiY="870" host="${SERVER}" id="CHP_DESC" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_Desc" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Couty_City Table" guiX="1229" guiY="613" host="${SERVER}" id="COUTY_CITY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node guiName="DailyObs-Station Join" guiX="1535" guiY="1193" id="DAILY_OBS_STATION_JOIN" joinKey="$cnin=$ID" joinType="leftOuter" type="EXT_HASH_JOIN">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.id = $in.0.id;
+	$out.0.station_id = $in.1.ID;
+	$out.0.date = $in.0.date;
+	$out.0.amount = $in.0.amount;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node guiName="Daily Reformat" guiX="1370" guiY="1193" id="DAILY_REFORMAT" type="REFORMAT">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.id = sequence(Daily_Percip_ID).next();
+	$out.0.date = createDate($in.0.year, $in.0.month, $in.0.day);
+	$out.0.amount = $in.0.amount;
+	$out.0.cnin = $in.0.cnin;
+	$out.0.cndn = $in.0.cndn;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node guiName="Daily Validator" guiX="1723" guiY="1193" id="DAILY_VALIDATOR" type="VALIDATOR">
+<attr name="errorMapping"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.1.recordNo = $in.1.recordNo;
+	$out.1.validationMessage = $in.1.validationMessage;
+	$out.1.ruleStatusCode = $in.1.ruleStatusCode;
+	$out.1.ruleName = $in.1.ruleName;
+	$out.1.ruleType = $in.1.ruleType;
+	$out.1.rulePath = $in.1.rulePath;
+	$out.1.validatedFieldNames = $in.1.validatedFieldNames;
+	$out.1.validatedValues = $in.1.validatedValues;
+	$out.1.ruleParameters = $in.1.ruleParameters;
+	$out.1.validationDate = $in.1.validationDate;
+	$out.1.componentID = $in.1.componentID;
+	$out.1.componentName = $in.1.componentName;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
+    <children>
+        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="amount" name="Comparison" operator="GE" outputField="" useType="DEFAULT" value="0">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </comparison>
+        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="station_id" name="Empty/Nonempty field" outputField="" trimInput="false"/>
+    </children>
+    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+    <imports/>
+</group>
+]]></attr>
+</Node>
+<Node dedupKey="ID(a)" guiName="Dedup" guiX="746" guiY="870" id="DEDUP1" type="DEDUP"/>
 <Node genericTransformClass="DedupEffEnd" guiName="Dedup Eff_End" guiX="2143" guiY="370" id="DEDUP_EFF_END" type="GENERIC_TRANSFORMER"/>
 <Node guiName="Dup Stations 1" guiX="1685" guiY="370" id="DUP_STATIONS_1" type="SIMPLE_COPY"/>
 <Node guiName="Dup Stations 2" guiX="2455" guiY="371" id="DUP_STATIONS_2" type="SIMPLE_COPY"/>
-<Node database="dse_traffic" guiName="Freeway Table" guiX="1229" guiY="508" host="alvahouse322.mynetgear.com" id="FREEWAY_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node guiName="End Month Empty Filter" guiX="984" guiY="1193" id="END_MONTH_EMPTY_FILTER" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[NOT ($0.hour== 25 and $0.amount == 0 and isnull($0.flag1))]]></attr>
+</Node>
+<Node guiName="FastSort" guiX="589" guiY="870" id="FAST_SORT1" sortKey="ID(a)" type="FAST_SORT"/>
+<Node guiName="Filter D11" guiX="238" guiY="752" id="FILTER_D11" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.District == 11]]></attr>
+</Node>
+<Node guiName="FIrst of the Month Filter" guiX="984" guiY="1071" id="FIRST_OF_THE_MONTH_FILTER" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+NOT ($in.0.day == 1 and $in.0.hour == 1 and $in.0.flag1 == 'g')]]></attr>
+</Node>
+<Node database="dse_traffic" failOnError="true" guiName="Freeway Table" guiX="1229" guiY="508" host="${SERVER}" id="FREEWAY_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node dedupKey="Num(a);Direction(a)" guiName="Fwy DeDup" guiX="599" guiY="508" id="FWY_DE_DUP" type="DEDUP"/>
 <Node guiName="Fwy Dup Sort" guiX="443" guiY="508" id="FWY_DUP_SORT" sortKey="Num(a);Direction(a)" type="FAST_SORT"/>
 <Node guiName="Fwy_ID Join" guiX="1067" guiY="370" id="FWY_ID_JOIN" joinKey="$Fwy=$Num;$Dir=$Direction" type="EXT_HASH_JOIN">
@@ -576,8 +957,195 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
+<Node guiName="Hourly/Daily Filter" guiX="806" guiY="1071" id="HOURLY_DAILY_FILTER" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[//#CTL2
+$in.0.hour <= 24]]></attr>
+</Node>
+<Node guiName="HourlyObs-Station Join" guiX="1535" guiY="1071" id="HOURLY_OBS_STATION_JOIN" joinKey="$cnin=$ID" joinType="leftOuter" type="EXT_HASH_JOIN">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.id = $in.0.id;
+	$out.0.station_id = $in.1.ID;
+	$out.0.date = $in.0.end_hour;
+	$out.0.amount = $in.0.amount;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node guiName="Hourly Reformat" guiX="1369" guiY="1071" id="HOURLY_REFORMAT" type="REFORMAT">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.id = sequence(Hourly_Percip_ID).next();
+	$out.0.end_hour = createDate($in.0.year, $in.0.month, $in.0.day, $in.0.hour, 0, 0);
+	$out.0.amount = $in.0.amount;
+	$out.0.cnin = $in.0.cnin;
+	$out.0.cndn = $in.0.cndn;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
+<Node genericTransformClass="PrecipValuesTransformer" genericTransformURL="${TRANS_DIR}/PrecipValuesTransformer.java" guiName="Hourly Transformer" guiX="609" guiY="1071" id="HOURLY_TRANSFORMER" type="GENERIC_TRANSFORMER"/>
+<Node guiName="Invalid Daily Filter" guiX="1199" guiY="1193" id="INVALID_DAILY_FILTER" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[NOT($0.amount == 0 and ($0.flag1 == "I" or $0.flag1 == "P"))]]></attr>
+</Node>
+<Node guiName="Invalid Hourly Filter" guiX="1194" guiY="1071" id="INVALID_HOURLY_FILTER" type="EXT_FILTER">
+<attr name="filterExpression"><![CDATA[NOT($0.amount == 99999 and ($0.flag1 == ']' or $0.flag1 == '[' or $0.flag1 == ']'))]]></attr>
+</Node>
+<Node guiName="Location Add" guiX="808" guiY="959" id="LOCATION_ADD" type="REFORMAT">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	$out.0.ID = $in.0.ID;
+	$out.0.NAME = $in.0.NAME;
+	$out.0.LATITUDE = $in.0.LATITUDE;
+	$out.0.LONGITUDE = $in.0.LONGITUDE;
+	$out.0.ELEVATION = $in.0.ELEVATION;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
 <Node guiName="PEMS Sort" guiX="1531" guiY="369" id="PEMS_SORT" sortKey="PEMS_ID(a)" type="FAST_SORT"/>
-<Node dataPolicy="controlled" fileURL="${DATAIN_DIR}/meta/*.txt" guiName="Read Station Meta" guiX="55" guiY="370" id="READ_STATION_META" type="DATA_READER"/>
+<Node dataPolicy="controlled" fileURL="gzip:(${DATAIN_DIR}/chp_incidents_day/*gz)" guiName="Read CHP INC" guiX="57" guiY="752" id="READ_CHP_INC" type="DATA_READER"/>
+<Node FileUrl="${DATAIN_DIR}/weather/3240sep2013.dat" genericTransformClass="HourlyPrecipitationCustomReader" genericTransformURL="${TRANS_DIR}/HourlyPrecipitationCustomReader.java" guiName="Read Precip" guiX="57" guiY="1071" id="READ_PRECIP" type="GENERIC_READER"/>
+<Node dataPolicy="controlled" fileURL="${DATAIN_DIR}/meta/*.txt" guiName="Read Traffic Stations" guiX="55" guiY="370" id="READ_TRAFFIC_STATIONS" type="DATA_READER"/>
+<Node FileUrl="${DATAIN_DIR}/weather/mshr_standard_nofirstline.txt" genericTransformClass="WeatherStationReader" genericTransformURL="${TRANS_DIR}/WeatherStationReader.java" guiName="Read Weather Stations" guiX="51" guiY="959" id="READ_WEATHER_STATIONS" type="GENERIC_READER"/>
+<Node guiName="Reformat" guiX="412" guiY="752" id="REFORMAT" type="REFORMAT">
+<attr name="transform"><![CDATA[//#CTL2
+
+// Transforms input record into output record.
+function integer transform() {
+	
+	string chp_desc = $in.0.Description;
+	
+	string[] id_text = split(chp_desc,'-',2);
+	integer num_ele = length(id_text);
+	
+	if(num_ele == 2)
+	{
+		$out.1.ID = id_text[0];
+		$out.1.Description = id_text[1];
+	}
+	else if(num_ele == 1)
+	{
+		$out.1.ID = null;
+		$out.1.Description = id_text[0];	
+	}
+	else
+	{
+		printErr("Could not parse description" + $in.0.Description);	
+	}
+	
+	// Manually assign a few as they do not have a code
+	if(isnull($out.1.ID) && $out.1.Description == "CLOSURE of a Road")
+	{
+		$out.1.ID = "1";
+	}
+	
+	$out.0.ID = $in.0.ID;
+	$out.0.CC_Code = $in.0.CC_Code;
+	$out.0.Incident_Num = $in.0.Incident_Num;
+	$out.0.Timestamp = $in.0.Timestamp;
+	$out.0.Desc_ID = $out.1.ID;
+	$out.0.Location = $in.0.Location;
+	$out.0.Area = $in.0.Area;
+	$out.0.Zoom_Map = $in.0.Zoom_Map;
+	$out.0.TB_xy = $in.0.TB_xy;
+	$out.0.Latitude = $in.0.Latitude;
+	$out.0.Longitude = $in.0.Longitude;
+	$out.0.District = $in.0.District;
+	$out.0.County_FIPS_ID = $in.0.County_FIPS_ID;
+	$out.0.City_FIPS_ID = $in.0.City_FIPS_ID;
+	$out.0.Freeway_Num = $in.0.Freeway_Num;
+	$out.0.Freeway_Dir = $in.0.Freeway_Dir;
+	$out.0.State_PM = $in.0.State_PM;
+	$out.0.Absolute_PM = $in.0.Absolute_PM;
+	$out.0.Severity = $in.0.Severity;
+	$out.0.Duration = $in.0.Duration;
+
+	return ALL;
+}
+
+// Called during component initialization.
+// function boolean init() {}
+
+// Called during each graph run before the transform is executed. May be used to allocate and initialize resources
+// required by the transform. All resources allocated within this method should be released
+// by the postExecute() method.
+// function void preExecute() {}
+
+// Called only if transform() throws an exception.
+// function integer transformOnError(string errorMessage, string stackTrace) {}
+
+// Called during each graph run after the entire transform was executed. Should be used to free any resources
+// allocated within the preExecute() method.
+// function void postExecute() {}
+
+// Called to return a user-defined error message when an error occurs.
+// function string getMessage() {}
+]]></attr>
+</Node>
 <Node guiName="Set CC_ID" guiX="910" guiY="613" id="SET_CC_ID" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -751,6 +1319,7 @@ function integer transform() {
 </Node>
 <Node guiName="Sort PEMS_ID 1" guiX="1995" guiY="370" id="SORT_PEMS_ID_1" sortKey="PEMS_ID(a);Eff_Start(a)" type="FAST_SORT"/>
 <Node guiName="Sort PEMS_ID 2" guiX="2295" guiY="370" id="SORT_PEMS_ID_2" sortKey="PEMS_ID(a)" type="FAST_SORT"/>
+<Node guiName="Sort Weather ID" guiX="443" guiY="959" id="SORT_WEATHER_ID" sortKey="ID(a)" type="FAST_SORT"/>
 <Node guiName="Split Stations" guiX="255" guiY="370" id="SPLIT_STATIONS" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -927,6 +1496,7 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
+<Node genericTransformClass="WeatherStationTransform" genericTransformURL="${TRANS_DIR}/WeatherStationTransform.java" guiName="Transform Weather Station" guiX="232" guiY="959" id="TRANSFORM_WEATHER_STATION" type="GENERIC_TRANSFORMER"/>
 <Node guiName="Type_ID Join" guiX="910" guiY="369" id="TYPE_ID_JOIN" joinKey="Type" leftOuterJoin="true" lookupTable="LookupTable0" type="LOOKUP_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -972,21 +1542,66 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
+<Node guiName="Validator" guiX="1741" guiY="1071" id="VALIDATOR" type="VALIDATOR">
+<attr name="rules"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
+    <children>
+        <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="id" name="Comparison" operator="G" outputField="" useType="DEFAULT" value="0">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </comparison>
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="amount" name="Comparison" operator="GE" outputField="" useType="DEFAULT" value="0">
+            <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+        </comparison>
+        <nonEmptyField customRejectMessage="" description="" enabled="true" goal="NONEMPTY" inputField="station_id" name="Empty/Nonempty field" outputField="" trimInput="false"/>
+    </children>
+    <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
+    <imports/>
+</group>
+]]></attr>
+</Node>
+<Node database="dse_traffic" failOnError="true" guiName="Weather_Station Table" guiX="1215" guiY="959" host="${SERVER}" id="WEATHER_STATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Weather_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Edge fromNode="AVG_WEATHER_POSITION:0" guiBendpoints="" guiRouter="Manhattan" id="Edge54" inPort="Port 0 (in)" metadata="Metadata20" outPort="Port 0 (out)" toNode="LOCATION_ADD:0"/>
+<Edge debugMode="false" fromNode="AVG_WEATHER_POSITION:1" guiBendpoints="" guiRouter="Manhattan" id="Edge49" inPort="Port 1 (slave)" metadata="Metadata20" outPort="Port 1 (out)" toNode="DAILY_OBS_STATION_JOIN:1"/>
+<Edge debugMode="false" fromNode="AVG_WEATHER_POSITION:2" guiBendpoints="" guiRouter="Manhattan" id="Edge63" inPort="Port 1 (slave)" metadata="Metadata20" outPort="Port 2 (out)" toNode="HOURLY_OBS_STATION_JOIN:1"/>
+<Edge debugMode="false" fromNode="CA_Filter:0" guiBendpoints="" guiRouter="Manhattan" id="Edge73" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata22" toNode="CA_RAW_VALIDATOR:0"/>
+<Edge debugMode="false" fromNode="CA_RAW_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge67" inPort="Port 0 (in)" metadata="Metadata23" outPort="Port 0 (valid)" toNode="HOURLY_TRANSFORMER:0"/>
 <Edge debugMode="false" fromNode="CC_DE_DUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge40" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata7" toNode="SET_CC_ID:0"/>
 <Edge debugMode="false" fromNode="CC_DUP_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge39" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata7" toNode="CC_DE_DUP:0"/>
 <Edge debugMode="false" fromNode="CC_ID_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge45" inPort="Port 0 (in)" metadata="Metadata9" outPort="Port 0 (out)" toNode="STATION_VALID:0"/>
+<Edge debugMode="false" fromNode="DAILY_OBS_STATION_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge55" inPort="Port 0 (in)" metadata="Metadata26" outPort="Port 0 (out)" toNode="DAILY_VALIDATOR:0"/>
+<Edge debugMode="false" fromNode="DAILY_REFORMAT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge88" inPort="Port 0 (driver)" metadata="Metadata27" outPort="Port 0 (out)" toNode="DAILY_OBS_STATION_JOIN:0"/>
+<Edge debugMode="false" fromNode="DAILY_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge78" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata26" toNode="PRECIPITATION_DAILY_TOTAL_TABLE:0"/>
+<Edge fromNode="DEDUP1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge99" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata18" toNode="CHP_DESC:0"/>
 <Edge debugMode="false" fromNode="DEDUP_EFF_END:0" guiBendpoints="" guiRouter="Manhattan" id="Edge84" inPort="Port 0 (in)" metadata="Metadata9" outPort="Port 0 (out)" toNode="SORT_PEMS_ID_2:0"/>
 <Edge debugMode="false" fromNode="DUP_STATIONS_1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge70" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="SET_EFF_END:0"/>
 <Edge debugMode="false" fromNode="DUP_STATIONS_1:1" guiBendpoints="" guiRouter="Manhattan" id="Edge71" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata9" toNode="SET_EFF_END:1"/>
 <Edge debugMode="false" fromNode="DUP_STATIONS_2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge26" inPort="Port 1 (slave)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="OBSO_STATION_JOIN:1"/>
 <Edge debugMode="false" fromNode="DUP_STATIONS_2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge24" inPort="Port 1 (primary records)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata9" toNode="CHECK_FOREIGN_KEY:1"/>
 <Edge debugMode="false" fromNode="DUP_STATIONS_2:2" guiBendpoints="" guiRouter="Manhattan" id="Edge28" inPort="Port 0 (in)" outPort="Port 2 (out)" persistedImplicitMetadata="Metadata9" toNode="STATIONS_FINAL_FORMAT:0"/>
+<Edge debugMode="false" fromNode="END_MONTH_EMPTY_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge91" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata24" toNode="INVALID_DAILY_FILTER:0"/>
+<Edge debugMode="true" fromNode="FAST_SORT1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge93" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata18" toNode="DEDUP1:0"/>
+<Edge debugMode="false" fromNode="FILTER_D11:0" guiBendpoints="" guiRouter="Manhattan" id="Edge61" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata12" toNode="REFORMAT:0"/>
+<Edge debugMode="false" fromNode="FIRST_OF_THE_MONTH_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge87" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata24" toNode="INVALID_HOURLY_FILTER:0"/>
 <Edge debugMode="false" fromNode="FWY_DE_DUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge34" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata6" toNode="FWY_VALID:0"/>
 <Edge debugMode="false" fromNode="FWY_DUP_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge33" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata6" toNode="FWY_DE_DUP:0"/>
 <Edge debugMode="false" fromNode="FWY_ID_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge44" inPort="Port 0 (driver)" metadata="Metadata8" outPort="Port 0 (out)" toNode="CC_ID_JOIN:0"/>
 <Edge debugMode="false" fromNode="FWY_VALID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge30" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata6" toNode="SET_FWY_ID:0"/>
+<Edge debugMode="false" fromNode="HOURLY_DAILY_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge12" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata24" toNode="FIRST_OF_THE_MONTH_FILTER:0"/>
+<Edge debugMode="false" fromNode="HOURLY_DAILY_FILTER:1" guiBendpoints="" guiRouter="Manhattan" id="Edge64" inPort="Port 0 (in)" outPort="Port 1 (rejected)" persistedImplicitMetadata="Metadata24" toNode="END_MONTH_EMPTY_FILTER:0"/>
+<Edge debugMode="false" fromNode="HOURLY_OBS_STATION_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge21" inPort="Port 0 (in)" metadata="Metadata26" outPort="Port 0 (out)" toNode="VALIDATOR:0"/>
+<Edge debugMode="false" fromNode="HOURLY_REFORMAT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge81" inPort="Port 0 (driver)" metadata="Metadata25" outPort="Port 0 (out)" toNode="HOURLY_OBS_STATION_JOIN:0"/>
+<Edge debugMode="false" fromNode="HOURLY_TRANSFORMER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge82" inPort="Port 0 (in)" metadata="Metadata24" outPort="Port 0 (out)" toNode="HOURLY_DAILY_FILTER:0"/>
+<Edge debugMode="false" fromNode="INVALID_DAILY_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge86" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata24" toNode="DAILY_REFORMAT:0"/>
+<Edge debugMode="false" fromNode="INVALID_HOURLY_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge80" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata24" toNode="HOURLY_REFORMAT:0"/>
+<Edge debugMode="false" fromNode="LOCATION_ADD:0" guiBendpoints="" guiRouter="Manhattan" id="Edge53" inPort="Port 0 (in)" metadata="Metadata21" outPort="Port 0 (out)" toNode="WEATHER_STATION_TABLE:0"/>
 <Edge debugMode="false" fromNode="PEMS_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge77" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="DUP_STATIONS_1:0"/>
-<Edge debugMode="false" fromNode="READ_STATION_META:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (output)" toNode="SPLIT_STATIONS:0"/>
+<Edge debugMode="false" fromNode="READ_CHP_INC:0" guiBendpoints="" guiRouter="Manhattan" id="Edge59" inPort="Port 0 (in)" metadata="Metadata12" outPort="Port 0 (output)" toNode="FILTER_D11:0"/>
+<Edge debugMode="false" fromNode="READ_PRECIP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge65" inPort="Port 0 (in)" metadata="Metadata22" outPort="Port 0 (out)" toNode="CA_Filter:0"/>
+<Edge debugMode="false" fromNode="READ_TRAFFIC_STATIONS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (output)" toNode="SPLIT_STATIONS:0"/>
+<Edge debugMode="false" fromNode="READ_WEATHER_STATIONS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge60" inPort="Port 0 (in)" metadata="Metadata19" outPort="Port 0 (out)" toNode="TRANSFORM_WEATHER_STATION:0"/>
+<Edge debugMode="false" fromNode="REFORMAT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge92" inPort="Port 0 (driver)" metadata="Metadata28" outPort="Port 0 (out)" toNode="FWY_ID_JOIN1:0"/>
+<Edge debugMode="true" fromNode="REFORMAT:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (in)" metadata="Metadata18" outPort="Port 1 (out)" toNode="FAST_SORT1:0"/>
 <Edge debugMode="false" fromNode="SET_CC_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge41" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata7" toNode="COUTY_CITY_TABLE:0"/>
 <Edge debugMode="false" fromNode="SET_CC_ID:1" guiBendpoints="" guiRouter="Manhattan" id="Edge47" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata7" toNode="CC_ID_JOIN:1"/>
 <Edge fromNode="SET_CC_ID:2" guiBendpoints="" guiRouter="Manhattan" id="Edge37" inPort="Port 1 (slave)" outPort="Port 2 (out)" persistedImplicitMetadata="Metadata7" toNode="CC_ID_JOIN1:1"/>
@@ -997,6 +1612,7 @@ function integer transform() {
 <Edge debugMode="false" fromNode="SET_STATION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge58" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata13" toNode="TYPE_ID_JOIN:0"/>
 <Edge debugMode="false" fromNode="SORT_PEMS_ID_1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge83" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="DEDUP_EFF_END:0"/>
 <Edge debugMode="false" fromNode="SORT_PEMS_ID_2:0" guiBendpoints="" guiRouter="Manhattan" id="Edge75" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata9" toNode="DUP_STATIONS_2:0"/>
+<Edge debugMode="false" fromNode="SORT_WEATHER_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge62" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata20" toNode="AVG_WEATHER_POSITION:0"/>
 <Edge debugMode="false" fromNode="SPLIT_STATIONS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge31" inPort="Port 0 (in)" metadata="Metadata13" outPort="Port 0 (out)" toNode="STATION_DUP_SORT:0"/>
 <Edge debugMode="false" fromNode="SPLIT_STATIONS:1" guiBendpoints="" guiRouter="Manhattan" id="Edge32" inPort="Port 0 (in)" metadata="Metadata6" outPort="Port 1 (out)" toNode="FWY_DUP_SORT:0"/>
 <Edge debugMode="false" fromNode="SPLIT_STATIONS:2" guiBendpoints="" guiRouter="Manhattan" id="Edge42" inPort="Port 0 (in)" metadata="Metadata7" outPort="Port 2 (out)" toNode="CC_DUP_SORT:0"/>
@@ -1004,10 +1620,12 @@ function integer transform() {
 <Edge debugMode="false" fromNode="STATION_DE_DUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge52" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata13" toNode="SET_STATION_ID:0"/>
 <Edge debugMode="false" fromNode="STATION_DUP_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge38" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata13" toNode="STATION_DE_DUP:0"/>
 <Edge debugMode="false" fromNode="STATION_VALID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge14" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata9" toNode="PEMS_SORT:0"/>
+<Edge debugMode="false" fromNode="TRANSFORM_WEATHER_STATION:0" guiBendpoints="" guiRouter="Manhattan" id="Edge56" inPort="Port 0 (in)" metadata="Metadata20" outPort="Port 0 (out)" toNode="SORT_WEATHER_ID:0"/>
 <Edge debugMode="false" fromNode="TYPE_ID_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge13" inPort="Port 0 (driver)" metadata="Metadata4" outPort="Port 0 (joined records)" toNode="FWY_ID_JOIN:0"/>
+<Edge debugMode="false" fromNode="VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge79" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata26" toNode="PRECIPITATION_HOURLY_OBSERVATION_TABLE:0"/>
 </Phase>
 <Phase number="1">
-<Node guiName="CC_ID Join" guiX="600" guiY="752" id="CC_ID_JOIN1" joinKey="$County_FIPS_ID=$County_FIPS_ID;$City_FIPS_ID=$City_FIPS_ID" type="EXT_HASH_JOIN">
+<Node guiName="CC_ID Join" guiX="746" guiY="752" id="CC_ID_JOIN1" joinKey="$County_FIPS_ID=$County_FIPS_ID;$City_FIPS_ID=$City_FIPS_ID" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -1016,7 +1634,7 @@ function integer transform() {
 	$out.0.CC_Code = $in.0.CC_Code;
 	$out.0.Incident_Num = $in.0.Incident_Num;
 	$out.0.Timestamp = $in.0.Timestamp;
-	$out.0.Description = $in.0.Description;
+	$out.0.Desc_ID = $in.0.Desc_ID;
 	$out.0.Location = $in.0.Location;
 	$out.0.Area = $in.0.Area;
 	$out.0.Zoom_Map = $in.0.Zoom_Map;
@@ -1054,7 +1672,7 @@ function integer transform() {
 ]]></attr>
 </Node>
 <Node defaultForeignKey=";" foreignKey="$Station=$PEMS_ID" guiName="CheckForeignKey" guiX="2270" guiY="68" id="CHECK_FOREIGN_KEY" type="CHECK_FOREIGN_KEY"/>
-<Node guiName="CHP Inc Final Order" guiX="910" guiY="752" id="CHP_INC_FINAL_ORDER1" type="REFORMAT">
+<Node guiName="CHP Inc Final Order" guiX="1056" guiY="752" id="CHP_INC_FINAL_ORDER1" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -1063,7 +1681,7 @@ function integer transform() {
 	$out.0.CC_Code = $in.0.CC_Code;
 	$out.0.Incident_Num = $in.0.Incident_Num;
 	$out.0.Timestamp = $in.0.Timestamp;
-	$out.0.Description = $in.0.Description;
+	$out.0.Desc_ID = $in.0.Desc_ID;
 	$out.0.Latitude = $in.0.Latitude;
 	$out.0.Longitude = $in.0.Longitude;
 	$out.0.District = $in.0.District;
@@ -1102,8 +1720,8 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="CHP_INC Table" guiX="1229" guiY="752" host="alvahouse322.mynetgear.com" id="CHP_INC_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_INC" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
-<Node guiName="CHP Inc Valid" guiX="754" guiY="752" id="CHP_INC_VALID" type="VALIDATOR">
+<Node database="dse_traffic" failOnError="true" guiName="CHP_INC Table" guiX="1229" guiY="752" host="${SERVER}" id="CHP_INC_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_INC" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node guiName="CHP Inc Valid" guiX="900" guiY="752" id="CHP_INC_VALID" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -1158,10 +1776,6 @@ function integer transform() {
 </Node>
 <Node dedupKey="Station(a)" guiName="Dedup" guiX="754" guiY="68" id="DEDUP" type="DEDUP"/>
 <Node concurrencyLimit="10" guiName="FastSort" guiX="599" guiY="67" id="FAST_SORT" runSize="50000" sortKey="Station(a)" tempFilesLimit="2000" type="FAST_SORT"/>
-<Node guiName="Filter D11" guiX="238" guiY="752" id="FILTER_D11" type="EXT_FILTER">
-<attr name="filterExpression"><![CDATA[//#CTL2
-$in.0.District == 11]]></attr>
-</Node>
 <Node guiName="Filter NA Lane" guiX="255" guiY="186" id="FILTER_NA_LANE" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $in.0.Samples != 0]]></attr>
@@ -1173,7 +1787,7 @@ OR
 (extractDate($in.0.s_Eff_Start) <= extractDate($in.0.Timestamp) AND extractDate($in.0.Timestamp) < extractDate($in.0.s_Eff_End))
 ]]></attr>
 </Node>
-<Node guiName="Fwy_ID Join" guiX="443" guiY="752" id="FWY_ID_JOIN1" joinKey="$Freeway_Num=$Num;$Freeway_Dir=$Direction" type="EXT_HASH_JOIN">
+<Node guiName="Fwy_ID Join" guiX="589" guiY="752" id="FWY_ID_JOIN1" joinKey="$Freeway_Num=$Num;$Freeway_Dir=$Direction" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -1182,7 +1796,7 @@ function integer transform() {
 	$out.0.CC_Code = $in.0.CC_Code;
 	$out.0.Incident_Num = $in.0.Incident_Num;
 	$out.0.Timestamp = $in.0.Timestamp;
-	$out.0.Description = $in.0.Description;
+	$out.0.Desc_ID = $in.0.Desc_ID;
 	$out.0.Location = $in.0.Location;
 	$out.0.Area = $in.0.Area;
 	$out.0.Zoom_Map = $in.0.Zoom_Map;
@@ -1417,7 +2031,9 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Node InputFile="${DATAIN_DIR}/station_5min" SeqName="Sequence0" enabled="trash" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="170" id="READ_STATION_5MIN" type="GENERIC_READER"/>
+<Node database="dse_traffic" failOnError="true" guiName="Precipitation_Daily_Total Table" guiX="1894" guiY="1193" host="${SERVER}" id="PRECIPITATION_DAILY_TOTAL_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Daily_Total" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Precipitation_Hourly_Observation Table" guiX="1894" guiY="1071" host="${SERVER}" id="PRECIPITATION_HOURLY_OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Hourly_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node InputFile="${DATAIN_DIR}/station_5min" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="170" id="READ_STATION_5MIN" type="GENERIC_READER"/>
 <Node guiName="Set Station_ID" guiX="1067" guiY="276" id="SET_STATION_ID1" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -1454,9 +2070,8 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" guiName="Stations Table" guiX="2815" guiY="401" host="alvahouse322.mynetgear.com" id="STATIONS_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Traffic_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Stations Table" guiX="2815" guiY="401" host="${SERVER}" id="STATIONS_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Traffic_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node guiName="Trash" guiX="2815" guiY="68" id="TRASH" type="TRASH"/>
-<Node dataPolicy="controlled" fileURL="gzip:(${DATAIN_DIR}/chp_incidents_day/*gz)" guiName="UniversalDataReader" guiX="48" guiY="752" id="UNIVERSAL_DATA_READER1" type="DATA_READER"/>
 <Node enabled="trash" guiName="5min Station Trash" guiX="443" guiY="68" id="_5MIN_STATION_TRASH1" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -1538,30 +2153,28 @@ function integer transform() {
 <Edge debugMode="false" fromNode="CHP_INC_VALID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge50" inPort="Port 0 (in)" metadata="Metadata16" outPort="Port 0 (valid)" toNode="CHP_INC_FINAL_ORDER1:0"/>
 <Edge debugMode="false" fromNode="DEDUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge18" inPort="Port 0 (foreign records)" outPort="Port 0 (unique)" toNode="CHECK_FOREIGN_KEY:0"/>
 <Edge debugMode="false" fromNode="FAST_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge8" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="DEDUP:0"/>
-<Edge debugMode="false" fromNode="FILTER_D11:0" guiBendpoints="" guiRouter="Manhattan" id="Edge61" inPort="Port 0 (driver)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata12" toNode="FWY_ID_JOIN1:0"/>
-<Edge debugMode="false" fromNode="FILTER_NA_LANE:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" toNode="LANE_VALIDATOR:0"/>
-<Edge debugMode="false" fromNode="FILTER_STATION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge51" inPort="Port 0 (in)" outPort="Port 0 (accepted)" toNode="SET_STATION_ID1:0"/>
+<Edge debugMode="false" fromNode="FILTER_NA_LANE:0" guiBendpoints="" guiRouter="Manhattan" id="Edge4" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata1" toNode="LANE_VALIDATOR:0"/>
+<Edge debugMode="false" fromNode="FILTER_STATION_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge51" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata14" toNode="SET_STATION_ID1:0"/>
 <Edge debugMode="false" fromNode="FWY_ID_JOIN1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge27" inPort="Port 0 (driver)" metadata="Metadata15" outPort="Port 0 (out)" toNode="CC_ID_JOIN1:0"/>
-<Edge debugMode="false" fromNode="LANE_OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (driver)" outPort="Port 0 (out)" toNode="LANE_OBSO_JOIN:0"/>
+<Edge debugMode="false" fromNode="LANE_OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge1" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata1" toNode="LANE_OBSO_JOIN:0"/>
 <Edge debugMode="false" fromNode="LANE_OBSO_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge5" inPort="Port 0 (in)" metadata="Metadata11" outPort="Port 0 (out)" toNode="LANE_OBSERVATION_TABLE:0"/>
-<Edge debugMode="false" fromNode="LANE_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (valid)" toNode="LANE_OBSO_ID_SORT:0"/>
-<Edge debugMode="false" fromNode="OBSO_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="OBSERVATION_TABLE:0"/>
-<Edge debugMode="false" fromNode="OBSO_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge17" inPort="Port 1 (slave)" outPort="Port 1 (out)" toNode="LANE_OBSO_JOIN:1"/>
-<Edge debugMode="false" fromNode="OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 0 (in)" outPort="Port 0 (out)" toNode="OBSO_COPY:0"/>
+<Edge debugMode="false" fromNode="LANE_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge15" inPort="Port 0 (in)" outPort="Port 0 (valid)" persistedImplicitMetadata="Metadata1" toNode="LANE_OBSO_ID_SORT:0"/>
+<Edge debugMode="false" fromNode="OBSO_COPY:0" guiBendpoints="" guiRouter="Manhattan" id="Edge20" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSERVATION_TABLE:0"/>
+<Edge debugMode="false" fromNode="OBSO_COPY:1" guiBendpoints="" guiRouter="Manhattan" id="Edge17" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata0" toNode="LANE_OBSO_JOIN:1"/>
+<Edge debugMode="false" fromNode="OBSO_ID_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge16" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSO_COPY:0"/>
 <Edge debugMode="false" fromNode="OBSO_STATION_JOIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge25" inPort="Port 0 (in)" metadata="Metadata14" outPort="Port 0 (out)" toNode="FILTER_STATION_ID:0"/>
-<Edge debugMode="false" fromNode="OBSO_STATION_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge76" inPort="Port 0 (driver)" outPort="Port 0 (out)" toNode="OBSO_STATION_JOIN:0"/>
+<Edge debugMode="false" fromNode="OBSO_STATION_SORT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge76" inPort="Port 0 (driver)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata0" toNode="OBSO_STATION_JOIN:0"/>
 <Edge debugMode="false" fromNode="OBSO_VALIDATOR:0" guiBendpoints="" guiRouter="Manhattan" id="Edge9" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (valid)" toNode="OBSO_STATION_SORT:0"/>
 <Edge debugMode="false" fromNode="READ_STATION_5MIN:0" guiBendpoints="" guiRouter="Manhattan" id="Edge2" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (out)" toNode="_5MIN_STATION_TRASH1:0"/>
 <Edge debugMode="false" fromNode="READ_STATION_5MIN:1" guiBendpoints="" guiRouter="Manhattan" id="Edge3" inPort="Port 0 (in)" metadata="Metadata1" outPort="Port 1 (out)" toNode="FILTER_NA_LANE:0"/>
 <Edge debugMode="false" fromNode="READ_STATION_5MIN:2" guiBendpoints="" guiRouter="Manhattan" id="Edge6" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 2 (out)" toNode="OBSO_VALIDATOR:0"/>
 <Edge debugMode="false" fromNode="SET_STATION_ID1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge74" inPort="Port 0 (in)" metadata="Metadata0" outPort="Port 0 (out)" toNode="OBSO_ID_SORT:0"/>
-<Edge debugMode="false" fromNode="UNIVERSAL_DATA_READER1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge59" inPort="Port 0 (in)" metadata="Metadata12" outPort="Port 0 (output)" toNode="FILTER_D11:0"/>
 <Edge debugMode="false" fromNode="_5MIN_STATION_TRASH1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (valid)" toNode="FAST_SORT:0"/>
 </Phase>
 <Phase number="2">
-<Node database="dse_traffic" enabled="trash" guiName="Observation Table" guiX="2815" guiY="276" host="alvahouse322.mynetgear.com" id="OBSERVATION_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Observation Table" guiX="2815" guiY="276" host="${SERVER}" id="OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 </Phase>
 <Phase number="3">
-<Node database="dse_traffic" enabled="trash" guiName="Lane_Observation Table" guiX="2815" guiY="186" host="alvahouse322.mynetgear.com" id="LANE_OBSERVATION_TABLE" parameters="port=&quot;55432&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Lane_Observation Table" guiX="2815" guiY="186" host="${SERVER}" id="LANE_OBSERVATION_TABLE" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 </Phase>
 </Graph>
