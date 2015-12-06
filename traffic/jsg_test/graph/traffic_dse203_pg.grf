@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sun Dec 06 11:18:53 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.307" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sun Dec 06 11:34:48 PST 2015" modifiedBy="conway" name="traffic_5min" revision="1.308" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata18" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="CHPDesc0" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
@@ -149,56 +149,6 @@
 <Field name="cndn" type="integer"/>
 <Field format="yyyy-MM-dd HH:mm:ss" name="end_hour" type="date"/>
 <Field name="amount" type="integer"/>
-</Record>
-</Metadata>
-<Metadata id="Metadata26" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," name="Precip_Final" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
-<Field name="id" nullable="true" type="integer"/>
-<Field name="station_id" type="integer"/>
-<Field format="yyyy-MM-dd HH:mm:ss" name="date" type="date"/>
-<Field name="amount" type="integer"/>
-</Record>
-</Metadata>
-<Metadata id="Metadata24" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," name="Precip2" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
-<Field name="cnin" type="integer"/>
-<Field name="cndn" type="integer"/>
-<Field name="element_units" type="string"/>
-<Field name="year" type="integer"/>
-<Field name="month" type="integer"/>
-<Field name="day" type="integer"/>
-<Field name="hour" type="integer"/>
-<Field name="amount" type="integer"/>
-<Field name="flag1" type="string"/>
-<Field name="flag2" type="string"/>
-</Record>
-</Metadata>
-<Metadata id="Metadata23" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," name="Precip1" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
-<Field name="cnin" type="integer"/>
-<Field name="cndn" type="integer"/>
-<Field name="element_type" type="string"/>
-<Field name="element_units" type="string"/>
-<Field name="year" type="integer"/>
-<Field name="month" type="integer"/>
-<Field name="day" type="integer"/>
-<Field name="num_reported_values" type="integer"/>
-<Field name="values" type="string"/>
-</Record>
-</Metadata>
-<Metadata id="Metadata22">
-<Record fieldDelimiter="," name="Precip0" recordDelimiter="\n" type="delimited">
-<Field name="record_type" type="string"/>
-<Field name="state_code" type="string"/>
-<Field name="cnin" type="string"/>
-<Field name="cndn" type="string"/>
-<Field name="element_type" type="string"/>
-<Field name="element_units" type="string"/>
-<Field name="year" type="string"/>
-<Field name="month" type="string"/>
-<Field name="day" type="string"/>
-<Field name="num_reported_values" type="string"/>
-<Field name="values" type="string"/>
 </Record>
 </Metadata>
 <Metadata id="Metadata1" previewAttachmentCharset="ISO-8859-1">
@@ -378,6 +328,56 @@ OR (On Ramp)]]></attr>
 </Field>
 </Record>
 </Metadata>
+<Metadata id="Metadata26" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="Precip_Final" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="id" nullable="true" type="integer"/>
+<Field name="station_id" type="integer"/>
+<Field format="yyyy-MM-dd HH:mm:ss" name="date" type="date"/>
+<Field name="amount" type="integer"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata22">
+<Record fieldDelimiter="," name="Precip0" recordDelimiter="\n" type="delimited">
+<Field name="record_type" type="string"/>
+<Field name="state_code" type="string"/>
+<Field name="cnin" type="string"/>
+<Field name="cndn" type="string"/>
+<Field name="element_type" type="string"/>
+<Field name="element_units" type="string"/>
+<Field name="year" type="string"/>
+<Field name="month" type="string"/>
+<Field name="day" type="string"/>
+<Field name="num_reported_values" type="string"/>
+<Field name="values" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata23" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="Precip1" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="cnin" type="integer"/>
+<Field name="cndn" type="integer"/>
+<Field name="element_type" type="string"/>
+<Field name="element_units" type="string"/>
+<Field name="year" type="integer"/>
+<Field name="month" type="integer"/>
+<Field name="day" type="integer"/>
+<Field name="num_reported_values" type="integer"/>
+<Field name="values" type="string"/>
+</Record>
+</Metadata>
+<Metadata id="Metadata24" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="Precip2" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="cnin" type="integer"/>
+<Field name="cndn" type="integer"/>
+<Field name="element_units" type="string"/>
+<Field name="year" type="integer"/>
+<Field name="month" type="integer"/>
+<Field name="day" type="integer"/>
+<Field name="hour" type="integer"/>
+<Field name="amount" type="integer"/>
+<Field name="flag1" type="string"/>
+<Field name="flag2" type="string"/>
+</Record>
+</Metadata>
 <Metadata id="Metadata5" previewAttachment="${LOOKUP_DIR}/station_type.csv" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," label="station_type.csv" name="ST_Type_Lkup" previewAttachment="${LOOKUP_DIR}/station_type.csv" previewAttachmentCharset="ISO-8859-1" quoteChar="both" quotedStrings="true" recordDelimiter="\n" skipSourceRows="1" type="delimited">
 <Field name="ID" type="integer"/>
@@ -519,15 +519,6 @@ OR (On Ramp)]]></attr>
 <Field name="ELEVATION" type="decimal"/>
 </Record>
 </Metadata>
-<Metadata id="Metadata20" previewAttachmentCharset="ISO-8859-1">
-<Record fieldDelimiter="," name="WStation1" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
-<Field name="ID" type="integer"/>
-<Field name="NAME" type="string"/>
-<Field name="LATITUDE" type="decimal"/>
-<Field name="LONGITUDE" type="decimal"/>
-<Field name="ELEVATION" type="decimal"/>
-</Record>
-</Metadata>
 <Metadata id="Metadata19" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="WStation0" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
 <Field name="STNIDNUM" type="string"/>
@@ -563,15 +554,24 @@ OR (On Ramp)]]></attr>
 <Field name="STNTYPE" type="string"/>
 </Record>
 </Metadata>
+<Metadata id="Metadata20" previewAttachmentCharset="ISO-8859-1">
+<Record fieldDelimiter="," name="WStation1" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
+<Field name="ID" type="integer"/>
+<Field name="NAME" type="string"/>
+<Field name="LATITUDE" type="decimal"/>
+<Field name="LONGITUDE" type="decimal"/>
+<Field name="ELEVATION" type="decimal"/>
+</Record>
+</Metadata>
 <GraphParameters>
 <GraphParameterFile fileURL="workspace.prm"/>
 </GraphParameters>
-<Sequence cached="0" id="Sequence5" name="Daily_Percip_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Sequence cached="0" id="Sequence1" name="Fwy_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Sequence cached="0" id="Sequence4" name="Hourly_Percip_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Sequence cached="0" id="Sequence2" name="CCID_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <Sequence cached="0" id="Sequence3" name="Station_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence2" name="CCID_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence4" name="Hourly_Percip_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence1" name="Fwy_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence5" name="Daily_Percip_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <LookupTable charset="ISO-8859-1" fileURL="${LOOKUP_DIR}/station_type.csv" id="LookupTable0" initialSize="512" key="Type" metadata="Metadata5" name="simpleLookup0" type="simpleLookup"/>
 <Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="72" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Disabled" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="403" x="443" y="-3">
 <attr name="text"><![CDATA[Station information from 5min reading is disabled, it can be enabled if the Station information from 5min readings needs to be used.]]></attr>
@@ -1068,9 +1068,11 @@ function integer transform() {
 </Node>
 <Node guiName="PEMS Sort" guiX="1531" guiY="369" id="PEMS_SORT" sortKey="PEMS_ID(a)" type="FAST_SORT"/>
 <Node dataPolicy="controlled" fileURL="gzip:(${DATAIN_DIR}/chp_incidents_day/*gz)" guiName="Read CHP INC" guiX="57" guiY="752" id="READ_CHP_INC" type="DATA_READER"/>
-<Node FileUrl="${DATAIN_DIR}/weather/3240sep2013.dat" genericTransformClass="HourlyPrecipitationCustomReader" genericTransformURL="${TRANS_DIR}/HourlyPrecipitationCustomReader.java" guiName="Read Precip" guiX="57" guiY="1071" id="READ_PRECIP" type="GENERIC_READER"/>
+<Node genericTransformClass="HourlyPrecipitationCustomReader" genericTransformURL="${TRANS_DIR}/HourlyPrecipitationCustomReader.java" guiName="Read Precip" guiX="57" guiY="1071" id="READ_PRECIP" type="GENERIC_READER"/>
 <Node dataPolicy="controlled" fileURL="${DATAIN_DIR}/meta/*.txt" guiName="Read Traffic Stations" guiX="55" guiY="370" id="READ_TRAFFIC_STATIONS" type="DATA_READER"/>
-<Node FileUrl="${DATAIN_DIR}/weather/mshr_standard_nofirstline.txt" genericTransformClass="WeatherStationReader" genericTransformURL="${TRANS_DIR}/WeatherStationReader.java" guiName="Read Weather Stations" guiX="51" guiY="959" id="READ_WEATHER_STATIONS" type="GENERIC_READER"/>
+<Node genericTransformClass="WeatherStationReader" genericTransformURL="${TRANS_DIR}/WeatherStationReader.java" guiName="Read Weather Stations" guiX="51" guiY="959" id="READ_WEATHER_STATIONS" type="GENERIC_READER">
+<attr name="FileUrl"><![CDATA[${DATAIN_DIR}/weather/mshr_standard_nofirstline.txt]]></attr>
+</Node>
 <Node guiName="Reformat" guiX="412" guiY="752" id="REFORMAT" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -2033,7 +2035,10 @@ function integer transform() {
 </Node>
 <Node database="dse_traffic" failOnError="true" guiName="Precipitation_Daily_Total Table" guiX="1894" guiY="1193" host="${SERVER}" id="PRECIPITATION_DAILY_TOTAL_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Daily_Total" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
 <Node database="dse_traffic" failOnError="true" guiName="Precipitation_Hourly_Observation Table" guiX="1894" guiY="1071" host="${SERVER}" id="PRECIPITATION_HOURLY_OBSERVATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Hourly_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
-<Node InputFile="${DATAIN_DIR}/station_5min" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="170" id="READ_STATION_5MIN" type="GENERIC_READER"/>
+<Node genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="170" id="READ_STATION_5MIN" type="GENERIC_READER">
+<attr name="InputFile"><![CDATA[${DATAIN_DIR}/station_5min]]></attr>
+<attr name="SeqName"><![CDATA[Sequence0]]></attr>
+</Node>
 <Node guiName="Set Station_ID" guiX="1067" guiY="276" id="SET_STATION_ID1" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 

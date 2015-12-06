@@ -2,6 +2,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.jetel.component.AbstractGenericTransform;
@@ -19,42 +22,61 @@ public class HourlyPrecipitationCustomReader extends AbstractGenericTransform {
 	@Override
 	public void execute() {
 		DataRecord record = outRecords[0];
-		String fileUrl = getProperties().getStringProperty("FileUrl");
-		File file = getFile(fileUrl);
-		getLogger().log(Level.DEBUG, "Reading input: " + fileUrl);
-		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+
+		File path = new File(getProperties().getStringProperty("FilesParentDir"));
+		Collection<File> files = listFileTree(path);
+
+		for (File file : files) {
+			getLogger().log(Level.DEBUG, "Reading input: " + file.getPath());
 			String str = null;
-			while ((str = reader.readLine()) != null) {
-				getLogger().log(Level.DEBUG, "Processing: " + str);
-				int idx = 0;
-				
-				record.getField("record_type").setValue(str.substring(idx, idx+3));
-				idx += 3;
-				record.getField("state_code").setValue(str.substring(idx, idx+2));
-				idx += 2;
-				record.getField("cnin").setValue(str.substring(idx, idx+4));
-				idx += 4;
-				record.getField("cndn").setValue(str.substring(idx, idx+2));
-				idx += 2;
-				record.getField("element_type").setValue(str.substring(idx, idx+4));
-				idx += 4;
-				record.getField("element_units").setValue(str.substring(idx, idx+2));
-				idx += 2;
-				record.getField("year").setValue(str.substring(idx, idx+4));
-				idx += 4;
-				record.getField("month").setValue(str.substring(idx, idx+2));
-				idx += 2;
-				record.getField("day").setValue(str.substring(idx, idx+4));
-				idx += 4;
-				record.getField("num_reported_values").setValue(str.substring(idx, idx+3));
-				idx += 3;
-				record.getField("values").setValue(str.substring(idx));
-				writeRecordToPort(0, record);
-				record.reset();
+			try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+				while ((str = reader.readLine()) != null) {
+					try {
+						getLogger().log(Level.DEBUG, "Processing: " + str);
+						int idx = 0;
+
+						record.getField("record_type").setValue(str.substring(idx, idx+3));
+						idx += 3;
+						record.getField("state_code").setValue(str.substring(idx, idx+2));
+						idx += 2;
+						record.getField("cnin").setValue(str.substring(idx, idx+4));
+						idx += 4;
+						record.getField("cndn").setValue(str.substring(idx, idx+2));
+						idx += 2;
+						record.getField("element_type").setValue(str.substring(idx, idx+4));
+						idx += 4;
+						record.getField("element_units").setValue(str.substring(idx, idx+2));
+						idx += 2;
+						record.getField("year").setValue(str.substring(idx, idx+4));
+						idx += 4;
+						record.getField("month").setValue(str.substring(idx, idx+2));
+						idx += 2;
+						record.getField("day").setValue(str.substring(idx, idx+4));
+						idx += 4;
+						record.getField("num_reported_values").setValue(str.substring(idx, idx+3));
+						idx += 3;
+						record.getField("values").setValue(str.substring(idx));
+						writeRecordToPort(0, record);
+						record.reset();
+					} catch (Exception e) {
+						getLogger().log(Level.ERROR, "Invalid line: " + str);
+					}
+				}
+
+			} catch (IOException e) {
+				throw new JetelRuntimeException(e);
+
 			}
-		} catch (IOException e) {
-			throw new JetelRuntimeException(e);
 		}
+	}
+	
+	public Collection<File> listFileTree(File dir) {
+		Set<File> fileTree = new HashSet<File>();
+		for (File entry : dir.listFiles()) {
+			if (entry.isFile()) fileTree.add(entry);
+			else fileTree.addAll(listFileTree(entry));
+		}
+		return fileTree;
 	}
 
 	@Override
