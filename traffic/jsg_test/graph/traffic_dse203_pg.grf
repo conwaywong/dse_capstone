@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sun Dec 06 11:18:53 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.307" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sun Dec 06 11:24:08 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.308" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata18" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="CHPDesc0" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
@@ -719,8 +719,8 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="CHP_Desc" guiX="910" guiY="870" host="${SERVER}" id="CHP_DESC" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_Desc" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
-<Node database="dse_traffic" failOnError="true" guiName="Couty_City Table" guiX="1229" guiY="613" host="${SERVER}" id="COUTY_CITY_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="CHP_Desc" guiX="910" guiY="870" host="${PG_SERVER}" id="CHP_DESC" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_Desc" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
+<Node database="dse_traffic" failOnError="true" guiName="Couty_City Table" guiX="1229" guiY="613" host="${PG_SERVER}" id="COUTY_CITY_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
 <Node guiName="DailyObs-Station Join" guiX="1535" guiY="1193" id="DAILY_OBS_STATION_JOIN" joinKey="$cnin=$ID" joinType="leftOuter" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -855,7 +855,7 @@ $in.0.District == 11]]></attr>
 <attr name="filterExpression"><![CDATA[//#CTL2
 NOT ($in.0.day == 1 and $in.0.hour == 1 and $in.0.flag1 == 'g')]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="Freeway Table" guiX="1229" guiY="508" host="${SERVER}" id="FREEWAY_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Freeway Table" guiX="1229" guiY="508" host="${PG_SERVER}" id="FREEWAY_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Freeways" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
 <Node dedupKey="Num(a);Direction(a)" guiName="Fwy DeDup" guiX="599" guiY="508" id="FWY_DE_DUP" type="DEDUP"/>
 <Node guiName="Fwy Dup Sort" guiX="443" guiY="508" id="FWY_DUP_SORT" sortKey="Num(a);Direction(a)" type="FAST_SORT"/>
 <Node guiName="Fwy_ID Join" guiX="1067" guiY="370" id="FWY_ID_JOIN" joinKey="$Fwy=$Num;$Dir=$Direction" type="EXT_HASH_JOIN">
@@ -1560,7 +1560,7 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="Weather_Station Table" guiX="1215" guiY="959" host="${SERVER}" id="WEATHER_STATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Weather_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Weather_Station Table" guiX="1215" guiY="959" host="${PG_SERVER}" id="WEATHER_STATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Weather_Station" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
 <Edge fromNode="AVG_WEATHER_POSITION:0" guiBendpoints="" guiRouter="Manhattan" id="Edge54" inPort="Port 0 (in)" metadata="Metadata20" outPort="Port 0 (out)" toNode="LOCATION_ADD:0"/>
 <Edge debugMode="false" fromNode="AVG_WEATHER_POSITION:1" guiBendpoints="" guiRouter="Manhattan" id="Edge49" inPort="Port 1 (slave)" metadata="Metadata20" outPort="Port 1 (out)" toNode="DAILY_OBS_STATION_JOIN:1"/>
 <Edge debugMode="false" fromNode="AVG_WEATHER_POSITION:2" guiBendpoints="" guiRouter="Manhattan" id="Edge63" inPort="Port 1 (slave)" metadata="Metadata20" outPort="Port 2 (out)" toNode="HOURLY_OBS_STATION_JOIN:1"/>
@@ -1720,7 +1720,7 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="CHP_INC Table" guiX="1229" guiY="752" host="${SERVER}" id="CHP_INC_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_INC" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="CHP_INC Table" guiX="1229" guiY="752" host="${PG_SERVER}" id="CHP_INC_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_INC" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
 <Node guiName="CHP Inc Valid" guiX="900" guiY="752" id="CHP_INC_VALID" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
 
@@ -2031,8 +2031,8 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="Precipitation_Daily_Total Table" guiX="1894" guiY="1193" host="${SERVER}" id="PRECIPITATION_DAILY_TOTAL_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Daily_Total" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
-<Node database="dse_traffic" failOnError="true" guiName="Precipitation_Hourly_Observation Table" guiX="1894" guiY="1071" host="${SERVER}" id="PRECIPITATION_HOURLY_OBSERVATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Hourly_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Precipitation_Daily_Total Table" guiX="1894" guiY="1193" host="${PG_SERVER}" id="PRECIPITATION_DAILY_TOTAL_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Daily_Total" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
+<Node database="dse_traffic" failOnError="true" guiName="Precipitation_Hourly_Observation Table" guiX="1894" guiY="1071" host="${PG_SERVER}" id="PRECIPITATION_HOURLY_OBSERVATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Hourly_Observation" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
 <Node InputFile="${DATAIN_DIR}/station_5min" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="170" id="READ_STATION_5MIN" type="GENERIC_READER"/>
 <Node guiName="Set Station_ID" guiX="1067" guiY="276" id="SET_STATION_ID1" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
@@ -2070,7 +2070,7 @@ function integer transform() {
 // function string getMessage() {}
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="Stations Table" guiX="2815" guiY="401" host="${SERVER}" id="STATIONS_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Traffic_Station" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Stations Table" guiX="2815" guiY="401" host="${PG_SERVER}" id="STATIONS_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Traffic_Station" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
 <Node guiName="Trash" guiX="2815" guiY="68" id="TRASH" type="TRASH"/>
 <Node enabled="trash" guiName="5min Station Trash" guiX="443" guiY="68" id="_5MIN_STATION_TRASH1" type="VALIDATOR">
 <attr name="errorMapping"><![CDATA[//#CTL2
@@ -2172,9 +2172,9 @@ function integer transform() {
 <Edge debugMode="false" fromNode="_5MIN_STATION_TRASH1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge0" inPort="Port 0 (in)" metadata="Metadata2" outPort="Port 0 (valid)" toNode="FAST_SORT:0"/>
 </Phase>
 <Phase number="2">
-<Node database="dse_traffic" failOnError="true" guiName="Observation Table" guiX="2815" guiY="276" host="${SERVER}" id="OBSERVATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Observation Table" guiX="2815" guiY="276" host="${PG_SERVER}" id="OBSERVATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Observation" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
 </Phase>
 <Phase number="3">
-<Node database="dse_traffic" failOnError="true" guiName="Lane_Observation Table" guiX="2815" guiY="186" host="${SERVER}" id="LANE_OBSERVATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
+<Node database="dse_traffic" failOnError="true" guiName="Lane_Observation Table" guiX="2815" guiY="186" host="${PG_SERVER}" id="LANE_OBSERVATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Lane_Observation" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
 </Phase>
 </Graph>

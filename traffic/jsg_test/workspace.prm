@@ -42,6 +42,7 @@
 <GraphParameter name="TRANS_DIR" value="${PROJECT}/trans">
 <attr name="description"><![CDATA[Default folder for java and CTL transformations]]></attr>
 </GraphParameter>
-<GraphParameter name="SERVER" value="alvahouse322.mynetgear.com"/>
+<GraphParameter name="PG_SERVER" value="alvahouse322.mynetgear.com"/>
 <GraphParameter name="PG_PORT" value="55432"/>
+<GraphParameter name="PG_USER" value="jgill"/>
 </GraphParameters>
