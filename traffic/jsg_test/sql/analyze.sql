@@ -5,6 +5,7 @@ ANALYZE County_City;
 ANALYZE Traffic_Station;
 ANALYZE Observation;
 ANALYZE Lane_Observation;
+ANALYZE CHP_Desc;
 ANALYZE CHP_INC;
 ANALYZE Weather_Station;
 ANALYZE Precipitation_Hourly_Observation;

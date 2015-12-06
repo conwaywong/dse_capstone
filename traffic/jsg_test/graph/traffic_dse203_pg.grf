@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sun Dec 06 11:34:48 PST 2015" modifiedBy="conway" name="traffic_5min" revision="1.308" showComponentDetails="true">
+<Graph author="johngill" created="Fri Oct 30 09:06:16 PDT 2015" guiVersion="4.1.0" id="1446221255244" licenseCode="CLP1DUNIVE32324995EX" licenseType="Evaluation" modified="Sun Dec 06 12:11:28 PST 2015" modifiedBy="johngill" name="traffic_5min" revision="1.322" showComponentDetails="true">
 <Global>
 <Metadata id="Metadata18" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="," name="CHPDesc0" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\n" type="delimited">
@@ -566,12 +566,12 @@ OR (On Ramp)]]></attr>
 <GraphParameters>
 <GraphParameterFile fileURL="workspace.prm"/>
 </GraphParameters>
-<Sequence cached="0" id="Sequence3" name="Station_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Sequence cached="0" id="Sequence2" name="CCID_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Sequence cached="0" id="Sequence4" name="Hourly_Percip_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
-<Sequence cached="0" id="Sequence1" name="Fwy_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <Sequence cached="0" id="Sequence5" name="Daily_Percip_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence1" name="Fwy_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence4" name="Hourly_Percip_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence0" name="Observation_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence2" name="CCID_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
+<Sequence cached="0" id="Sequence3" name="Station_ID" start="1" step="1" type="PRIMITIVE_SEQUENCE"/>
 <LookupTable charset="ISO-8859-1" fileURL="${LOOKUP_DIR}/station_type.csv" id="LookupTable0" initialSize="512" key="Type" metadata="Metadata5" name="simpleLookup0" type="simpleLookup"/>
 <Note alignment="1" backgroundColorB="225" backgroundColorG="255" backgroundColorR="255" folded="false" height="72" id="Note1" textColorB="0" textColorG="0" textColorR="0" textFontSize="12" title="Disabled" titleColorB="0" titleColorG="0" titleColorR="0" titleFontSize="14" width="403" x="443" y="-3">
 <attr name="text"><![CDATA[Station information from 5min reading is disabled, it can be enabled if the Station information from 5min readings needs to be used.]]></attr>
@@ -580,7 +580,7 @@ OR (On Ramp)]]></attr>
 </Global>
 <Phase number="0">
 <Node aggregateKey="ID" guiName="Avg Weather Position" guiX="609" guiY="960" id="AVG_WEATHER_POSITION" mapping="$ID:=$ID;$NAME:=modus($NAME);$LATITUDE:=avg($LATITUDE);$LONGITUDE:=avg($LONGITUDE);$ELEVATION:=avg($ELEVATION);" type="AGGREGATE"/>
-<Node guiName="CA_Filter" guiX="232" guiY="1071" id="CA_Filter" type="EXT_FILTER">
+<Node guiName="CA_Filter" guiX="259" guiY="1071" id="CA_Filter" type="EXT_FILTER">
 <attr name="filterExpression"><![CDATA[//#CTL2
 $in.0.state_code == '04']]></attr>
 </Node>
@@ -628,22 +628,22 @@ function integer transform() {
 <group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="All rules" statusCode="">
     <children>
         <copyAllByName customRejectMessage="" description="" enabled="true" inputField="" name="Copy all fields by name" outputField=""/>
-        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="record_type" name="Comparison" operator="E" outputField="" useType="DEFAULT" value="HPD">
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="record_type" name="Record_Type HPD" operator="E" outputField="" useType="DEFAULT" value="HPD">
             <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
         </comparison>
-        <isNumber acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="cnin" name="Is Number" numberType="INTEGER" outputField="cnin" trimInput="false">
+        <isNumber acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="cnin" name="cnin is int" numberType="INTEGER" outputField="cnin" trimInput="false">
             <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
         </isNumber>
-        <isNumber acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="cndn" name="Is Number" numberType="INTEGER" outputField="cndn" trimInput="false">
+        <isNumber acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="cndn" name="cndn is int" numberType="INTEGER" outputField="cndn" trimInput="false">
             <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
         </isNumber>
-        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="state_code" name="Comparison" operator="E" outputField="" useType="DEFAULT" value="04">
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="state_code" name="state_code is 04" operator="E" outputField="" useType="DEFAULT" value="04">
             <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
         </comparison>
-        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="element_type" name="Comparison" operator="E" outputField="" useType="DEFAULT" value="HPCP">
+        <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="element_type" name="element_Type is HPCP" operator="E" outputField="" useType="DEFAULT" value="HPCP">
             <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
         </comparison>
-        <enumMatch acceptEmpty="false" customRejectMessage="" description="" enabled="true" ignoreCase="false" inputField="element_units" name="Enum Match" outputField="" trimInput="false" useType="DEFAULT">
+        <enumMatch acceptEmpty="false" customRejectMessage="" description="" enabled="true" ignoreCase="false" inputField="element_units" name="element_units HI, HT" outputField="" trimInput="false" useType="DEFAULT">
             <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
             <values>
                 <value>HI</value>
@@ -652,20 +652,20 @@ function integer transform() {
         </enumMatch>
         <group conjunction="AND" description="" enabled="true" errorMessage="" errorMessageProducer="RULES" lazyEvaluation="true" name="Date" statusCode="">
             <children>
-                <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="1" inputField="month" name="Interval" outputField="month" to="12" useType="LONG">
+                <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="1" inputField="month" name="Month [1,12]" outputField="month" to="12" useType="LONG">
                     <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
                 </interval>
-                <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="year" name="Comparison" operator="G" outputField="year" useType="LONG" value="1900">
+                <comparison acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="year" name="Year &gt; 1900" operator="G" outputField="year" useType="LONG" value="1900">
                     <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
                 </comparison>
-                <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="1" inputField="day" name="Interval" outputField="day" to="31" useType="LONG">
+                <interval acceptEmpty="false" boundaries="CLOSED_CLOSED" customRejectMessage="" description="" enabled="true" from="1" inputField="day" name="Day [1,31]" outputField="day" to="31" useType="LONG">
                     <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
                 </interval>
             </children>
             <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
             <imports/>
         </group>
-        <isNumber acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="num_reported_values" name="Is Number" numberType="INTEGER" outputField="num_reported_values" trimInput="false">
+        <isNumber acceptEmpty="false" customRejectMessage="" description="" enabled="true" inputField="num_reported_values" name="num_reported_values is int" numberType="INTEGER" outputField="num_reported_values" trimInput="false">
             <languageSetting dateFormat="" locale="" numberFormat="" timezone=""/>
         </isNumber>
     </children>
@@ -721,7 +721,7 @@ function integer transform() {
 </Node>
 <Node database="dse_traffic" failOnError="true" guiName="CHP_Desc" guiX="910" guiY="870" host="${PG_SERVER}" id="CHP_DESC" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="CHP_Desc" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
 <Node database="dse_traffic" failOnError="true" guiName="Couty_City Table" guiX="1229" guiY="613" host="${PG_SERVER}" id="COUTY_CITY_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="County_City" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
-<Node guiName="DailyObs-Station Join" guiX="1535" guiY="1193" id="DAILY_OBS_STATION_JOIN" joinKey="$cnin=$ID" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node guiName="DailyObs-Station Join" guiX="1535" guiY="1193" id="DAILY_OBS_STATION_JOIN" joinKey="$cnin=$ID" joinType="inner" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -961,7 +961,7 @@ function integer transform() {
 <attr name="filterExpression"><![CDATA[//#CTL2
 $in.0.hour <= 24]]></attr>
 </Node>
-<Node guiName="HourlyObs-Station Join" guiX="1535" guiY="1071" id="HOURLY_OBS_STATION_JOIN" joinKey="$cnin=$ID" joinType="leftOuter" type="EXT_HASH_JOIN">
+<Node guiName="HourlyObs-Station Join" guiX="1535" guiY="1071" id="HOURLY_OBS_STATION_JOIN" joinKey="$cnin=$ID" joinType="inner" type="EXT_HASH_JOIN">
 <attr name="transform"><![CDATA[//#CTL2
 
 // Transforms input record into output record.
@@ -1068,11 +1068,9 @@ function integer transform() {
 </Node>
 <Node guiName="PEMS Sort" guiX="1531" guiY="369" id="PEMS_SORT" sortKey="PEMS_ID(a)" type="FAST_SORT"/>
 <Node dataPolicy="controlled" fileURL="gzip:(${DATAIN_DIR}/chp_incidents_day/*gz)" guiName="Read CHP INC" guiX="57" guiY="752" id="READ_CHP_INC" type="DATA_READER"/>
-<Node genericTransformClass="HourlyPrecipitationCustomReader" genericTransformURL="${TRANS_DIR}/HourlyPrecipitationCustomReader.java" guiName="Read Precip" guiX="57" guiY="1071" id="READ_PRECIP" type="GENERIC_READER"/>
+<Node FilesParentDir="${DATAIN_DIR}/weather/2010" genericTransformClass="HourlyPrecipitationCustomReader" genericTransformURL="${TRANS_DIR}/HourlyPrecipitationCustomReader.java" guiName="Read Precip" guiX="57" guiY="1071" id="READ_PRECIP" type="GENERIC_READER"/>
 <Node dataPolicy="controlled" fileURL="${DATAIN_DIR}/meta/*.txt" guiName="Read Traffic Stations" guiX="55" guiY="370" id="READ_TRAFFIC_STATIONS" type="DATA_READER"/>
-<Node genericTransformClass="WeatherStationReader" genericTransformURL="${TRANS_DIR}/WeatherStationReader.java" guiName="Read Weather Stations" guiX="51" guiY="959" id="READ_WEATHER_STATIONS" type="GENERIC_READER">
-<attr name="FileUrl"><![CDATA[${DATAIN_DIR}/weather/mshr_standard_nofirstline.txt]]></attr>
-</Node>
+<Node FileUrl="${DATAIN_DIR}/weather/mshr_standard_nofirstline.txt" genericTransformClass="WeatherStationReader" genericTransformURL="${TRANS_DIR}/WeatherStationReader.java" guiName="Read Weather Stations" guiX="51" guiY="959" id="READ_WEATHER_STATIONS" type="GENERIC_READER"/>
 <Node guiName="Reformat" guiX="412" guiY="752" id="REFORMAT" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 
@@ -1562,7 +1560,7 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="Weather_Station Table" guiX="1215" guiY="959" host="${PG_SERVER}" id="WEATHER_STATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Weather_Station" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
+<Node database="dse_traffic" failOnError="true" guiName="Weather_Station Table" guiX="987" guiY="959" host="${PG_SERVER}" id="WEATHER_STATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Weather_Station" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
 <Edge fromNode="AVG_WEATHER_POSITION:0" guiBendpoints="" guiRouter="Manhattan" id="Edge54" inPort="Port 0 (in)" metadata="Metadata20" outPort="Port 0 (out)" toNode="LOCATION_ADD:0"/>
 <Edge debugMode="false" fromNode="AVG_WEATHER_POSITION:1" guiBendpoints="" guiRouter="Manhattan" id="Edge49" inPort="Port 1 (slave)" metadata="Metadata20" outPort="Port 1 (out)" toNode="DAILY_OBS_STATION_JOIN:1"/>
 <Edge debugMode="false" fromNode="AVG_WEATHER_POSITION:2" guiBendpoints="" guiRouter="Manhattan" id="Edge63" inPort="Port 1 (slave)" metadata="Metadata20" outPort="Port 2 (out)" toNode="HOURLY_OBS_STATION_JOIN:1"/>
@@ -1582,7 +1580,7 @@ function integer transform() {
 <Edge debugMode="false" fromNode="DUP_STATIONS_2:1" guiBendpoints="" guiRouter="Manhattan" id="Edge24" inPort="Port 1 (primary records)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata9" toNode="CHECK_FOREIGN_KEY:1"/>
 <Edge debugMode="false" fromNode="DUP_STATIONS_2:2" guiBendpoints="" guiRouter="Manhattan" id="Edge28" inPort="Port 0 (in)" outPort="Port 2 (out)" persistedImplicitMetadata="Metadata9" toNode="STATIONS_FINAL_FORMAT:0"/>
 <Edge debugMode="false" fromNode="END_MONTH_EMPTY_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge91" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata24" toNode="INVALID_DAILY_FILTER:0"/>
-<Edge debugMode="true" fromNode="FAST_SORT1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge93" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata18" toNode="DEDUP1:0"/>
+<Edge debugMode="false" fromNode="FAST_SORT1:0" guiBendpoints="" guiRouter="Manhattan" id="Edge93" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata18" toNode="DEDUP1:0"/>
 <Edge debugMode="false" fromNode="FILTER_D11:0" guiBendpoints="" guiRouter="Manhattan" id="Edge61" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata12" toNode="REFORMAT:0"/>
 <Edge debugMode="false" fromNode="FIRST_OF_THE_MONTH_FILTER:0" guiBendpoints="" guiRouter="Manhattan" id="Edge87" inPort="Port 0 (in)" outPort="Port 0 (accepted)" persistedImplicitMetadata="Metadata24" toNode="INVALID_HOURLY_FILTER:0"/>
 <Edge debugMode="false" fromNode="FWY_DE_DUP:0" guiBendpoints="" guiRouter="Manhattan" id="Edge34" inPort="Port 0 (in)" outPort="Port 0 (unique)" persistedImplicitMetadata="Metadata6" toNode="FWY_VALID:0"/>
@@ -1603,7 +1601,7 @@ function integer transform() {
 <Edge debugMode="false" fromNode="READ_TRAFFIC_STATIONS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge11" inPort="Port 0 (in)" metadata="Metadata3" outPort="Port 0 (output)" toNode="SPLIT_STATIONS:0"/>
 <Edge debugMode="false" fromNode="READ_WEATHER_STATIONS:0" guiBendpoints="" guiRouter="Manhattan" id="Edge60" inPort="Port 0 (in)" metadata="Metadata19" outPort="Port 0 (out)" toNode="TRANSFORM_WEATHER_STATION:0"/>
 <Edge debugMode="false" fromNode="REFORMAT:0" guiBendpoints="" guiRouter="Manhattan" id="Edge92" inPort="Port 0 (driver)" metadata="Metadata28" outPort="Port 0 (out)" toNode="FWY_ID_JOIN1:0"/>
-<Edge debugMode="true" fromNode="REFORMAT:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (in)" metadata="Metadata18" outPort="Port 1 (out)" toNode="FAST_SORT1:0"/>
+<Edge debugMode="false" fromNode="REFORMAT:1" guiBendpoints="" guiRouter="Manhattan" id="Edge10" inPort="Port 0 (in)" metadata="Metadata18" outPort="Port 1 (out)" toNode="FAST_SORT1:0"/>
 <Edge debugMode="false" fromNode="SET_CC_ID:0" guiBendpoints="" guiRouter="Manhattan" id="Edge41" inPort="Port 0 (in)" outPort="Port 0 (out)" persistedImplicitMetadata="Metadata7" toNode="COUTY_CITY_TABLE:0"/>
 <Edge debugMode="false" fromNode="SET_CC_ID:1" guiBendpoints="" guiRouter="Manhattan" id="Edge47" inPort="Port 1 (slave)" outPort="Port 1 (out)" persistedImplicitMetadata="Metadata7" toNode="CC_ID_JOIN:1"/>
 <Edge fromNode="SET_CC_ID:2" guiBendpoints="" guiRouter="Manhattan" id="Edge37" inPort="Port 1 (slave)" outPort="Port 2 (out)" persistedImplicitMetadata="Metadata7" toNode="CC_ID_JOIN1:1"/>
@@ -2033,12 +2031,9 @@ function integer transform() {
 </group>
 ]]></attr>
 </Node>
-<Node database="dse_traffic" failOnError="true" guiName="Precipitation_Daily_Total Table" guiX="1894" guiY="1193" host="${SERVER}" id="PRECIPITATION_DAILY_TOTAL_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Daily_Total" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
-<Node database="dse_traffic" failOnError="true" guiName="Precipitation_Hourly_Observation Table" guiX="1894" guiY="1071" host="${SERVER}" id="PRECIPITATION_HOURLY_OBSERVATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Hourly_Observation" type="POSTGRESQL_DATA_WRITER" username="jgill"/>
-<Node genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="170" id="READ_STATION_5MIN" type="GENERIC_READER">
-<attr name="InputFile"><![CDATA[${DATAIN_DIR}/station_5min]]></attr>
-<attr name="SeqName"><![CDATA[Sequence0]]></attr>
-</Node>
+<Node database="dse_traffic" failOnError="true" guiName="Precipitation_Daily_Total Table" guiX="1959" guiY="1193" host="${PG_SERVER}" id="PRECIPITATION_DAILY_TOTAL_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Daily_Total" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
+<Node database="dse_traffic" failOnError="true" guiName="Precipitation_Hourly_Observation Table" guiX="1942" guiY="1071" host="${PG_SERVER}" id="PRECIPITATION_HOURLY_OBSERVATION_TABLE" parameters="port=&quot;${PG_PORT}&quot;" psqlPath="/Applications/Postgres.app/Contents/Versions/9.4/bin/psql" table="Precipitation_Hourly_Observation" type="POSTGRESQL_DATA_WRITER" username="${PG_USER}"/>
+<Node InputFile="${DATAIN_DIR}/station_5min" SeqName="Sequence0" genericTransformClass="Traffic5MinReader" genericTransformURL="${TRANS_DIR}/Traffic5MinReader.java" guiName="Read Station 5min" guiX="55" guiY="170" id="READ_STATION_5MIN" type="GENERIC_READER"/>
 <Node guiName="Set Station_ID" guiX="1067" guiY="276" id="SET_STATION_ID1" type="REFORMAT">
 <attr name="transform"><![CDATA[//#CTL2
 

@@ -23,7 +23,7 @@ public class HourlyPrecipitationCustomReader extends AbstractGenericTransform {
 	public void execute() {
 		DataRecord record = outRecords[0];
 
-		File path = new File(getProperties().getStringProperty("FilesParentDir"));
+		File path = getFile(getProperties().getStringProperty("FilesParentDir"));
 		Collection<File> files = listFileTree(path);
 
 		for (File file : files) {
@@ -72,6 +72,7 @@ public class HourlyPrecipitationCustomReader extends AbstractGenericTransform {
 	
 	public Collection<File> listFileTree(File dir) {
 		Set<File> fileTree = new HashSet<File>();
+
 		for (File entry : dir.listFiles()) {
 			if (entry.isFile()) fileTree.add(entry);
 			else fileTree.addAll(listFileTree(entry));
