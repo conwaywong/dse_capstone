@@ -11,6 +11,8 @@ pip install pg8000
 
 import pg8000
 import traceback
+import numpy as np
+import pandas as pd
 
 class StatementExecutorTemplateCallback:
     def __init__(self):
@@ -56,4 +58,9 @@ class StatementExecutorTemplate:
                 cur.close()
             if conn is not None:
                 conn.close()
+
+def to_data_frame(results, column_names):
+    m_arr= np.array(results)
+    m_df= pd.DataFrame.from_records(m_arr, columns=column_names)
+    return m_df
         
