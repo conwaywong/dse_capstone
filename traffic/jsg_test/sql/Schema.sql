@@ -114,6 +114,12 @@ CREATE TABLE Lane_Observation (
 CREATE UNIQUE INDEX L_Obso_PriIdx ON Lane_Observation (Observation_ID, Station_ID, L_Num);
 CREATE INDEX L_Obos_SecIdx ON Lane_Observation(Station_ID, L_Num);
 
+DROP TABLE IF EXISTS CHP_Desc CASCADE;
+CREATE TABLE CHP_Desc (
+	ID TEXT PRIMARY KEY,
+	Description TEXT
+);
+
 -- CHP Data
 DROP TABLE IF EXISTS CHP_INC CASCADE;
 CREATE TABLE CHP_INC (
@@ -121,7 +127,7 @@ CREATE TABLE CHP_INC (
 	CC_CODE TEXT,
 	INC_NUM INTEGER,
 	Time Timestamp NOT NULL,
-	Description TEXT,
+	Desc_ID TEXT NOT NULL REFERENCES CHP_Desc(ID),
 	-- Location DELETE
 	-- Area DELETE
 	-- Zoom_Map DELETE
