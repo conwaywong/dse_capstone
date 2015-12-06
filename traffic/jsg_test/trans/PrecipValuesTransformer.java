@@ -12,10 +12,6 @@ public class PrecipValuesTransformer extends AbstractGenericTransform {
 
 	@Override
 	public void execute() {
-		/** This code is an example. Replace it with your custom code. */
-
-		/** You can log messages. */
-//		getLogger().log(Level.DEBUG, "Custom property resolved to: " + customValue);
 
 		/** Record prepared for reading from input port 0 */
 		DataRecord inRecord = inRecords[0];
@@ -25,43 +21,47 @@ public class PrecipValuesTransformer extends AbstractGenericTransform {
 
 		/** Read all records from input port 0 */
 		while ((inRecord = readRecordFromPort(0)) != null) {
-			
-			outRecord.getField("cnin").setValue(inRecord.getField("cnin").getValue());
-			outRecord.getField("cndn").setValue(inRecord.getField("cndn").getValue());
-			outRecord.getField("element_units").setValue(inRecord.getField("element_units").getValue());
-			outRecord.getField("year").setValue(inRecord.getField("year").getValue());
-			outRecord.getField("month").setValue(inRecord.getField("month").getValue());
-			outRecord.getField("day").setValue(inRecord.getField("day").getValue());
-			
-			Integer numValues = (Integer) inRecord.getField("num_reported_values").getValue();
-			String valuesStr = inRecord.getField("values").toString();
-			
-			String[] values = valuesStr.split(" +");
-			if (values.length / 2 != numValues) {
-				getLogger().log(Level.ERROR, String.format("Values list unexpected length.  Expected %d. Got %d.", 2 * numValues, values.length));
-				continue;
-			}
-			
-//			getLogger().log(Level.INFO, values.toString());
-			
-			for (int i = 0; i < values.length; i += 2) {
-				
-				for (int f = 6; f < outRecord.getNumFields(); f++) {
-					outRecord.reset(f);
+
+			try {
+				outRecord.getField("cnin").setValue(inRecord.getField("cnin").getValue());
+				outRecord.getField("cndn").setValue(inRecord.getField("cndn").getValue());
+				outRecord.getField("element_units").setValue(inRecord.getField("element_units").getValue());
+				outRecord.getField("year").setValue(inRecord.getField("year").getValue());
+				outRecord.getField("month").setValue(inRecord.getField("month").getValue());
+				outRecord.getField("day").setValue(inRecord.getField("day").getValue());
+
+				Integer numValues = (Integer) inRecord.getField("num_reported_values").getValue();
+				String valuesStr = inRecord.getField("values").toString();
+
+				String[] values = valuesStr.split(" +");
+				if (values.length / 2 != numValues) {
+					getLogger().log(Level.ERROR, String.format("Values list unexpected length.  Expected %d. Got %d.", 2 * numValues, values.length));
+					continue;
 				}
-				
-				outRecord.getField("hour").setValue(Integer.parseInt(values[i]) / 100);
-				
-				outRecord.getField("amount").setValue(Integer.parseInt((values[i+1]).substring(0, 5)));
-				if ((values[i+1]).length() > 5) outRecord.getField("flag1").setValue((values[i+1]).substring(5,6));
-				if ((values[i+1]).length() > 6) outRecord.getField("flag2").setValue((values[i+1]).substring(6,7));
-				
-				writeRecordToPort(0, outRecord);
-				
-			};
-			
-					
-			
+
+				//			getLogger().log(Level.INFO, values.toString());
+
+				for (int i = 0; i < values.length; i += 2) {
+
+					for (int f = 6; f < outRecord.getNumFields(); f++) {
+						outRecord.reset(f);
+					}
+
+					outRecord.getField("hour").setValue(Integer.parseInt(values[i]) / 100);
+
+					outRecord.getField("amount").setValue(Integer.parseInt((values[i+1]).substring(0, 5)));
+					if ((values[i+1]).length() > 5) outRecord.getField("flag1").setValue((values[i+1]).substring(5,6));
+					if ((values[i+1]).length() > 6) outRecord.getField("flag2").setValue((values[i+1]).substring(6,7));
+
+					writeRecordToPort(0, outRecord);
+
+				};
+			} catch (Exception e) {
+				getLogger().log(Level.WARN, e.getMessage());
+			}
+
+
+
 		}
 	}
 
