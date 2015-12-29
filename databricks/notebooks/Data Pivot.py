@@ -1,4 +1,4 @@
-# Databricks notebook source exported at Tue, 29 Dec 2015 18:44:18 UTC
+# Databricks notebook source exported at Tue, 29 Dec 2015 18:47:34 UTC
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.sql.types import *
@@ -8,6 +8,8 @@ from datetime import time, datetime
 
 #sc = SparkContext("local", "Simple App")
 sqlContext = SQLContext(sc)
+
+# test
 
 # COMMAND ----------
 
