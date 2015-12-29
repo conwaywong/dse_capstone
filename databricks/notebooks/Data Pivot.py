@@ -1,4 +1,18 @@
-# Databricks notebook source exported at Tue, 29 Dec 2015 18:47:34 UTC
+# Databricks notebook source exported at Tue, 29 Dec 2015 19:56:27 UTC
+# Determing if findspark module is available. 
+# If so, it's assumed this notebook is run on a local Spark instance and *not* on Databricks
+DATABRICKS_FLAG = True
+try:
+    __import__("findspark")
+    import findspark
+    findspark.init()
+    DATABRICKS_FLAG = False
+    print "findspark module found. Running on local Spark instance."
+except ImportError:
+    print "findspark module not available. Running on Databricks cluster."
+
+# COMMAND ----------
+
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.sql.types import *
