@@ -1,4 +1,9 @@
-# Databricks notebook source exported at Tue, 29 Dec 2015 19:56:27 UTC
+# Databricks notebook source exported at Wed, 30 Dec 2015 06:55:09 UTC
+# MAGIC %md
+# MAGIC # Data Pivot
+
+# COMMAND ----------
+
 # Determing if findspark module is available. 
 # If so, it's assumed this notebook is run on a local Spark instance and *not* on Databricks
 DATABRICKS_FLAG = True
@@ -13,36 +18,77 @@ except ImportError:
 
 # COMMAND ----------
 
+# A SparkContext instance is created automagically by Databricks
+# If not running in Databricks, create a SparkContext instance
+if not DATABRICKS_FLAG:
+    sc = SparkContext("local", "Simple App")
+
+# COMMAND ----------
+
+'''
+IMPORTANT
+
+To prevent AWS credentials from being saved in this notebook, it's assumed there is a file in the current directory named 'spark.config' that contains AWS credentials.
+Below is an example of the contents:
+
+[aws]                                                          
+access_key_id: <YOUR ACCESS KEY ID>
+secret_access_key: <YOUR SECRET KEY>
+region_name: us-west-1
+bucket_id: dse-jgilliii
+
+'''
+
+import boto3
+import botocore
+from boto3.session import Session
+
+import ConfigParser
+config = ConfigParser.ConfigParser()
+config.read("spark.config")
+aws_id = config.get("aws", "access_key_id")
+aws_secret_key = config.get("aws", "secret_access_key")
+aws_region = config.get("aws", "region_name")
+bucket_name = config.get("aws", "bucket_id")
+
+session = Session(aws_access_key_id=aws_id,
+                  aws_secret_access_key=aws_secret_key,
+                  region_name=aws_region)
+
+# Let's use Amazon S3
+s3 = session.resource('s3')
+
+# Verify the bucket is available
+# boto3 does not have a convenience method to verify whether a bucket exists.  Hence the boilerplate code.
+bucket = s3.Bucket(bucket_name)
+bucket_exists = True
+try:
+    s3.meta.client.head_bucket(Bucket=bucket_name)
+except botocore.exceptions.ClientError as e:
+    # If a client error is thrown, then check that it was a 404 error.
+    # If it was a 404 error, then the bucket does not exist.
+    error_code = int(e.response['Error']['Code'])
+    if error_code == 404:
+        exists = False
+
+# Example of iterating over files and filtering based on directory name
+# for obj in bucket.objects.filter(Prefix='dse_traffic/station_5min/2015/d10'):
+#     lines = sc.textFile("s3n://%s:%s@%s/%s" % (aws_id, aws_secret_key, bucket_name, obj.key))
+#     lines_nonempty = lines.filter(lambda x: len(x) > 0)
+#     print lines_nonempty.count()
+
+# Example of loading s3n file.  We have yet to get it working with s3 or s3a
+# Note the following does not seem to work with prebuilt Spark 1.5.2, Hadoop 2.6 distribution.  Downgrade to Hadoop 2.4.
+lines = sc.textFile("s3n://%s:%s@%s/%s" % (aws_id, aws_secret_key, bucket_name, "dse_traffic/station_5min/2010/d8/d08_text_station_5min_2010_06_21.txt.gz"))
+lines_nonempty = lines.filter(lambda x: len(x) > 0)
+lines_nonempty.count()
+
+# COMMAND ----------
+
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
 from pyspark.sql.types import *
 from datetime import time, datetime
-
-# COMMAND ----------
-
-#sc = SparkContext("local", "Simple App")
-sqlContext = SQLContext(sc)
-
-# test
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC Setup the Mount point on the cluster to access S3 Bucket
-
-# COMMAND ----------
-
-# NOTE: Set the access to this notebook appropriately to protect the security of your keys.
-# Or you can delete this cell after you run the mount command below once successfully.
-ACCESS_KEY = getArgument("1. ACCESS_KEY", "")
-SECRET_KEY = getArgument("2. SECRET_KEY", "")
-ENCODED_SECRET_KEY = SECRET_KEY.replace("/", "%2F")
-AWS_BUCKET_NAME = getArgument("3. S3_BUCKET","dse-jgilliii")
-MOUNT_NAME = getArgument("4. MNT_NAME","jgilll")
-
-# COMMAND ----------
-
-dbutils.fs.mount("s3a://%s:%s@%s" % (ACCESS_KEY, ENCODED_SECRET_KEY, AWS_BUCKET_NAME), "/mnt/%s" % MOUNT_NAME)
 
 # COMMAND ----------
 
@@ -133,14 +179,6 @@ def buildRow(tuples):
 
 # COMMAND ----------
 
-lines = sc.textFile("/mnt/%s/dse_traffic/station_5min/2015/d11/d11_text_station_5min_2010_01_0[1234567]*" % MOUNT_NAME)
-newrows = lines.flatMap(parseInfo).groupByKey().map(buildRow)
-
-df = sqlContext.createDataFrame(newrows, schema)
-#df.registerTempTable("avg_speed")
-
-
-#results = sqlContext.sql("SELECT ID, count(*) as cnt FROM avg_speed GROUP BY ID").collect()
-
-#for r in sorted(results, key=lambda x: x.ID):
-#    print r
+# TODO Change reading from S3 bucket instead of virtual mount
+#lines = sc.textFile("/mnt/%s/dse_traffic/station_5min/2015/d11/d11_text_station_5min_2010_01_0[1234567]*" % MOUNT_NAME)
+#newrows = lines.flatMap(parseInfo).groupByKey().map(buildRow)
