@@ -3,6 +3,7 @@ from pyspark.sql import SQLContext
 from pyspark.sql.types import *
 from datetime import time, datetime
 from Stats2 import VecStat
+import pickle
 import numpy as np
 
 sc = SparkContext("local", "Simple App")
@@ -92,11 +93,20 @@ def EigReduce(v1, v2):
 
     return cStats
 
-lines = sc.textFile('../../jsg_test/data-in/station_5min/d11_text_station_5min_2010_01_*.txt.gz')
+def toCSVLine(data):
+    return ','.join(str(d) for d in data)
+
+lines = sc.textFile('../../jsg_test/data-in/station_5min/d11_text_station_5min_2010_01_*.txt.gz', 8)
 newrows = lines.flatMap(parseInfo).groupByKey().map(buildRow)
+
+newrows.map(toCSVLine).saveAsTextFile('d11_2010_01_m1_pivot')
 
 stats = newrows.flatMap(EigMap).reduceByKey(EigReduce).collect()
 
-eigs = stats[0][1].compute(k=10)
+x=20
+eigs = stats[0][1].compute(k=x)
 
-print eigs
+with open('d11_2010_01_m1_eigs'+str(x)+'.pkl', 'wb') as pfile:
+    pickle.dump(eigs['eigvalues'], pfile)
+    pickle.dump(eigs['eigvectors'], pfile)
+    pickle.dump(eigs['mean'], pfile)
