@@ -3,12 +3,10 @@ import java.text.SimpleDateFormat
 import java.util.Arrays
 import java.util.Calendar
 import java.util.TimeZone
-
 import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.StringBuilder
 import scala.collection.mutable.TreeSet
 import scala.math.Ordering
-
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import org.apache.spark.annotation.Since
@@ -22,11 +20,14 @@ import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.apache.spark.rdd.PairRDDFunctions
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.SQLUserDefinedType
-
 import breeze.linalg.{ DenseMatrix => BDM }
 import breeze.linalg.{ DenseVector => BDV }
 import breeze.linalg.csvwrite
 import breeze.linalg.{ svd => brzSvd }
+import org.apache.commons.math3.stat.descriptive.MultivariateSummaryStatistics
+import org.apache.spark.mllib.stat.Statistics
+import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
+import org.apache.spark.mllib.feature.StandardScaler
 
 /**
  * @author dyerke
@@ -39,27 +40,37 @@ object SparkMLib {
     //
     val m_file_name = "/home/dyerke/Documents/DSE/capstone_project/traffic/data/01_2010"
     //val m_file_name = "/home/dyerke/Documents/DSE/capstone_project/traffic/data/d11_text_station_5min_2015_01_01.txt"
-    val lines: RDD[String] = sc.textFile(m_file_name, 4)
+    val fid = m_file_name.split('/').last
     //
+    val lines: RDD[String] = sc.textFile(m_file_name, 4)
     val t_rdd: RDD[(String, ListBuffer[Any])] = lines.map(m_map_row)
     val pair_rdd: PairRDDFunctions[String, ListBuffer[Any]] = RDD.rddToPairRDDFunctions(t_rdd)
     val m_result_rdd: RDD[(String, Iterable[ListBuffer[Any]])] = pair_rdd.groupByKey()
     val m_vector_rdd: RDD[Vector] = m_result_rdd.map(m_map_vector).filter { v => v.size > 0 }
-    //
+    // obtain mean vector
+    val m_summary_stats: MultivariateStatisticalSummary = Statistics.colStats(m_vector_rdd)
+    val mean_vector = m_summary_stats.mean.toArray
+    val mean_filename= "/tmp/mean_vector." + fid + ".csv"
+    write_vector(mean_filename, mean_vector)
+    // normalize dataset
+    val scaler: StandardScaler= new StandardScaler()
+    val m_norm_vector_rdd: RDD[Vector]= scaler.fit(m_vector_rdd).transform(m_vector_rdd)
+    // execute PCA against normalized dataset
     val k = 30
-    val (eigenvectors, eigenvalues) = computePrincipalComponentsAndExplainedVariance(m_vector_rdd, k)
-    val fid = m_file_name.split('/').last
+    val (eigenvectors, eigenvalues) = computePrincipalComponentsAndExplainedVariance(m_norm_vector_rdd, k)
     //
     // eigenvectors written out as column-major matrix
     //
-    csvwrite(new File("/tmp/eigenvectors." + fid + ".csv"), new BDM[Double](eigenvectors.numRows, eigenvectors.numCols, eigenvectors.toArray))
+    val eigenvectors_filename= "/tmp/eigenvectors." + fid + ".csv"
+    write_matrix(eigenvectors_filename, eigenvectors)
     //
     // eigenvalues written out as one row
     //
-    val matrix_values = (new BDM[Double](k, 1, eigenvalues.toArray)).t
-    csvwrite(new File("/tmp/eigenvalues." + fid + ".csv"), matrix_values)
-
-    // sanity print statements
+    val eigenvalue_filename= "/tmp/eigenvalues." + fid + ".csv"
+    write_vector(eigenvalue_filename, eigenvalues.toArray)
+    //
+    // print statements to verify
+    //
     println("eigenvectors= " + eigenvectors)
     println("eigenvalues= " + eigenvalues)
     val m_list_buffer = new ListBuffer[Double]()
@@ -70,6 +81,17 @@ object SparkMLib {
       m_list_buffer += cum_sum
     }
     println("perc variance explained= " + m_list_buffer)
+  }
+
+  private def write_vector(filename: String, m_vector: Array[Double]) = {
+    // written out as one row
+    val arr_values = (new BDM[Double](m_vector.length, 1, m_vector)).t
+    csvwrite(new File(filename), arr_values)
+  }
+
+  private def write_matrix(filename: String, m_matrix: Matrix) = {
+    // written out as column major matrix
+    csvwrite(new File(filename), new BDM[Double](m_matrix.numRows, m_matrix.numCols, m_matrix.toArray))
   }
 
   private def m_map_row(line: String): (String, ListBuffer[Any]) = {
