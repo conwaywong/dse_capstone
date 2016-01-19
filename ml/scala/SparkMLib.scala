@@ -1,16 +1,17 @@
 package org.ucsd.dse.capstone.traffic
 
 import scala.collection.mutable.ListBuffer
-
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 import org.apache.spark.annotation.Since
-import org.apache.spark.mllib.linalg.MatrixUDT
 import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.rdd.RDD
+import org.ucsd.dse.capstone.traffic.support.PivotHandler
+import org.ucsd.dse.capstone.traffic.support.StandardPivotHandler
+import org.ucsd.dse.capstone.traffic.support.TrafficPivotFields.TrafficPivotFields
+import org.ucsd.dse.capstone.traffic.support.TrafficPivotFields
 
 /**
  * @author dyerke
@@ -22,16 +23,31 @@ object SparkMLib {
     val sc = new SparkContext(conf)
     //
     val m_file_name = "/home/dyerke/Documents/DSE/capstone_project/traffic/data/01_2010"
-    //val m_file_name = "/home/dyerke/Documents/DSE/capstone_project/traffic/data/d11_text_station_5min_2015_01_01.txt"
-    val fid = m_file_name.split('/').last
+    val m_string_rdd: RDD[String] = MLibUtils.new_rdd(sc, m_file_name, 4)
     //
-    val m_vector_rdd: RDD[Vector] = MLibUtils.pivot(sc, m_file_name, 4)
+    // Execute PCA for each field
+    //
+    val m_fields_pca = List[Tuple2[String, TrafficPivotFields]](
+      ("/tmp/total_flow.", TrafficPivotFields.TotalFlow),
+      ("/tmp/occupancy.", TrafficPivotFields.Occupancy),
+      ("/tmp/speed.", TrafficPivotFields.Speed))
+    val fid = m_file_name.split('/').last
+    m_fields_pca.foreach { tuple: Tuple2[String, TrafficPivotFields] =>
+      val file_dir_prefix = tuple._1
+      val pivot_field = tuple._2
+      do_run(sc, m_string_rdd, fid, file_dir_prefix, pivot_field)
+    }
+  }
+
+  private def do_run(sc: SparkContext, m_string_rdd: RDD[String], fid: String, file_dir_prefix: String, pivot_field: TrafficPivotFields) = {
+    val handler: PivotHandler = new StandardPivotHandler(sc, pivot_field)
+    val m_vector_rdd: RDD[Vector] = MLibUtils.pivot(m_string_rdd, handler)
     //
     // obtain mean vector
     //
     val m_summary_stats: MultivariateStatisticalSummary = MLibUtils.summary_stats(m_vector_rdd)
     val mean_vector = m_summary_stats.mean.toArray
-    val mean_filename = "/tmp/mean_vector." + fid + ".csv"
+    val mean_filename = file_dir_prefix + "mean_vector." + fid + ".csv"
     MLibUtils.write_vectors(mean_filename, List[Vector](Vectors.dense(mean_vector)))
     //
     // execute PCA
@@ -42,18 +58,18 @@ object SparkMLib {
     //
     // eigenvectors written out as column-major matrix
     //
-    val eigenvectors_filename = "/tmp/eigenvectors." + fid + ".csv"
+    val eigenvectors_filename = file_dir_prefix + "eigenvectors." + fid + ".csv"
     MLibUtils.write_matrix(eigenvectors_filename, eigenvectors)
     //
     // eigenvalues written out as one row
     //
-    val eigenvalue_filename = "/tmp/eigenvalues." + fid + ".csv"
+    val eigenvalue_filename = file_dir_prefix + "eigenvalues." + fid + ".csv"
     MLibUtils.write_vectors(eigenvalue_filename, List[Vector](eigenvalues))
     //
     // take a sample of 10 vectors
     //
     val sample_arr: Array[Vector] = m_vector_rdd.takeSample(false, 10, 47)
-    val sample_filename = "/tmp/samples." + fid + ".csv"
+    val sample_filename = file_dir_prefix + "samples." + fid + ".csv"
     MLibUtils.write_vectors(sample_filename, sample_arr)
     //
     // print statements to verify

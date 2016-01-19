@@ -24,6 +24,8 @@ import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.mllib.stat.Statistics
 import org.apache.spark.rdd.PairRDDFunctions
 import org.apache.spark.rdd.RDD
+import org.apache.spark.storage.StorageLevel
+import org.ucsd.dse.capstone.traffic.support.PivotHandler
 
 import au.com.bytecode.opencsv.CSVWriter
 import breeze.linalg.{ DenseMatrix => BDM }
@@ -96,74 +98,27 @@ object MLibUtils {
   }
 
   /**
-   * Pivots the traffic data specified by filename
+   * Creates and persists a new RDD[String] created from specified file
    *
-   * @param sc the SparkContext
-   * @param filename filename or directory path to traffic data
-   * @param partition_count the number of partitions to cut the dataset into
-   * @return RDD[Vector] pivoted by day
+   * @param the SparkContext
+   * @param filename filename or directory path to data
+   * @param partition_count the number of partitions to divide the dataset into
+   * @return RDD[String]
    */
-  def pivot(sc: SparkContext, filename: String, partition_count: Int = 4): RDD[Vector] = {
-    val lines: RDD[String] = sc.textFile(filename, partition_count)
-    val t_rdd: RDD[(String, ListBuffer[Any])] = lines.map(m_map_row)
-    val pair_rdd: PairRDDFunctions[String, ListBuffer[Any]] = RDD.rddToPairRDDFunctions(t_rdd)
-    val m_result_rdd: RDD[(String, Iterable[ListBuffer[Any]])] = pair_rdd.groupByKey()
-    m_result_rdd.map(m_map_vector).filter { v => v.size > 0 }
+  def new_rdd(sc: SparkContext, filename: String, partition_count: Int = 4): RDD[String] = {
+    val m_rdd: RDD[String] = sc.textFile(filename, partition_count)
+    m_rdd.persist(StorageLevel.MEMORY_AND_DISK)
   }
 
-  private def m_map_row(line: String): (String, ListBuffer[Any]) = {
-    val x_arr = line.split(",")
-    if (x_arr(5) == "ML") {
-      //
-      val tz = TimeZone.getTimeZone("UTC")
-      val fmt = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")
-      fmt.setTimeZone(tz)
-      val key_builder = new StringBuilder()
-      val resultList = new ListBuffer[Any]()
-      val m_date = fmt.parse(x_arr(0))
-      val cal = Calendar.getInstance(tz)
-      cal.setTime(m_date)
-      //
-      // key
-      //
-      key_builder.append(x_arr(1)) // Station_Id
-      key_builder.append(",").append(cal.get(Calendar.YEAR)) // Year
-      key_builder.append(",").append(cal.get(Calendar.DAY_OF_YEAR)) // Day of Year
-      //
-      // data
-      //
-      resultList += m_date.getTime() // Epoch Time
-      resultList += x_arr(7).toDouble
-      resultList += x_arr(8).toDouble
-      resultList += x_arr(9).toDouble
-      resultList += x_arr(10).toDouble
-      resultList += x_arr(11).toDouble
-      //
-      (key_builder.toString(), resultList)
-    } else {
-      ("", new ListBuffer())
-    }
-  }
-
-  private def m_map_vector(tuple: Tuple2[String, Iterable[ListBuffer[Any]]]): Vector = {
-    val key = tuple._1
-    if (key.trim().length() > 0) {
-      val values = tuple._2
-      //
-      val m_ordering = Ordering.by { x: ListBuffer[Any] => x(0).asInstanceOf[Long] }
-      val set = TreeSet.empty(m_ordering)
-      values.foreach(list => set.add(list))
-      //
-      val doubles_list = new ListBuffer[Double]()
-      set.foreach { list => doubles_list += list(1).asInstanceOf[Double] }
-      set.foreach { list => doubles_list += list(2).asInstanceOf[Double] }
-      set.foreach { list => doubles_list += list(3).asInstanceOf[Double] }
-      set.foreach { list => doubles_list += list(4).asInstanceOf[Double] }
-      set.foreach { list => doubles_list += list(5).asInstanceOf[Double] }
-      Vectors.dense(doubles_list.toArray)
-    } else {
-      Vectors.zeros(0)
-    }
+  /**
+   * Pivots traffic data using specified PivotHandler
+   *
+   * @param m_string_rdd the traffic data as an RDD[String]
+   * @param m_pivot_handler the pivot handler
+   * @return RDD[Vector]
+   */
+  def pivot(m_string_rdd: RDD[String], m_pivot_handler: PivotHandler): RDD[Vector] = {
+    m_pivot_handler.pivot(m_string_rdd)
   }
 
   /**
