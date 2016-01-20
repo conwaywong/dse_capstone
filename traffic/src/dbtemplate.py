@@ -17,6 +17,7 @@ import pandas as pd
 class StatementExecutorTemplateCallback:
     def __init__(self):
         self._mQuery = self._get_query()
+        self.m_results= []
     
     def _get_query(self):
         raise NotImplementedError
@@ -27,12 +28,18 @@ class StatementExecutorTemplateCallback:
     def do_in_cursor(self, cur):
         cur.execute(self._mQuery)
         rows = cur.fetchmany(500)
-        m_results = []
         while len(rows) > 0:
-            for row in rows:
-                m_results.append(self._map_row(row))
+            self.process_rows(rows)
             rows = cur.fetchmany(500)
-        return m_results
+        self.post_intercept(self.m_results)
+        return self.m_results
+    
+    def process_rows(self, rows):
+        for row in rows:
+            self.m_results.append(self._map_row(row))
+    
+    def post_intercept(self, results):
+        pass
 
 class StatementExecutorTemplate:
     
@@ -60,6 +67,8 @@ class StatementExecutorTemplate:
                 conn.close()
 
 def to_data_frame(results, column_names):
+    if len(results) == 0:
+        return None
     m_arr= np.array(results)
     m_df= pd.DataFrame.from_records(m_arr, columns=column_names)
     return m_df
