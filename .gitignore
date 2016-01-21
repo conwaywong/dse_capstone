@@ -7,3 +7,20 @@
 **/*.pyc
 **/*.idea
 **/*.swp
+
+# building
+target
+build
+null
+tmp*
+temp*
+dist
+test-output
+build.log
+
+eclipse conf file
+.settings
+.classpath
+.project
+.manager
+.scala_dependencies
