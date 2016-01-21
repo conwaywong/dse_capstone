@@ -1,17 +1,16 @@
 package org.ucsd.dse.capstone.traffic
 
 import scala.collection.mutable.ListBuffer
+
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.rdd.RDD
+import org.ucsd.dse.capstone.traffic.support.Fields
 import org.ucsd.dse.capstone.traffic.support.PivotHandler
 import org.ucsd.dse.capstone.traffic.support.StandardPivotHandler
-import org.ucsd.dse.capstone.traffic.support.TrafficPivotFields.TrafficPivotFields
-import org.ucsd.dse.capstone.traffic.support.TrafficPivotFields
 
 /**
  * @author dyerke
@@ -27,19 +26,20 @@ object SparkMLib {
     //
     // Execute PCA for each field
     //
-    val m_fields_pca = List[Tuple2[String, TrafficPivotFields]](
-      ("/tmp/total_flow.", TrafficPivotFields.TotalFlow),
-      ("/tmp/occupancy.", TrafficPivotFields.Occupancy),
-      ("/tmp/speed.", TrafficPivotFields.Speed))
+
+    val m_fields_pca = List[Tuple2[String, Int]](
+      ("/tmp/total_flow.", Fields.TotalFlow),
+      ("/tmp/occupancy.", Fields.Occupancy),
+      ("/tmp/speed.", Fields.Speed))
     val fid = m_file_name.split('/').last
-    m_fields_pca.foreach { tuple: Tuple2[String, TrafficPivotFields] =>
+    m_fields_pca.foreach { tuple: Tuple2[String, Int] =>
       val file_dir_prefix = tuple._1
       val pivot_field = tuple._2
       do_run(sc, m_string_rdd, fid, file_dir_prefix, pivot_field)
     }
   }
 
-  private def do_run(sc: SparkContext, m_string_rdd: RDD[String], fid: String, file_dir_prefix: String, pivot_field: TrafficPivotFields) = {
+  private def do_run(sc: SparkContext, m_string_rdd: RDD[String], fid: String, file_dir_prefix: String, pivot_field: Int) = {
     val handler: PivotHandler = new StandardPivotHandler(sc, pivot_field)
     val m_vector_rdd: RDD[Vector] = MLibUtils.pivot(m_string_rdd, handler)
     //

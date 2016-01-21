@@ -14,22 +14,18 @@ import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.rdd.PairRDDFunctions
 import org.apache.spark.rdd.RDD
 
-import TrafficPivotFields.Occupancy
-import TrafficPivotFields.Speed
-import TrafficPivotFields.TotalFlow
-import TrafficPivotFields.TrafficPivotFields
-
 /**
  * @author dyerke
  */
 
-object TrafficPivotFields extends Enumeration {
-  type TrafficPivotFields = Value
-  val TotalFlow, Occupancy, Speed = Value
+object Fields {
+  val TotalFlow= 1
+  val Occupancy= 2
+  val Speed= 3
 }
 
-class StandardPivotHandler(sc: SparkContext, fields_enum: TrafficPivotFields) extends PivotHandler {
-
+class StandardPivotHandler(sc: SparkContext, fields_enum: Int) extends PivotHandler {
+  
   var m_sc = sc
   var m_fields_enum = fields_enum
 
@@ -59,9 +55,9 @@ class StandardPivotHandler(sc: SparkContext, fields_enum: TrafficPivotFields) ex
         //
         resultList += m_date.getTime() // Epoch Time
         broadcast_fields_enum.value match {
-          case TotalFlow => resultList += x_arr(9).toDouble // Total Flow
-          case Occupancy => resultList += x_arr(10).toDouble // Avg. Occupancy
-          case Speed     => resultList += x_arr(11).toDouble // Avg. Speed
+          case Fields.TotalFlow => resultList += x_arr(9).toDouble // Total Flow
+          case Fields.Occupancy => resultList += x_arr(10).toDouble // Avg. Occupancy
+          case Fields.Speed     => resultList += x_arr(11).toDouble // Avg. Speed
         }
         //
         (key_builder.toString(), resultList)
