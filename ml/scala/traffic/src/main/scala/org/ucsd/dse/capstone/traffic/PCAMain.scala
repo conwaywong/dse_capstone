@@ -83,7 +83,7 @@ object PCAMain {
     MLibUtils.write_vectors(eigenvalue_filename, List[Vector](eigenvalues), filename => {
       new BufferedWriter(new OutputStreamWriter(eigenvalue_stream))
     })
-    val eigenvalue_stream_tuple = (eigenvectors_filename, eigenvalue_stream)
+    val eigenvalue_stream_tuple = (eigenvalue_filename, eigenvalue_stream)
     //
     // take a sample of 10 vectors
     //
