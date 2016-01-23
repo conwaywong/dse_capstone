@@ -1,12 +1,24 @@
 package org.ucsd.dse.capstone.traffic
 
+import java.io.BufferedWriter
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileWriter
+import java.io.OutputStreamWriter
+import java.io.Writer
+
 import scala.collection.mutable.ListBuffer
 
+import org.apache.commons.io.IOUtils
 import org.apache.spark.SparkContext
+import org.apache.spark.annotation.Since
+import org.apache.spark.mllib.linalg.MatrixUDT
 import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.types.SQLUserDefinedType
 
 /**
  * @author dyerke
@@ -58,18 +70,45 @@ object PCAMain {
     // eigenvectors written out as column-major matrix
     //
     val eigenvectors_filename = file_dir_prefix + "eigenvectors." + fid + ".csv"
-    MLibUtils.write_matrix(eigenvectors_filename, eigenvectors)
+    val eigenvector_stream: ByteArrayOutputStream = new ByteArrayOutputStream();
+    MLibUtils.write_matrix(eigenvectors_filename, eigenvectors, filename => {
+      new BufferedWriter(new OutputStreamWriter(eigenvector_stream))
+    })
+    val eigenvector_stream_tuple = (eigenvectors_filename, eigenvector_stream)
     //
     // eigenvalues written out as one row
     //
     val eigenvalue_filename = file_dir_prefix + "eigenvalues." + fid + ".csv"
-    MLibUtils.write_vectors(eigenvalue_filename, List[Vector](eigenvalues))
+    val eigenvalue_stream: ByteArrayOutputStream = new ByteArrayOutputStream()
+    MLibUtils.write_vectors(eigenvalue_filename, List[Vector](eigenvalues), filename => {
+      new BufferedWriter(new OutputStreamWriter(eigenvalue_stream))
+    })
+    val eigenvalue_stream_tuple = (eigenvectors_filename, eigenvalue_stream)
     //
     // take a sample of 10 vectors
     //
     val sample_arr: Array[Vector] = m_vector_rdd.takeSample(false, 10, 47)
     val sample_filename = file_dir_prefix + "samples." + fid + ".csv"
-    MLibUtils.write_vectors(sample_filename, sample_arr)
+    val sample_stream: ByteArrayOutputStream = new ByteArrayOutputStream()
+    MLibUtils.write_vectors(sample_filename, sample_arr, filename => {
+      new BufferedWriter(new OutputStreamWriter(sample_stream))
+    })
+    val sample_stream_tuple = (sample_filename, sample_stream)
+    //
+    // write streams to files
+    //
+    val tuple_list: List[Tuple2[String, ByteArrayOutputStream]] = List[Tuple2[String, ByteArrayOutputStream]](eigenvector_stream_tuple, eigenvalue_stream_tuple, sample_stream_tuple)
+    tuple_list.foreach { tuple: Tuple2[String, ByteArrayOutputStream] =>
+      val filename: String = tuple._1
+      val stream: ByteArrayOutputStream = tuple._2
+      //
+      val writer: Writer = new FileWriter(new File(filename))
+      try {
+        IOUtils.write(stream.toByteArray(), writer)
+      } finally {
+        IOUtils.closeQuietly(writer)
+      }
+    }
     //
     // print statements to verify
     //
