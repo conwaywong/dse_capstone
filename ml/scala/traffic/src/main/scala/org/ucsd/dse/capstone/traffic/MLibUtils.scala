@@ -3,23 +3,27 @@ package org.ucsd.dse.capstone.traffic
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.io.Writer
 import java.util.Arrays
 
 import org.apache.spark.SparkContext
+import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Matrices
 import org.apache.spark.mllib.linalg.Matrix
 import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.mllib.stat.Statistics
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.types.SQLUserDefinedType
 import org.apache.spark.storage.StorageLevel
 
 import au.com.bytecode.opencsv.CSVWriter
+import breeze.io.{ CSVWriter => BCSV }
 import breeze.linalg.{ DenseMatrix => BDM }
 import breeze.linalg.{ DenseVector => BDV }
-import breeze.linalg.csvwrite
 import breeze.linalg.{ svd => brzSvd }
 
 /**
@@ -29,7 +33,7 @@ import breeze.linalg.{ svd => brzSvd }
  */
 object MLibUtils {
 
-  /**
+  /**new FileWriter(new File(filename))
    * Returns summary stats for specified RDD[Vector]
    *
    * @param rdd
@@ -116,9 +120,14 @@ object MLibUtils {
    * @param filename file to write to
    * @param m_list TraversableOnce[Vector]
    */
-  def write_vectors(filename: String, m_list: TraversableOnce[Vector]) = {
-    // written out as one row
-    val csv_writer: CSVWriter = new CSVWriter(new FileWriter(new File(filename)))
+  def write_vectors(filename: String, m_list: TraversableOnce[Vector]): Unit = {
+    write_vectors(filename, m_list, filename => {
+      new FileWriter(new File(filename))
+    })
+  }
+
+  def write_vectors(filename: String, m_list: TraversableOnce[Vector], new_writer: (String) => Writer): Unit = {
+    val csv_writer: CSVWriter = new CSVWriter(new_writer(filename))
     try {
       try {
         m_list.foreach { a_vec: Vector =>
@@ -137,8 +146,16 @@ object MLibUtils {
     }
   }
 
-  def write_matrix(filename: String, m_matrix: Matrix) = {
+  def write_matrix(filename: String, m_matrix: Matrix): Unit = {
     // written out as column major matrix
-    csvwrite(new File(filename), new BDM[Double](m_matrix.numRows, m_matrix.numCols, m_matrix.toArray))
+    write_matrix(filename, m_matrix, filename => {
+      new FileWriter(new File(filename))
+    })
+  }
+
+  def write_matrix(filename: String, m_matrix: Matrix, new_writer: (String) => Writer): Unit = {
+    // written out as column major matrix
+    val mat: BDM[Double] = new BDM[Double](m_matrix.numRows, m_matrix.numCols, m_matrix.toArray)
+    BCSV.write(new_writer(filename), IndexedSeq.tabulate(mat.rows, mat.cols)(mat(_, _).toString))
   }
 }
