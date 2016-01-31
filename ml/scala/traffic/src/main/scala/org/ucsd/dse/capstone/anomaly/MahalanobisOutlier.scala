@@ -24,7 +24,7 @@ import javax.swing.text.html.CSS.Value
 
 import java.lang.Math.max
 
-class PCAMahalanobis(sc : SparkContext) extends AnomalyDetector
+class MahalanobisOutlier(sc : SparkContext) extends AnomalyDetector
 {
     private var _sig:BDM[Double] = null
     private var _sig_i:BDM[Double] = null
@@ -39,13 +39,6 @@ class PCAMahalanobis(sc : SparkContext) extends AnomalyDetector
         _sig_i = inv(_sig)
         _fit = true
     }
-    
-    /* Would be great if we could overload the method to take a Vector object
-     * but for some reason the way that scala is writeen this isn't allowed. 
-    def mahalanobis(obsoV: RDD[(Vector, Long)]) : RDD[(Vector, Long)] =
-    {
-        mahalanobis(obsoV.map{ case(o,i)=>(BDV(o.toArray), i) })
-    }*/
     
     def mahalanobis(obso: RDD[(BDV[Double], Long)]) : RDD[(Vector, Long)] =
     {

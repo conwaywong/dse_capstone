@@ -5,7 +5,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.linalg.Vector
 
-object CalcMahala {
+object AnomalyMain {
     def main(args: Array[String])
     {
         val template: SparkTemplate = new DefaultSparkTemplate()
@@ -20,7 +20,7 @@ object CalcMahala {
         val handler: PivotHandler = new StandardPivotHandler(sc, Fields.Speed)
         val m_vector_rdd: RDD[Vector] = MLibUtils.pivot(m_string_rdd, handler)
         
-        val sig:AnomalyDetector = new PCAMahalanobis(sc)
+        val sig:AnomalyDetector = new MahalanobisOutlier(sc)
         val outliers = sig.DetectOutlier(m_vector_rdd.zipWithIndex(), 3.0)
         outliers.collect().foreach(println)
     }

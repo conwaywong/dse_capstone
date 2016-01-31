@@ -3,7 +3,7 @@ package org.ucsd.dse.capstone.anomaly
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.rdd.RDD
 
-class KMeans extends AnomalyDetector
+class KMeansOutlier extends AnomalyDetector
 {
     def fit(X: RDD[Vector])
     {
