@@ -81,7 +81,7 @@ object MLibUtils {
     }
   }
 
-  private def toBreeze(m_matrix: Matrix): BDM[Double] = {
+   def toBreeze(m_matrix: Matrix): BDM[Double] = {
     if (!m_matrix.isTransposed) {
       new BDM[Double](m_matrix.numRows, m_matrix.numCols, m_matrix.toArray)
     } else {
