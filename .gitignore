@@ -24,3 +24,6 @@ eclipse conf file
 .project
 .manager
 .scala_dependencies
+
+# misc
+.cache-main
