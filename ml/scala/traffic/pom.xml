@@ -14,7 +14,7 @@
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<encoding>UTF-8</encoding>
-		<scala.version>2.10.6</scala.version>
+		<scala.version>2.10.5</scala.version>
 		<scala.compat.version>2.10</scala.compat.version>
 		<spark.version>1.6.0</spark.version>
 	</properties>
@@ -102,12 +102,6 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
-					<!-- MainClass in mainfest make a executable jar -->
-					<!-- <archive> -->
-					<!-- <manifest> -->
-					<!-- <mainClass>com.mkyong.core.utils.App</mainClass> -->
-					<!-- </manifest> -->
-					<!-- </archive> -->
 				</configuration>
 				<executions>
 					<execution>
