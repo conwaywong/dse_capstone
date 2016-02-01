@@ -24,7 +24,7 @@ import javax.swing.text.html.CSS.Value
 
 import java.lang.Math.max
 
-class MahalanobisOutlier(sc : SparkContext) extends AnomalyDetector
+class MahalanobisOutlier(sc:SparkContext) extends AnomalyDetector
 {
     private var _sig:BDM[Double] = null
     private var _sig_i:BDM[Double] = null
@@ -55,6 +55,8 @@ class MahalanobisOutlier(sc : SparkContext) extends AnomalyDetector
     {
         if(!_fit) fit(X.map{case(o,i)=>o})
         
+        //val X1 = X.zipWithIndex()
+        
         val Blocation:Broadcast[BDV[Double]] = _sc.broadcast(BDV(_location.toArray))
         val mahalanobis_dist:RDD[(Vector, Long)] = mahalanobis(X.map{ case(o,i)=>(BDV(o.toArray)-Blocation.value,i) })
         
@@ -64,6 +66,9 @@ class MahalanobisOutlier(sc : SparkContext) extends AnomalyDetector
         val threshold:Double = stats.variance.apply(0)*stdd
         val Bthreshold:Broadcast[Double] = _sc.broadcast(threshold)
         
+        /* Could change this to be a join, but as the number of outliers SHOULD be small it's faster
+         * to just collect the results and just let them be broadcasted for the final filtering.
+         */
         val outlier = mahalanobis_dist.filter{ case(o,i)=>o.apply(0) >= Bthreshold.value }.map{ case(o,i)=>i }.collect().toSet
         val Boutlier = _sc.broadcast(outlier)
         X.filter { case(o,i)=>Boutlier.value.contains(i) }.map{ case(o,i)=>o }
