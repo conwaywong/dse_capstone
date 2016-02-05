@@ -8,9 +8,8 @@ import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
-import org.apache.spark.mllib.stat.{MultivariateStatisticalSummary => MVSS, Statistics}
+import org.apache.spark.mllib.stat.Statistics
 import org.apache.spark.util.StatCounter
 
 /* Breeze Math imports */
@@ -20,8 +19,6 @@ import breeze.linalg.inv
 import breeze.linalg.sum
 import breeze.linalg.Axis
 import breeze.numerics.sqrt
-import breeze.linalg.argsort
-import javax.swing.text.html.CSS.Value
 
 import java.lang.Math.max
 
