@@ -29,16 +29,14 @@ object PivotMain extends Logging {
   def do_execute(sc: SparkContext) = {
     // execute pivot
     val broadcast_logger = sc.broadcast(log)
-    val broadcast_empty = sc.broadcast(("", new ListBuffer[Any]()))
     val broadcast_expected_column_count = sc.broadcast((288 * 3) + 5)
     //
     val files: List[String] = List("/home/dyerke/Documents/DSE/capstone_project/traffic/data/d11_text_station_5min_2015_01_01_mod.txt")
-    val m_string_rdd: RDD[String] = sc.textFile(files.mkString(","))
+    val m_string_rdd: RDD[String] = MLibUtils.new_rdd(sc, files, 4)
     //
     // execute pivot
     //
     val t_rdd: RDD[(String, ListBuffer[Any])] = m_string_rdd.map { line: String =>
-      val EMPTY: (String, ListBuffer[Any]) = broadcast_empty.value
       val x_arr = line.split(",")
       if (x_arr(5) == "ML") {
         //
@@ -62,56 +60,45 @@ object PivotMain extends Logging {
         // data
         //
         resultList += m_date.getTime() // Epoch Time
-        try {
-          resultList += x_arr(9).toDouble // Total Flow
-          resultList += x_arr(10).toDouble // Avg. Occupancy
-          resultList += x_arr(11).toDouble // Avg. Speed
-        } catch {
-          case e: Exception => EMPTY
-        }
+        resultList += x_arr(9).toDouble // Total Flow
+        resultList += x_arr(10).toDouble // Avg. Occupancy
+        resultList += x_arr(11).toDouble // Avg. Speed
         //
         (key_builder.toString(), resultList)
       } else {
-        EMPTY
+        ("", new ListBuffer())
       }
     }
     val pair_rdd: PairRDDFunctions[String, ListBuffer[Any]] = RDD.rddToPairRDDFunctions(t_rdd)
     val m_result_rdd: RDD[(String, Iterable[ListBuffer[Any]])] = pair_rdd.groupByKey()
-    val broadcast_empty_row = sc.broadcast(Row.fromSeq(List()))
     val row_rdd: RDD[Row] = m_result_rdd.map {
       tuple: Tuple2[String, Iterable[ListBuffer[Any]]] =>
-        val log = broadcast_logger.value
-        val EMPTY_ROW = broadcast_empty_row.value
         val expected_column_count = broadcast_expected_column_count.value
         val key = tuple._1
         if (key.trim().length() > 0) {
-          try {
-            val values = tuple._2
-            //
-            val m_ordering = Ordering.by { x: ListBuffer[Any] => x(0).asInstanceOf[Long] }
-            val set = TreeSet.empty(m_ordering)
-            values.foreach(list => set.add(list))
-            //
-            val row_contents = new ListBuffer[Any]()
-            row_contents.appendAll(key.split(",")) // ID fields
-            set.foreach { list => row_contents += list(1).asInstanceOf[Double] } // Total Flow
-            set.foreach { list => row_contents += list(2).asInstanceOf[Double] } // Avg. Occupancy
-            set.foreach { list => row_contents += list(3).asInstanceOf[Double] } // Avg. Speed
-            val n = row_contents.size
-            if (n < expected_column_count) {
-              log.error("Expecting " + expected_column_count + " but obtained " + n + " for key " + key)
-              EMPTY_ROW
-            } else {
-              if (log.isInfoEnabled()) {
-                log.info("Found " + n + " readings, including key " + key + " into dataset")
-              }
-              Row.fromSeq(row_contents)
+          val values = tuple._2
+          //
+          val m_ordering = Ordering.by { x: ListBuffer[Any] => x(0).asInstanceOf[Long] }
+          val set = TreeSet.empty(m_ordering)
+          values.foreach(list => set.add(list))
+          //
+          val row_contents = new ListBuffer[Any]()
+          row_contents.appendAll(key.split(",")) // ID fields
+          set.foreach { list => row_contents += list(1).asInstanceOf[Double] } // Total Flow
+          set.foreach { list => row_contents += list(2).asInstanceOf[Double] } // Avg. Occupancy
+          set.foreach { list => row_contents += list(3).asInstanceOf[Double] } // Avg. Speed
+          val n = row_contents.size
+          if (n < expected_column_count) {
+            log.error("Expecting " + expected_column_count + " but obtained " + n + " for key " + key)
+            Row.fromSeq(List())
+          } else {
+            if (log.isInfoEnabled()) {
+              log.info("Found " + n + " readings, including key " + key + " into dataset")
             }
-          } catch {
-            case e: Exception => EMPTY_ROW
+            Row.fromSeq(row_contents)
           }
         } else {
-          EMPTY_ROW
+          Row.fromSeq(List())
         }
     }.filter { row: Row => row.size > 0 }
     //
@@ -147,7 +134,7 @@ object PivotMain extends Logging {
     //
     // persist
     //
-    val output_dir = "/var/tmp/test_output2"
+    val output_dir = "/tmp/test_output2"
     row_rdd.saveAsTextFile(output_dir, classOf[BZip2Codec])
   }
 }
