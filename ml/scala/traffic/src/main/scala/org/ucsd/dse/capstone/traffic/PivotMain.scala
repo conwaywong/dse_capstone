@@ -32,7 +32,7 @@ object PivotMain extends Logging {
     val broadcast_expected_column_count = sc.broadcast((288 * 3) + 5)
     //
     val files: List[String] = List("/home/dyerke/Documents/DSE/capstone_project/traffic/data/d11_text_station_5min_2015_01_01_mod.txt")
-    val m_string_rdd: RDD[String] = MLibUtils.new_rdd(sc, files, 4)
+    val m_string_rdd: RDD[String] = sc.textFile(files.mkString(","))
     //
     // execute pivot
     //

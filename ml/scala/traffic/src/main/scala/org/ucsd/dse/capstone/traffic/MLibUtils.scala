@@ -7,18 +7,14 @@ import java.io.Writer
 import java.util.Arrays
 
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Matrices
 import org.apache.spark.mllib.linalg.Matrix
 import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.mllib.stat.Statistics
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.types.SQLUserDefinedType
-import org.apache.spark.storage.StorageLevel
 
 import au.com.bytecode.opencsv.CSVWriter
 import breeze.io.{ CSVWriter => BCSV }
@@ -33,7 +29,8 @@ import breeze.linalg.{ svd => brzSvd }
  */
 object MLibUtils {
 
-  /**new FileWriter(new File(filename))
+  /**
+   * new FileWriter(new File(filename))
    * Returns summary stats for specified RDD[Vector]
    *
    * @param rdd
@@ -81,25 +78,13 @@ object MLibUtils {
     }
   }
 
-   def toBreeze(m_matrix: Matrix): BDM[Double] = {
+  def toBreeze(m_matrix: Matrix): BDM[Double] = {
     if (!m_matrix.isTransposed) {
       new BDM[Double](m_matrix.numRows, m_matrix.numCols, m_matrix.toArray)
     } else {
       val breezeMatrix = new BDM[Double](m_matrix.numCols, m_matrix.numRows, m_matrix.toArray)
       breezeMatrix.t
     }
-  }
-
-  /**
-   * Creates and persists a new RDD[String] created from specified file
-   *
-   * @param the SparkContext
-   * @param filename filename or directory path to data
-   * @param partition_count the number of partitions to divide the dataset into
-   * @return RDD[String]
-   */
-  def new_rdd(sc: SparkContext, files: List[String], partition_count: Int = 4): RDD[String] = {
-    sc.textFile(files.mkString(","), partition_count)
   }
 
   /**
