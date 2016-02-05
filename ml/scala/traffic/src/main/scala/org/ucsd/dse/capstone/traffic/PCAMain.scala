@@ -1,27 +1,22 @@
 package org.ucsd.dse.capstone.traffic
 
+import java.io.BufferedOutputStream
 import java.io.BufferedWriter
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.InputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 import java.io.OutputStreamWriter
 
 import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.Since
-import org.apache.spark.mllib.linalg.MatrixUDT
+import org.apache.spark.annotation.Experimental
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.types.SQLUserDefinedType
-
-import com.amazonaws.auth.AWSCredentials
-import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.services.s3.AmazonS3
-import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.model.ObjectMetadata
+import org.apache.spark.sql.SQLContext
 
 /**
  * @author dyerke
@@ -31,51 +26,40 @@ object PCAMain {
   def main(args: Array[String]) {
     val template: SparkTemplate = new DefaultSparkTemplate()
     //
-    val output_aws_id = "AKIAJFOAU7QJI4CFLAKA"
-    val output_aws_secret_key = "6bBcmynL6SB0OeVX4+TUGecpQURjMu5cNqmqTaOi".replace("/", "%2F")
-    val cred: AWSCredentials = new BasicAWSCredentials(output_aws_id, output_aws_secret_key)
-    val client: AmazonS3 = new AmazonS3Client(cred)
-    //
-    template.execute { sc => do_execute(sc, client) }
+    template.execute { sc => do_execute(sc) }
   }
 
-  def do_execute(sc: SparkContext, client: AmazonS3) = {
-
-    val aws_id = "AKIAJFOAU7QJI4CFLAKA"
-    val aws_secret_key = "6bBcmynL6SB0OeVX4+TUGecpQURjMu5cNqmqTaOi".replace("/", "%2F")
-    val bucket_name = "dse-jgilliii"
-    val obj_key = "dse_traffic/station_5min/2010/d12/d12_text_station_5min_2010_01_01.txt.gz"
-    val url = "s3n://%s:%s@%s/%s".format(aws_id, aws_secret_key, bucket_name, obj_key)
+  def do_execute(sc: SparkContext) = {
     //
-    //    val files: List[String] = List("/home/dyerke/Documents/DSE/capstone_project/traffic/data/01_2010", "/home/dyerke/Documents/DSE/capstone_project/traffic/data/01_2010_first_seven_days")
-    val files: List[String] = List(url)
-    val m_string_rdd: RDD[String] = MLibUtils.new_rdd(sc, files, 4)
-
+    // Read DataFrame
+    //
+    val sqlContext: SQLContext = new SQLContext(sc)
+    val path = "/var/tmp/test_output2"
+    val pivot_df = MLibUtils.new_pivot_df(sc, sqlContext, path)
     //
     // Execute PCA for each field
     //
-    val m_fields_pca = List[Tuple2[String, Int]](
-      ("/tmp/total_flow.", Fields.TotalFlow),
-      ("/tmp/occupancy.", Fields.Occupancy),
-      ("/tmp/speed.", Fields.Speed))
-    val fid = "01_2010" // hardcode id for now
-    m_fields_pca.foreach { tuple: Tuple2[String, Int] =>
-      val file_dir_prefix = tuple._1
-      val pivot_field = tuple._2
-      do_run(client, sc, m_string_rdd, fid, file_dir_prefix, pivot_field)
+    val m_column_prefixes = List(ColumnPrefixes.TOTAL_FLOW, ColumnPrefixes.SPEED, ColumnPrefixes.OCCUPANCY)
+    val fid = "test"
+    val file_dir_prefix = "/var/tmp/";
+    m_column_prefixes.foreach { column_prefix =>
+      val m_vector_rdd: RDD[Vector] = MLibUtils.get_vector_rdd(pivot_df, column_prefix)
+      execute(m_vector_rdd, fid, file_dir_prefix)
     }
   }
 
-  private def do_run(client: AmazonS3, sc: SparkContext, m_string_rdd: RDD[String], fid: String, file_dir_prefix: String, pivot_field: Int) = {
-    val handler: PivotHandler = new StandardPivotHandler(sc, pivot_field)
-    val m_vector_rdd: RDD[Vector] = MLibUtils.pivot(m_string_rdd, handler)
+  private def execute(m_vector_rdd: RDD[Vector], fid: String, file_dir_prefix: String) = {
     //
     // obtain mean vector
     //
     val m_summary_stats: MultivariateStatisticalSummary = MLibUtils.summary_stats(m_vector_rdd)
     val mean_vector = m_summary_stats.mean.toArray
     val mean_filename = file_dir_prefix + "mean_vector." + fid + ".csv"
-    MLibUtils.write_vectors(mean_filename, List[Vector](Vectors.dense(mean_vector)))
+    val mean_stream: ByteArrayOutputStream = new ByteArrayOutputStream();
+    MLibUtils.write_vectors(mean_filename, List[Vector](Vectors.dense(mean_vector)), filename => {
+      new BufferedWriter(new OutputStreamWriter(mean_stream))
+    })
+    val mean_stream_tuple = (mean_filename, mean_stream)
     //
     // execute PCA
     //
@@ -113,12 +97,12 @@ object PCAMain {
     //
     // write streams to files
     //
-    val tuple_list: List[Tuple2[String, ByteArrayOutputStream]] = List[Tuple2[String, ByteArrayOutputStream]](eigenvector_stream_tuple, eigenvalue_stream_tuple, sample_stream_tuple)
+    val tuple_list: List[Tuple2[String, ByteArrayOutputStream]] = List[Tuple2[String, ByteArrayOutputStream]](mean_stream_tuple, eigenvector_stream_tuple, eigenvalue_stream_tuple, sample_stream_tuple)
     tuple_list.foreach { tuple: Tuple2[String, ByteArrayOutputStream] =>
       val filename: String = tuple._1
       val stream: ByteArrayOutputStream = tuple._2
       //
-      process_stream(client, filename, stream)
+      process_stream(filename, stream)
     }
     //
     // print statements to verify
@@ -135,18 +119,12 @@ object PCAMain {
     println("perc variance explained= " + m_list_buffer)
   }
 
-  private def process_stream(client: AmazonS3, filename: String, stream: ByteArrayOutputStream): Unit = {
-    val output_bucket_name = "dse-csw009"
-    val simple_filename= filename.split("/").last
-    val output_bucket_key = "upload/" + simple_filename
-    //
-    val bytes: Array[Byte] = stream.toByteArray();
-    //
-    val in_stream: InputStream = new ByteArrayInputStream(bytes)
-    val in_stream_meta: ObjectMetadata = new ObjectMetadata()
-    in_stream_meta.setContentLength(bytes.length)
-    //
-    println("Invoking client.putObject with parameters: %s,%s".format(output_bucket_name, output_bucket_key))
-    client.putObject(output_bucket_name, output_bucket_key, in_stream, in_stream_meta)
+  private def process_stream(filename: String, stream: ByteArrayOutputStream): Unit = {
+    val out: OutputStream = new BufferedOutputStream(new FileOutputStream(new File(filename)))
+    try {
+      out.write(stream.toByteArray())
+    } finally {
+      out.close()
+    }
   }
 }
