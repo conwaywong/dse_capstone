@@ -99,19 +99,7 @@ object MLibUtils {
    * @return RDD[String]
    */
   def new_rdd(sc: SparkContext, files: List[String], partition_count: Int = 4): RDD[String] = {
-    val m_rdd: RDD[String] = sc.textFile(files.mkString(","), partition_count)
-    m_rdd.persist(StorageLevel.MEMORY_AND_DISK)
-  }
-
-  /**
-   * Pivots traffic data using specified PivotHandler
-   *
-   * @param m_string_rdd the traffic data as an RDD[String]
-   * @param m_pivot_handler the pivot handler
-   * @return RDD[Vector]
-   */
-  def pivot(m_string_rdd: RDD[String], m_pivot_handler: PivotHandler): RDD[Vector] = {
-    m_pivot_handler.pivot(m_string_rdd)
+    sc.textFile(files.mkString(","), partition_count)
   }
 
   /**
