@@ -8,25 +8,17 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 import java.io.OutputStreamWriter
 
-import scala.annotation.elidable
-import scala.annotation.elidable.ASSERTION
 import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.DeveloperApi
-import org.apache.spark.annotation.Experimental
+import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.Column
-import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.Row
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.types.DoubleType
-import org.apache.spark.sql.types.IntegerType
-import org.apache.spark.sql.types.StructField
-import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.types.SQLUserDefinedType
 
 /**
  * @author dyerke
@@ -45,70 +37,17 @@ object PCAMain {
     //
     val sqlContext: SQLContext = new SQLContext(sc)
     val path = "/var/tmp/test_output2"
-    val (m_observation_times, pivot_df) = do_read_pivot(sc, sqlContext, path)
+    val pivot_df = MLibUtils.read_pivot_df(sc, sqlContext, path)
     //
     // Execute PCA for each field
     //
-    val m_column_prefixes = List("total_flow_", "occupancy_", "speed_")
+    val m_column_prefixes = List(PivotColumnPrefixes.TOTAL_FLOW, PivotColumnPrefixes.SPEED, PivotColumnPrefixes.OCCUPANCY)
     val fid = "test"
     val file_dir_prefix = "/var/tmp/";
     m_column_prefixes.foreach { column_prefix =>
-      val m_vector_rdd: RDD[Vector] = to_vector_rdd(pivot_df, m_observation_times, column_prefix)
+      val m_vector_rdd: RDD[Vector] = MLibUtils.to_vector_rdd(pivot_df, column_prefix)
       execute(m_vector_rdd, fid, file_dir_prefix)
     }
-  }
-
-  private def do_read_pivot(sc: SparkContext, sqlContext: SQLContext, path: String, table_name: String = "pivot_all", num_partitions: Int = 12): (IndexedSeq[String], DataFrame) = {
-    // Create Schema
-    var schema = new StructType()
-
-    schema = schema.add(new StructField("station_id", IntegerType))
-    schema = schema.add(new StructField("district_id", IntegerType))
-    schema = schema.add(new StructField("year", IntegerType))
-    schema = schema.add(new StructField("day_of_year", IntegerType))
-    schema = schema.add(new StructField("day_of_week", IntegerType))
-
-    val m_obversation_prefixes = List("total_flow", "occupancy", "speed")
-
-    val m_observation_times: IndexedSeq[String] = (0 to 287).map((_ * 5)).map(s => f"${s / 60}%02d${s % 60}%02dM")
-    m_obversation_prefixes.foreach { prefix =>
-      m_observation_times.foreach { time_str =>
-        schema = schema.add(StructField(s"${prefix}_${time_str}", DoubleType))
-      }
-    }
-    // create DataFrame
-    val m_string_rdd: RDD[String] = sc.textFile(path, num_partitions)
-    val m_row_rdd: RDD[Row] = m_string_rdd.map { s =>
-      var s_csv: String = null
-      try {
-        s_csv = s.substring(1, s.length - 1)
-        val s_arr: Array[String] = s_csv.split(",")
-        val key_arr: Array[Int] = s_arr.slice(0, 5).map(_.toInt)
-        val values_arr: Array[Double] = s_arr.slice(5, s_arr.length).map(_.toDouble)
-        Row.fromSeq(List.concat(key_arr, values_arr))
-      } catch {
-        case e: Exception => throw new IllegalStateException("Error parsing " + s_csv, e)
-      }
-    }
-    val pivot_df: DataFrame = sqlContext.createDataFrame(m_row_rdd, schema)
-    // Register the DataFrames as a table.
-    pivot_df.registerTempTable(table_name)
-    (m_observation_times, pivot_df)
-  }
-
-  private def to_vector_rdd(pivot_df: DataFrame, m_observation_times: IndexedSeq[String], column_prefix: String): RDD[Vector] = {
-    // Build total_flow column names
-    val columns: Seq[Column] = for (i <- m_observation_times) yield new Column(s"${column_prefix}${i}")
-    assert(columns.length == 288, { println("Columns is not 288") })
-
-    // create DataFrame which only contains the desired columns
-    //
-    // Note the casting of the Seq[Column] into varargs
-    val subset_df = pivot_df.select(columns: _*)
-
-    // conver to RDD[Vector]
-    val rdd_total_flow_rows = subset_df.rdd
-    rdd_total_flow_rows.map(x => Vectors.dense(x.toSeq.map(_.asInstanceOf[Double]).toArray))
   }
 
   private def execute(m_vector_rdd: RDD[Vector], fid: String, file_dir_prefix: String) = {
