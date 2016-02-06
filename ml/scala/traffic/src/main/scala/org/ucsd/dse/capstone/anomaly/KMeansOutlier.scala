@@ -61,11 +61,11 @@ class KMeansOutlier(sc:SparkContext, numClust:Int, numOutlier:Int) extends Anoma
     {
         require(_fit, "Must call fit before attempting to Detect Outliers")
         
-        var outlier:Set[Array[Int]] = null
+        var outlier:Array[Array[Int]] = null
         var mDist:Double = Double.PositiveInfinity
         var _i:Int = 0
         
-        do
+        while(mDist > convergeDist)
         {
             _i += 1
             // Compute d(x | Ci-1) for all x in X
@@ -75,9 +75,9 @@ class KMeansOutlier(sc:SparkContext, numClust:Int, numOutlier:Int) extends Anoma
             
             // Re-order the points in X by decreasing distance
             // and save off _l 'outliers'
-            outlier = XO.takeOrdered(_l)(Ordering[Double].reverse.on{ case(i,d)=>d }).map{ p=>p._1 }.toSet
+            outlier = XO.takeOrdered(_l)(Ordering[Double].reverse.on{ case(i,d)=>d }).map{ p=>p._1 }
             // Broadcast list of points to be filtered out for update centers
-            val Boutlier:Broadcast[Set[Array[Int]]] = _sc.broadcast(outlier)
+            val Boutlier:Broadcast[Array[Array[Int]]] = _sc.broadcast(outlier)
             
             // Calculate new centers
             val Ncent:Map[Int, BDV[Double]] =
@@ -95,10 +95,20 @@ class KMeansOutlier(sc:SparkContext, numClust:Int, numOutlier:Int) extends Anoma
             for (newP <- Ncent)
                 _kCent(newP._1) = newP._2
             println("Interation " + _i + " completed. mDist(" + mDist + ") ? convergeDist(" + convergeDist + ")") 
-        } while(mDist > convergeDist);
+        } 
 
          // Broadcast list of points to be filtered out for update centers on last time
-        val Boutlier:Broadcast[Set[Array[Int]]] = _sc.broadcast(outlier)
-        X.filter { case(i,o)=>Boutlier.value.contains(i) }
+        val Boutlier:Broadcast[Array[Array[Int]]] = _sc.broadcast(outlier)
+        X.filter { case(i,o)=>
+            var found:Boolean = false
+            var j:Int = 0
+            while(j < Boutlier.value.length && !found)
+            {
+                if(Boutlier.value(j).sameElements(i))
+                    found = true
+                j += 1
+            }
+            found
+        }
     }
 }

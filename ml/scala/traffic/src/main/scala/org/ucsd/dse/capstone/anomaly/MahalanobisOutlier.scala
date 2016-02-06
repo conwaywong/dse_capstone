@@ -66,9 +66,19 @@ class MahalanobisOutlier(sc:SparkContext) extends AnomalyDetector
         /* Could change this to be a join, but as the number of outliers SHOULD be small it's faster
          * to just collect the results and just let them be broadcasted for the final filtering.
          */
-        val outlier:Set[Array[Int]] = mahalanobis_dist.filter{ case(i,o)=>o > Bthreshold.value }.map{ case(i,o)=>i }.collect().toSet
-        val Boutlier:Broadcast[Set[Array[Int]]] = _sc.broadcast(outlier)
-        X.filter { case(i,o)=>Boutlier.value.contains(i) }
+        val outlier:Array[Array[Int]] = mahalanobis_dist.filter{ case(i,o)=>o > Bthreshold.value }.map{ case(i,o)=>i }.collect()
+        val Boutlier:Broadcast[Array[Array[Int]]] = _sc.broadcast(outlier)
+        X.filter { case(i,o) =>
+            var found:Boolean = false
+            var j:Int = 0
+            while(j < Boutlier.value.length && !found)
+            {
+                if(Boutlier.value(j).sameElements(i))
+                    found = true
+                j += 1
+            }
+            found
+        }
     }
     
     private def calc_cov(m_vector_rdd: RDD[Vector]) : BDM[Double] =

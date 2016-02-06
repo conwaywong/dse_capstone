@@ -43,7 +43,7 @@ object AnomalyMain {
         println(m_rslts.length)
         m_rslts.foreach { r => println(r._1.deep.mkString(",") + " " + r._2) }
         
-        val kmeans:AnomalyDetector = new KMeansOutlier(sc, 10, 20)
+        val kmeans:AnomalyDetector = new KMeansOutlier(sc, 5, 10)
         kmeans.fit(data_rdd.map{x => x._2})
         kmeans.DetectOutlier(data_rdd, 0.1).collect().foreach { r => println(r._1.deep.mkString(",") + " " + r._2) }
     }
