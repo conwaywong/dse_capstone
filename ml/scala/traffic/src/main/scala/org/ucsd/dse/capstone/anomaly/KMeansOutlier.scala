@@ -57,11 +57,11 @@ class KMeansOutlier(sc:SparkContext, numClust:Int, numOutlier:Int) extends Anoma
         _fit = true
     }
     
-    def DetectOutlier(X : RDD[(Vector, Long)], convergeDist:Double) : RDD[Vector] =
+    def DetectOutlier(X : RDD[(Array[Int], Vector)], convergeDist:Double) : RDD[(Array[Int], Vector)] =
     {
         require(_fit, "Must call fit before attempting to Detect Outliers")
         
-        var outlier:Set[Long] = null
+        var outlier:Set[Array[Int]] = null
         var mDist:Double = Double.PositiveInfinity
         var _i:Int = 0
         
@@ -71,18 +71,18 @@ class KMeansOutlier(sc:SparkContext, numClust:Int, numOutlier:Int) extends Anoma
             // Compute d(x | Ci-1) for all x in X
             // Broadcast the centers to all nodes
             val Bcent:Broadcast[Array[BDV[Double]]] = _sc.broadcast(_kCent)
-            val XO:RDD[(Long, Double)] = X.map{ case(o,i)=>(i, KMeansUtil.dist(BDV(o.toArray), Bcent.value)) }
+            val XO:RDD[(Array[Int], Double)] = X.map{ case(i,o)=>(i, KMeansUtil.dist(BDV(o.toArray), Bcent.value)) }
             
             // Re-order the points in X by decreasing distance
             // and save off _l 'outliers'
-            outlier = XO.takeOrdered(_l)(Ordering[Double].reverse.on{ case(o,d)=>d }).map{ p=>p._1 }.toSet
+            outlier = XO.takeOrdered(_l)(Ordering[Double].reverse.on{ case(i,d)=>d }).map{ p=>p._1 }.toSet
             // Broadcast list of points to be filtered out for update centers
-            val Boutlier:Broadcast[Set[Long]] = _sc.broadcast(outlier)
+            val Boutlier:Broadcast[Set[Array[Int]]] = _sc.broadcast(outlier)
             
             // Calculate new centers
             val Ncent:Map[Int, BDV[Double]] =
-                X.filter{ case(o,i)=>(!Boutlier.value.contains(i)) }
-                 .map{ case(o,i)=>(KMeansUtil.centI(BDV(o.toArray),Bcent.value), (BDV(o.toArray),1)) } // the 1 is used for summing
+                X.filter{ case(i,o)=>(!Boutlier.value.contains(i)) }
+                 .map{ case(i,o)=>(KMeansUtil.centI(BDV(o.toArray),Bcent.value), (BDV(o.toArray),1)) } // the 1 is used for summing
                  .reduceByKey{ case((point1, count1), (point2, count2))=>(point1+point2, count1+count2) } // Add up points/counts
                  .map{ pair=>(pair._1, pair._2._1 * (1.0 / pair._2._2)) }.collectAsMap() // Calculate new average centers and return as map
 
@@ -98,7 +98,7 @@ class KMeansOutlier(sc:SparkContext, numClust:Int, numOutlier:Int) extends Anoma
         } while(mDist > convergeDist);
 
          // Broadcast list of points to be filtered out for update centers on last time
-        val Boutlier:Broadcast[Set[Long]] = _sc.broadcast(outlier)
-        X.filter { case(o,i)=>Boutlier.value.contains(i) }.map{ case(o,i)=>o }
+        val Boutlier:Broadcast[Set[Array[Int]]] = _sc.broadcast(outlier)
+        X.filter { case(i,o)=>Boutlier.value.contains(i) }
     }
 }

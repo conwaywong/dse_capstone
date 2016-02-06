@@ -44,7 +44,7 @@ object PCAMain {
     //
     val sqlContext: SQLContext = new SQLContext(sc)
     val path = "/var/tmp/test_output2"
-    val pivot_df = MLibUtils.read_pivot_df(sc, sqlContext, path)
+    val pivot_df = IOUtils.read_pivot_df(sc, sqlContext, path)
     //
     // Execute PCA for each field
     //
@@ -52,7 +52,7 @@ object PCAMain {
     val fid = "test"
     val file_dir_prefix = "/var/tmp/";
     m_column_prefixes.foreach { column_prefix =>
-      val m_vector_rdd: RDD[Vector] = MLibUtils.to_vector_rdd(pivot_df, column_prefix)
+      val m_vector_rdd: RDD[Vector] = IOUtils.toVectorRDD(pivot_df, column_prefix)
       execute(m_vector_rdd, fid, file_dir_prefix)
     }
   }
@@ -65,7 +65,7 @@ object PCAMain {
     val mean_vector = m_summary_stats.mean.toArray
     val mean_filename = file_dir_prefix + "mean_vector." + fid + ".csv"
     val mean_stream: ByteArrayOutputStream = new ByteArrayOutputStream();
-    MLibUtils.write_vectors(mean_filename, List[Vector](Vectors.dense(mean_vector)), filename => {
+    IOUtils.write_vectors(mean_filename, List[Vector](Vectors.dense(mean_vector)), filename => {
       new BufferedWriter(new OutputStreamWriter(mean_stream))
     })
     val mean_stream_tuple = (mean_filename, mean_stream)
@@ -80,7 +80,7 @@ object PCAMain {
     //
     val eigenvectors_filename = file_dir_prefix + "eigenvectors." + fid + ".csv"
     val eigenvector_stream: ByteArrayOutputStream = new ByteArrayOutputStream();
-    MLibUtils.write_matrix(eigenvectors_filename, eigenvectors, filename => {
+    IOUtils.write_matrix(eigenvectors_filename, eigenvectors, filename => {
       new BufferedWriter(new OutputStreamWriter(eigenvector_stream))
     })
     val eigenvector_stream_tuple = (eigenvectors_filename, eigenvector_stream)
@@ -89,7 +89,7 @@ object PCAMain {
     //
     val eigenvalue_filename = file_dir_prefix + "eigenvalues." + fid + ".csv"
     val eigenvalue_stream: ByteArrayOutputStream = new ByteArrayOutputStream()
-    MLibUtils.write_vectors(eigenvalue_filename, List[Vector](eigenvalues), filename => {
+    IOUtils.write_vectors(eigenvalue_filename, List[Vector](eigenvalues), filename => {
       new BufferedWriter(new OutputStreamWriter(eigenvalue_stream))
     })
     val eigenvalue_stream_tuple = (eigenvalue_filename, eigenvalue_stream)
@@ -99,7 +99,7 @@ object PCAMain {
     val sample_arr: Array[Vector] = m_vector_rdd.takeSample(false, 10, 47)
     val sample_filename = file_dir_prefix + "samples." + fid + ".csv"
     val sample_stream: ByteArrayOutputStream = new ByteArrayOutputStream()
-    MLibUtils.write_vectors(sample_filename, sample_arr, filename => {
+    IOUtils.write_vectors(sample_filename, sample_arr, filename => {
       new BufferedWriter(new OutputStreamWriter(sample_stream))
     })
     val sample_stream_tuple = (sample_filename, sample_stream)

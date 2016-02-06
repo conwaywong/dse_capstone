@@ -1,7 +1,7 @@
 package org.ucsd.dse.capstone.anomaly
 
 /* Other UCSD Utilities */
-import org.ucsd.dse.capstone.traffic._
+import org.ucsd.dse.capstone.traffic.MLibUtils
 
 /* Spark libraries */
 import org.apache.spark.SparkContext
@@ -38,7 +38,7 @@ class MahalanobisOutlier(sc:SparkContext) extends AnomalyDetector
         _fit = true
     }
     
-    def mahalanobis(obso: RDD[(BDV[Double], Long)]) : RDD[(Double, Long)] =
+    def mahalanobis(obso: RDD[(Array[Int], BDV[Double])]) : RDD[(Array[Int], Double)] =
     {
         require(_fit, "Must call fit before calculating mahalanobis distance")
         
@@ -46,18 +46,18 @@ class MahalanobisOutlier(sc:SparkContext) extends AnomalyDetector
         val Blocation:Broadcast[BDV[Double]] = _sc.broadcast(BDV(_location.toArray))
         val Bsig_i:Broadcast[BDM[Double]] = _sc.broadcast(_sig_i)
         
-        obso.map{ case(o,i)=> 
-            (sqrt(sum((o-Blocation.value).asDenseMatrix*Bsig_i.value*(o-Blocation.value).asDenseMatrix.t, Axis._1).valueAt(0)), i)}
+        obso.map{ case(i,o)=> 
+            (i, sqrt(sum((o-Blocation.value).asDenseMatrix*Bsig_i.value*(o-Blocation.value).asDenseMatrix.t, Axis._1).valueAt(0)))}
     }
 
-    def DetectOutlier(X : RDD[(Vector,Long)], stdd:Double = 1.0) : RDD[Vector] = 
+    def DetectOutlier(X : RDD[(Array[Int], Vector)], stdd:Double = 1.0) : RDD[(Array[Int], Vector)] = 
     {
         require(_fit, "Must call fit before attempting to Detect Outliers")
         
         val Blocation:Broadcast[BDV[Double]] = _sc.broadcast(BDV(_location.toArray))
-        val mahalanobis_dist:RDD[(Double, Long)] = mahalanobis(X.map{ case(o,i)=>(BDV(o.toArray)-Blocation.value,i) })
+        val mahalanobis_dist:RDD[(Array[Int], Double)] = mahalanobis(X.map{ case(i,o)=>(i, BDV(o.toArray)-Blocation.value) })
 
-        val stats:StatCounter = mahalanobis_dist.map{case(o,i)=>o}.stats()
+        val stats:StatCounter = mahalanobis_dist.map{case(i,o)=>o}.stats()
         
         /* Figure out what the threshold value is based on std-dev */
         val threshold:Double = stats.mean + (stats.variance*stdd)
@@ -66,12 +66,12 @@ class MahalanobisOutlier(sc:SparkContext) extends AnomalyDetector
         /* Could change this to be a join, but as the number of outliers SHOULD be small it's faster
          * to just collect the results and just let them be broadcasted for the final filtering.
          */
-        val outlier:Set[Long] = mahalanobis_dist.filter{ case(o,i)=>o > Bthreshold.value }.map{ case(o,i)=>i }.collect().toSet
-        val Boutlier:Broadcast[Set[Long]] = _sc.broadcast(outlier)
-        X.filter { case(o,i)=>Boutlier.value.contains(i) }.map{ case(o,i)=>o }
+        val outlier:Set[Array[Int]] = mahalanobis_dist.filter{ case(i,o)=>o > Bthreshold.value }.map{ case(i,o)=>i }.collect().toSet
+        val Boutlier:Broadcast[Set[Array[Int]]] = _sc.broadcast(outlier)
+        X.filter { case(i,o)=>Boutlier.value.contains(i) }
     }
     
-    private def calc_cov(m_vector_rdd: RDD[Vector]) : BDM[Double] = 
+    private def calc_cov(m_vector_rdd: RDD[Vector]) : BDM[Double] =
     {
         val row_matrix:RowMatrix = new RowMatrix(m_vector_rdd)
         MLibUtils.toBreeze(row_matrix.computeCovariance())
