@@ -6,12 +6,7 @@ import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.rdd.RDD
 
-import org.ucsd.dse.capstone.traffic._ /*DefaultSparkTemplate
-import org.ucsd.dse.capstone.traffic.Fields
-import org.ucsd.dse.capstone.traffic.PivotHandler
-import org.ucsd.dse.capstone.traffic.SparkTemplate
-import org.ucsd.dse.capstone.traffic.StandardPivotHandler
-import org.ucsd.dse.capstone.traffic.MLibUtils*/
+import org.ucsd.dse.capstone.traffic._ 
 
 object AnomalyMain {
     private def parseVector(line: String): Vector =
@@ -27,24 +22,24 @@ object AnomalyMain {
 
     def do_execute(sc: SparkContext)
     {
-        /*val files:List[String] = List("station_5min/d11_text_station_5min_2010_01_*.txt.gz")
-        val m_string_rdd:RDD[String] = sc.textFile(files.mkString(","))*/
+        val sqlContext: SQLContext = new SQLContext(sc)
+        val files: List[String] = List("/Users/johngill/Documents/DSE/jgilliii/dse_capstone/ml/scala/traffic/data/d11_text_station_5min_2010_01_*.txt.gz")
+        val output_dir = "/tmp/test_output2"
         
-        val files:List[String] = List("/Users/johngill/Documents/DSE/jgilliii/dse_capstone/ml/notebooks/t_data.csv")
-        val data_rdd:RDD[(Array[Int], Vector)] = sc.textFile(files.mkString(",")).zipWithIndex().map{ case(o,i) => (Array(i.toInt), parseVector(o)) }
+        val pivot_executor: Executor[Null] = new PivotExecutor(files, output_dir, false)
+        pivot_executor.execute(sc, sqlContext)
         
-//        val sqlContext: SQLContext = new SQLContext(sc)
-//        val path = "data location"
-//        val data_rdd: RDD[(Array[Int], Vector)] = IOUtils.toVectorRDD_withKeys(IOUtils.read_pivot_df(sc, sqlContext, path), PivotColumnPrefixes.SPEED)
+        //val files:List[String] = List("/Users/johngill/Documents/DSE/jgilliii/dse_capstone/ml/notebooks/t_data.csv")
+        //val data_rdd:RDD[(Array[Int], Vector)] = sc.textFile(files.mkString(",")).zipWithIndex().map{ case(o,i) => (Array(i.toInt), parseVector(o)) }
+        
+        val data_rdd: RDD[(Array[Int], Vector)] = IOUtils.toVectorRDD_withKeys(IOUtils.read_pivot_df(sc, sqlContext, output_dir), PivotColumnPrefixes.SPEED)
         
         val mahala:AnomalyDetector = new MahalanobisOutlier(sc)
         mahala.fit(data_rdd.map{x => x._2})
-        val m_rslts = mahala.DetectOutlier(data_rdd, 1.0).collect()
-        println(m_rslts.length)
-        m_rslts.foreach { r => println(r._1.deep.mkString(",") + " " + r._2) }
+        mahala.DetectOutlier(data_rdd, 3.0).collect().foreach { r => println(r._1.deep.mkString(",") + " " + r._2) }
         
         val kmeans:AnomalyDetector = new KMeansOutlier(sc, 5, 10)
         kmeans.fit(data_rdd.map{x => x._2})
-        kmeans.DetectOutlier(data_rdd, 0.1).collect().foreach { r => println(r._1.deep.mkString(",") + " " + r._2) }
+        kmeans.DetectOutlier(data_rdd, 4.0).collect().foreach { r => println(r._1.deep.mkString(",") + " " + r._2) }
     }
 }

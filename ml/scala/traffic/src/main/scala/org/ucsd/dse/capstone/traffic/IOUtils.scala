@@ -126,7 +126,9 @@ object IOUtils
         // Note the casting of the Seq[Column] into var args
         // convert to RDD[Vector]
         val rddRows = pivotDF.select(columns: _*).rdd
-        rddRows.map(x => Vectors.dense(x.toSeq.map(_.asInstanceOf[Double]).toArray))
+        rddRows.map(row => Vectors.dense(row.toSeq.toArray.map {
+            x => if(x.isInstanceOf[Double]) x.asInstanceOf[Double] else x.asInstanceOf[Int]
+        }))
     }
 
     /* Wrapper to write to file */

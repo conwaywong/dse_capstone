@@ -17,7 +17,7 @@ import org.apache.spark.sql.SQLContext
 /**
  * @author dyerke
  */
-class PivotExecutor(files: List[String], output_path: String) extends Executor[Null] {
+class PivotExecutor(files: List[String], output_path: String, s3out:Boolean=true) extends Executor[Null] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*) = {
     // execute pivot
@@ -102,7 +102,10 @@ class PivotExecutor(files: List[String], output_path: String) extends Executor[N
           EMPTY_ROW
         }
     }.filter { row: Row => row.size > 0 }
-    row_rdd.saveAsTextFile(output_path, classOf[BZip2Codec])
+    if(s3out)
+        row_rdd.saveAsTextFile(output_path, classOf[BZip2Codec])
+    else
+        row_rdd.saveAsTextFile(output_path)
     null
   }
 }
