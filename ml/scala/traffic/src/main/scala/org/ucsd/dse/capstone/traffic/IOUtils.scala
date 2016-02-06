@@ -62,7 +62,7 @@ object IOUtils
         (schema, m_observation_times)
     }
     
-    private def get_col_prefix(col_enum:Int) : String = 
+    def get_col_prefix(col_enum:Int) : String = 
     {
        col_enum match {
             case PivotColumnPrefixes.TOTAL_FLOW => "total_flow_"

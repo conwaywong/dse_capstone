@@ -14,17 +14,15 @@ import scala.collection.mutable.ListBuffer
 
 import org.apache.commons.io.FilenameUtils
 import org.apache.spark.SparkContext
+import org.apache.spark.annotation.Experimental
 import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Matrix
-import org.apache.spark.mllib.linalg.MatrixUDT
 import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.types.SQLUserDefinedType
 
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
@@ -76,12 +74,13 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     val results: ListBuffer[PCAResult] = new ListBuffer[PCAResult]()
     m_column_prefixes.foreach { column_prefix =>
       val m_vector_rdd: RDD[Vector] = IOUtils.toVectorRDD(pivot_df, column_prefix)
-      results += do_execute(m_vector_rdd, output_param.m_output_fid, output_param.m_output_dir)
+      results += do_execute(m_vector_rdd, column_prefix, output_param.m_output_fid, output_param.m_output_dir)
     }
     new PCAResults(results(0), results(1), results(2))
   }
 
-  private def do_execute(m_vector_rdd: RDD[Vector], fid: String, output_dir: String): PCAResult = {
+  private def do_execute(m_vector_rdd: RDD[Vector], obs_enum: Int, fid: String, output_dir: String): PCAResult = {
+    val filename_prefix = IOUtils.get_col_prefix(obs_enum)
     //
     // calculate summary stats
     //
@@ -90,7 +89,7 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     // obtain mean vector
     //
     val mean_vector = m_summary_stats.mean.toArray
-    val mean_filename = output_dir + "mean_vector." + fid + ".csv"
+    val mean_filename = output_dir + filename_prefix + "mean_vector." + fid + ".csv"
     val mean_stream: ByteArrayOutputStream = new ByteArrayOutputStream();
     IOUtils.write_vectors(mean_filename, List[Vector](Vectors.dense(mean_vector)), filename => {
       new BufferedWriter(new OutputStreamWriter(mean_stream))
@@ -103,7 +102,7 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     for (i <- 0 to std_vector.length - 1) {
       std_vector.update(i, Math.sqrt(std_vector(i)))
     }
-    val std_filename = output_dir + "std_vector." + fid + ".csv"
+    val std_filename = output_dir + filename_prefix + "std_vector." + fid + ".csv"
     val std_stream: ByteArrayOutputStream = new ByteArrayOutputStream();
     IOUtils.write_vectors(std_filename, List[Vector](Vectors.dense(std_vector)), filename => {
       new BufferedWriter(new OutputStreamWriter(std_stream))
@@ -117,7 +116,7 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     //
     // eigenvectors written out as column-major matrix
     //
-    val eigenvectors_filename = output_dir + "eigenvectors." + fid + ".csv"
+    val eigenvectors_filename = output_dir + filename_prefix + "eigenvectors." + fid + ".csv"
     val eigenvectors_stream: ByteArrayOutputStream = new ByteArrayOutputStream();
     IOUtils.write_matrix(eigenvectors_filename, eigenvectors, filename => {
       new BufferedWriter(new OutputStreamWriter(eigenvectors_stream))
@@ -126,7 +125,7 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     //
     // eigenvalues written out as one row
     //
-    val eigenvalues_filename = output_dir + "eigenvalues." + fid + ".csv"
+    val eigenvalues_filename = output_dir + filename_prefix + "eigenvalues." + fid + ".csv"
     val eigenvalues_stream: ByteArrayOutputStream = new ByteArrayOutputStream()
     IOUtils.write_vectors(eigenvalues_filename, List[Vector](eigenvalues), filename => {
       new BufferedWriter(new OutputStreamWriter(eigenvalues_stream))
@@ -136,7 +135,7 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     // take a sample of 10 vectors
     //
     val sample_arr: Array[Vector] = m_vector_rdd.takeSample(false, 10, 47)
-    val sample_filename = output_dir + "samples." + fid + ".csv"
+    val sample_filename = output_dir + filename_prefix + "samples." + fid + ".csv"
     val sample_stream: ByteArrayOutputStream = new ByteArrayOutputStream()
     IOUtils.write_vectors(sample_filename, sample_arr, filename => {
       new BufferedWriter(new OutputStreamWriter(sample_stream))
