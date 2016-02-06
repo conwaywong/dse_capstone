@@ -183,7 +183,7 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
   private def process_stream(client: AmazonS3, bucket_name: String, output_dir: String, filename: String, stream: ByteArrayOutputStream): Unit = {
     val output_bucket_name = bucket_name
     val simple_filename = filename.split("/").last
-    val output_bucket_key = simple_filename
+    val output_bucket_key = output_dir + simple_filename
     //
     val bytes: Array[Byte] = stream.toByteArray();
     //
