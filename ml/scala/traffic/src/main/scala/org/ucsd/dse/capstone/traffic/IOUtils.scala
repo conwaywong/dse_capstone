@@ -113,14 +113,14 @@ object IOUtils
         val (schema, obos_times) = get_schema()
 
         // Build total_flow column names
-        val columns: Seq[Column] = Seq()
+        var columns: Seq[Column] = Seq()
         if(includeKeys)
         {
             columns :+ Seq(schema.fieldNames.slice(0, keyFldCnt).foreach { f => new Column(f) })
             nCols += keyFldCnt
         }
         for (i <- obos_times)
-            columns :+ new Column(s"${col_prefix}${i}")
+            columns :+ Seq(new Column(s"${col_prefix}${i}"))
         require(columns.length == nCols, "Columns is not " + nCols)
 
         // create DataFrame which only contains the desired columns

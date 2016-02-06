@@ -28,24 +28,23 @@ object AnomalyMain {
     def do_execute(sc: SparkContext)
     {
         /*val files:List[String] = List("station_5min/d11_text_station_5min_2010_01_*.txt.gz")
-        val m_string_rdd:RDD[String] = sc.textFile(files.mkString(","))
+        val m_string_rdd:RDD[String] = sc.textFile(files.mkString(","))*/
         
-        val handler:PivotHandler = new StandardPivotHandler(sc, Fields.Speed)
-        val m_vector_rdd:RDD[Vector] = handler.pivot(m_string_rdd)*/
+        val files:List[String] = List("/Users/johngill/Documents/DSE/jgilliii/dse_capstone/ml/notebooks/t_data.csv")
+        val data_rdd:RDD[(Array[Int], Vector)] = sc.textFile(files.mkString(",")).zipWithIndex().map{ case(o,i) => (Array(i.toInt), parseVector(o)) }
         
-        //val files:List[String] = List("/Users/johngill/Documents/DSE/jgilliii/dse_capstone/ml/notebooks/t_data.csv")
-        //val m_vector_rdd:RDD[Vector] = sc.textFile(files.mkString(","))
-        
-        val sqlContext: SQLContext = new SQLContext(sc)
-        val path = "data location"
-        val data_rdd: RDD[(Array[Int], Vector)] = IOUtils.toVectorRDD_withKeys(IOUtils.read_pivot_df(sc, sqlContext, path), PivotColumnPrefixes.SPEED)
+//        val sqlContext: SQLContext = new SQLContext(sc)
+//        val path = "data location"
+//        val data_rdd: RDD[(Array[Int], Vector)] = IOUtils.toVectorRDD_withKeys(IOUtils.read_pivot_df(sc, sqlContext, path), PivotColumnPrefixes.SPEED)
         
         val mahala:AnomalyDetector = new MahalanobisOutlier(sc)
         mahala.fit(data_rdd.map{x => x._2})
-        mahala.DetectOutlier(data_rdd, 3.0).collect().foreach(println)
+        val m_rslts = mahala.DetectOutlier(data_rdd, 1.0).collect()
+        println(m_rslts.length)
+        m_rslts.foreach { r => println(r._1.deep.mkString(",") + " " + r._2) }
         
         val kmeans:AnomalyDetector = new KMeansOutlier(sc, 10, 20)
         kmeans.fit(data_rdd.map{x => x._2})
-        kmeans.DetectOutlier(data_rdd, 4.5).collect().foreach(println)
+        kmeans.DetectOutlier(data_rdd, 0.1).collect().foreach { r => println(r._1.deep.mkString(",") + " " + r._2) }
     }
 }
