@@ -1,29 +1,28 @@
 package org.ucsd.dse.capstone.traffic
 
-// IO Writer imports
 import java.io.File
 import java.io.FileWriter
-import java.io.Writer
 import java.io.IOException
-import au.com.bytecode.opencsv.CSVWriter
+import java.io.Writer
+
+import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
+import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.mllib.linalg.Matrix
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.rdd.RDD
-
-// SQL Imports for DataFrames
-import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.Column
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.Row
-import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.types.DoubleType
-import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.sql.types.StructField
+import org.apache.spark.sql.types.StructType
 
-// Breeze imports
+import au.com.bytecode.opencsv.CSVWriter
 import breeze.io.{ CSVWriter => BCSV }
 import breeze.linalg.{ DenseMatrix => BDM }
 
@@ -113,15 +112,15 @@ object IOUtils
         val (schema, obos_times) = get_schema()
 
         // Build total_flow column names
-        val columns: Seq[Column] = Seq()
+        val columns: ListBuffer[Column] = new ListBuffer[Column]()
         if(includeKeys)
         {
-            columns :+ Seq(schema.fieldNames.slice(0, keyFldCnt).foreach { f => new Column(f) })
+            Seq(schema.fieldNames.slice(0, keyFldCnt).foreach { f => columns += new Column(f) })
             nCols += keyFldCnt
         }
         for (i <- obos_times)
-            columns :+ new Column(s"${col_prefix}${i}")
-        require(columns.length == nCols, "Columns is not " + nCols)
+            columns += new Column(s"${col_prefix}${i}")
+        require(columns.length == nCols, "obos_times.length= " + + obos_times.length + "; columns.length= " + + columns.length + "; Columns is not " + nCols)
 
         // create DataFrame which only contains the desired columns
         // Note the casting of the Seq[Column] into var args
