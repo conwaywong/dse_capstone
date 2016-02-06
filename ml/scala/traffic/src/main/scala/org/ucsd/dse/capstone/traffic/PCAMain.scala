@@ -11,14 +11,16 @@ import java.io.OutputStreamWriter
 import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.types.SQLUserDefinedType
+
+import com.amazonaws.auth.AWSCredentials
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.services.s3.AmazonS3Client
 
 /**
  * @author dyerke
@@ -27,6 +29,11 @@ object PCAMain {
 
   def main(args: Array[String]) {
     val template: SparkTemplate = new DefaultSparkTemplate()
+    //
+    val output_aws_id = null // replace with access id
+    val output_aws_secret_key = null // replace with secret key
+    val cred: AWSCredentials = new BasicAWSCredentials(output_aws_id, output_aws_secret_key)
+    val client: AmazonS3 = new AmazonS3Client(cred)
     //
     template.execute { sc => do_execute(sc) }
   }
@@ -120,6 +127,21 @@ object PCAMain {
     }
     println("perc variance explained= " + m_list_buffer)
   }
+
+  //  private def process_stream(client: AmazonS3, filename: String, stream: ByteArrayOutputStream): Unit = {
+  //    val output_bucket_name = "dse-team2-2014"
+  //    val simple_filename = filename.split("/").last
+  //    val output_bucket_key = "output/" + simple_filename
+  //    //
+  //    val bytes: Array[Byte] = stream.toByteArray();
+  //    //
+  //    val in_stream: InputStream = new ByteArrayInputStream(bytes)
+  //    val in_stream_meta: ObjectMetadata = new ObjectMetadata()
+  //    in_stream_meta.setContentLength(bytes.length)
+  //    //
+  //    println("Invoking client.putObject with parameters: %s,%s".format(output_bucket_name, output_bucket_key))
+  //    client.putObject(output_bucket_name, output_bucket_key, in_stream, in_stream_meta)
+  //  }
 
   private def process_stream(filename: String, stream: ByteArrayOutputStream): Unit = {
     val out: OutputStream = new BufferedOutputStream(new FileOutputStream(new File(filename)))
