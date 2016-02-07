@@ -5,6 +5,9 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 
 /**
+ * Driver that executes the pivot of traffic data from RDD[String] to RDD[Row] and serializes
+ * it to compressed text.
+ * 
  * @author dyerke
  */
 object PivotMain extends Logging {

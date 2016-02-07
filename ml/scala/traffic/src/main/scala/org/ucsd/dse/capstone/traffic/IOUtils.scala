@@ -33,6 +33,11 @@ object PivotColumnPrefixes
   val OCCUPANCY = 3
 }
 
+/**
+ * IO Utilities that deserializes RDD[Row] in compressed text format to RDD[Vector] for use in PCA
+ * 
+ * @author cwong, dyerke, jgill
+ */
 object IOUtils
 {
     var keyFldCnt:Int = 0

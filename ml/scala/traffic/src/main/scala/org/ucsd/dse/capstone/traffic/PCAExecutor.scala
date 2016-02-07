@@ -28,7 +28,14 @@ import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
 
 /**
+ * Defines the classes and logic that executes PCA against a specified compressed RDD[Row]. The
+ * result of the PCA is stored as CSV files in the location specified by S3Parameter and OutputParameter.
+ *
  * @author dyerke
+ */
+
+/**
+ * Class to hold the PCA result
  */
 class PCAResult(
     eigenvectors: Tuple2[Matrix, String],
@@ -43,17 +50,26 @@ class PCAResult(
   val m_samples = samples
 }
 
+/**
+ * Class to hold the PCAResult for each observation (total flow, speed, occupancy)
+ */
 class PCAResults(total_flow: PCAResult, speed: PCAResult, occupancy: PCAResult) {
   val m_total_flow = total_flow
   val m_speed = speed
   val m_occupancy = occupancy
 }
 
+/**
+ * Class used when having S3 as the destination output.
+ */
 class S3Parameter(client: AmazonS3, bucket_name: String) {
   val m_client = client
   val m_bucket_name = bucket_name
 }
 
+/**
+ * Class specifying the output directory and an output id to uniquely identify the output file.
+ */
 class OutputParameter(output_fid: String, output_dir: String) {
   val m_output_fid = output_fid
   val m_output_dir = FilenameUtils.normalizeNoEndSeparator(output_dir + "/").concat("/")
@@ -179,6 +195,9 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     new PCAResult(r_eigenvectors, r_eigenvalues, r_meanvector, r_stdvector, r_samples)
   }
 
+  /**
+   * Process the stream, writes out specified stream to an S3 bucket
+   */
   private def process_stream(client: AmazonS3, bucket_name: String, output_dir: String, filename: String, stream: ByteArrayOutputStream): Unit = {
     val output_bucket_name = bucket_name
     val simple_filename = filename.split("/").last
@@ -194,6 +213,9 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     client.putObject(output_bucket_name, output_bucket_key, in_stream, in_stream_meta)
   }
 
+  /**
+   * Process the stream, writes out specified stream to a CSV file
+   */
   private def process_stream(output_dir: String, filename: String, stream: ByteArrayOutputStream): Unit = {
     val dir = new File(output_dir)
     if (!dir.exists()) {

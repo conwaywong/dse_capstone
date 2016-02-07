@@ -15,6 +15,15 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.SQLContext
 
 /**
+ * Class that pivots an RDD[String] consisting of rows of individual traffic readings to
+ * columns of traffic readings. The resulting RDD[Row] consists of:
+ * 
+ * 288 total flow 5m readings as columns
+ * 288 occupancy 5m readings as columns
+ * 288 speed 5m readings as columns
+ * 
+ * Each row represents the readings for a traffic station in a given day.
+ * 
  * @author dyerke
  */
 class PivotExecutor(files: List[String], output_path: String, s3out:Boolean=true) extends Executor[Null] {

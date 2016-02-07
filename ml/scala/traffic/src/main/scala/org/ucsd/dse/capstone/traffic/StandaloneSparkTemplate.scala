@@ -4,6 +4,8 @@ import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
 /**
+ * An instance of SparkTemplate that submits the Spark Application programatically (without using spark-submit command line)
+ * 
  * @author dyerke
  */
 class StandaloneSparkTemplate(app_name: String = "SparkApp", hostname: String = "192.168.0.10", spark_home: String = "/usr/local/spark-1.6.0-bin-hadoop2.6") extends SparkTemplate {

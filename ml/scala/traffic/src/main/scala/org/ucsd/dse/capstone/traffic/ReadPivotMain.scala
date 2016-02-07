@@ -14,6 +14,11 @@ import org.apache.spark.sql.Column
 // Import Spark SQL data types
 import org.apache.spark.sql.types._
 
+/**
+ * Application that deserializes RDD[Row] from compressed text files into a Spark SQL DataFrame.
+ * 
+ * @cwong
+ */
 object ReadPivotMain extends Logging {
 
   def main(args: Array[String]) {

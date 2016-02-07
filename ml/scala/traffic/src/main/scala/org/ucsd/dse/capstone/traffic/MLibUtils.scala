@@ -58,14 +58,25 @@ object MLibUtils {
     val n = row_matrix.numCols().toInt
     require(k > 0 && k <= n, s"k = $k out of range (0, n = $n]")
 
+    //
+    // compute the Covariance matrix of the using RowMatrix.computeCovariance().
+    // Underlying implementation uses Spark RDD treeAggregate function, allowing
+    // for the distributed computation of the Covariance Matrix of the large dataset
+    //
     val Cov: BDM[Double] = toBreeze(row_matrix.computeCovariance())
 
+    //
+    // Execute Singular Value Decompisition on the Covariance Matrix using Breeze
+    //
     val brzSvd.SVD(u: BDM[Double], s: BDV[Double], _) = brzSvd(Cov)
 
     val eigenSum = s.data.sum
     val explainedVariance = s.data.map(_ / eigenSum)
 
     if (k == n) {
+      //
+      // return Eigenvectors and Eigenvalues
+      //
       (Matrices.dense(n, k, u.data), Vectors.dense(explainedVariance))
     } else {
       (Matrices.dense(n, k, Arrays.copyOfRange(u.data, 0, n * k)),
