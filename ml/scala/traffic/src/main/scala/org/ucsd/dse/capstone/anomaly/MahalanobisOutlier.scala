@@ -27,7 +27,6 @@ class MahalanobisOutlier(sc:SparkContext) extends AnomalyDetector
     private var _sig:BDM[Double] = null
     private var _sig_i:BDM[Double] = null
     private var _location:Vector = null
-    private val _sc:SparkContext = sc
     private var _fit:Boolean = false
 
     def fit(X: RDD[Vector])
@@ -43,8 +42,8 @@ class MahalanobisOutlier(sc:SparkContext) extends AnomalyDetector
         require(_fit, "Must call fit before calculating mahalanobis distance")
         
         /* Broadcast out the center (location) and co-variance matrix (sig) */
-        val Blocation:Broadcast[BDV[Double]] = _sc.broadcast(BDV(_location.toArray))
-        val Bsig_i:Broadcast[BDM[Double]] = _sc.broadcast(_sig_i)
+        val Blocation:Broadcast[BDV[Double]] = sc.broadcast(BDV(_location.toArray))
+        val Bsig_i:Broadcast[BDM[Double]] = sc.broadcast(_sig_i)
         
         obso.map{ case(i,o)=> 
             (i, sqrt(sum((o-Blocation.value).asDenseMatrix*Bsig_i.value*(o-Blocation.value).asDenseMatrix.t, Axis._1).valueAt(0)))}
@@ -54,20 +53,20 @@ class MahalanobisOutlier(sc:SparkContext) extends AnomalyDetector
     {
         require(_fit, "Must call fit before attempting to Detect Outliers")
         
-        val Blocation:Broadcast[BDV[Double]] = _sc.broadcast(BDV(_location.toArray))
+        val Blocation:Broadcast[BDV[Double]] = sc.broadcast(BDV(_location.toArray))
         val mahalanobis_dist:RDD[(Array[Int], Double)] = mahalanobis(X.map{ case(i,o)=>(i, BDV(o.toArray)-Blocation.value) })
 
         val stats:StatCounter = mahalanobis_dist.map{case(i,o)=>o}.stats()
         
         /* Figure out what the threshold value is based on std-dev */
         val threshold:Double = stats.mean + (stats.variance*stdd)
-        val Bthreshold:Broadcast[Double] = _sc.broadcast(threshold)
+        val Bthreshold:Broadcast[Double] = sc.broadcast(threshold)
         
         /* Could change this to be a join, but as the number of outliers SHOULD be small it's faster
          * to just collect the results and just let them be broadcasted for the final filtering.
          */
         val outlier:Array[Array[Int]] = mahalanobis_dist.filter{ case(i,o)=>o > Bthreshold.value }.map{ case(i,o)=>i }.collect()
-        val Boutlier:Broadcast[Array[Array[Int]]] = _sc.broadcast(outlier)
+        val Boutlier:Broadcast[Array[Array[Int]]] = sc.broadcast(outlier)
         X.filter { case(i,o) =>
             var found:Boolean = false
             var j:Int = 0
