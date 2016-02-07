@@ -15,7 +15,7 @@ import org.apache.spark.sql.Column
 import org.apache.spark.sql.types._
 
 /**
- * Application that deserializes RDD[Row] from compressed text files into a Spark SQL DataFrame.
+ * Driver that deserializes RDD[Row] from compressed text files into a Spark SQL DataFrame.
  * 
  * @cwong
  */

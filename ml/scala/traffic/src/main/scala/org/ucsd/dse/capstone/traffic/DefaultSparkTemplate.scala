@@ -4,6 +4,7 @@ import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
 
 /**
+ * An instance of SparkTemplate that relies on the command line spark-submit. See PCAMain, PivotMain for example usage.
  * @author dyerke
  */
 class DefaultSparkTemplate(app_name: String = "SparkApp") extends SparkTemplate {
