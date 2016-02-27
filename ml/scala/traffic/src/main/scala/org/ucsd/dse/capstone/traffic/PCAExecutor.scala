@@ -1,21 +1,12 @@
 package org.ucsd.dse.capstone.traffic
 
-import java.io.BufferedOutputStream
 import java.io.BufferedWriter
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.io.OutputStream
 import java.io.OutputStreamWriter
 
 import scala.collection.mutable.ListBuffer
 
-import org.apache.commons.io.FilenameUtils
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.Experimental
-import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Matrix
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.Vectors
@@ -24,57 +15,12 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.SQLContext
 
-import com.amazonaws.services.s3.AmazonS3
-import com.amazonaws.services.s3.model.ObjectMetadata
-
 /**
- * Defines the classes and logic that executes PCA against a specified compressed RDD[Row]. The
+ * Defines the logic that executes PCA against a specified compressed RDD[Row]. The
  * result of the PCA is stored as CSV files in the location specified by S3Parameter and OutputParameter.
  *
  * @author dyerke
  */
-
-/**
- * Class to hold the PCA result
- */
-class PCAResult(
-    eigenvectors: Tuple2[Matrix, String],
-    eigenvalues: Tuple2[Vector, String],
-    meanvector: Tuple2[Array[Double], String],
-    stdvector: Tuple2[Array[Double], String],
-    samples: Tuple2[Array[Vector], String]) {
-  val m_eig = eigenvectors
-  val m_eig_values = eigenvalues
-  val m_mean_vec = meanvector
-  val m_std_vec = stdvector
-  val m_samples = samples
-}
-
-/**
- * Class to hold the PCAResult for each observation (total flow, speed, occupancy)
- */
-class PCAResults(total_flow: PCAResult, speed: PCAResult, occupancy: PCAResult) {
-  val m_total_flow = total_flow
-  val m_speed = speed
-  val m_occupancy = occupancy
-}
-
-/**
- * Class used when having S3 as the destination output.
- */
-class S3Parameter(client: AmazonS3, bucket_name: String) {
-  val m_client = client
-  val m_bucket_name = bucket_name
-}
-
-/**
- * Class specifying the output directory and an output id to uniquely identify the output file.
- */
-class OutputParameter(output_fid: String, output_dir: String) {
-  val m_output_fid = output_fid
-  val m_output_dir = FilenameUtils.normalizeNoEndSeparator(output_dir + "/").concat("/")
-}
-
 class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: S3Parameter = null, k: Int = 30, log_output: Boolean = true) extends Executor[PCAResults] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*): PCAResults = {
@@ -86,7 +32,7 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     //
     // Execute PCA for each field
     //
-    val m_column_prefixes = List(PivotColumnPrefixes.TOTAL_FLOW, PivotColumnPrefixes.SPEED, PivotColumnPrefixes.OCCUPANCY)
+    val m_column_prefixes = List(TOTAL_FLOW, SPEED, OCCUPANCY)
     val results: ListBuffer[PCAResult] = new ListBuffer[PCAResult]()
     m_column_prefixes.foreach { column_prefix =>
       val m_vector_rdd: RDD[Vector] = IOUtils.toVectorRDD(pivot_df, column_prefix)
@@ -95,7 +41,7 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     new PCAResults(results(0), results(1), results(2))
   }
 
-  private def do_execute(m_vector_rdd: RDD[Vector], obs_enum: Int, fid: String, output_dir: String): PCAResult = {
+  private def do_execute(m_vector_rdd: RDD[Vector], obs_enum: PivotColumn, fid: String, output_dir: String): PCAResult = {
     val filename_prefix = IOUtils.get_col_prefix(obs_enum)
     //
     // calculate summary stats
@@ -166,9 +112,9 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
       val stream: ByteArrayOutputStream = tuple._2
       //
       if (s3_param != null) {
-        process_stream(s3_param.m_client, s3_param.m_bucket_name, output_param.m_output_dir, filename, stream)
+        IOUtils.process_stream(s3_param.m_client, s3_param.m_bucket_name, output_param.m_output_dir, filename, stream)
       } else {
-        process_stream(output_param.m_output_dir, filename, stream)
+        IOUtils.process_stream(output_param.m_output_dir, filename, stream)
       }
     }
     if (log_output) {
@@ -193,39 +139,5 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     val r_stdvector: Tuple2[Array[Double], String] = (std_vector, std_filename)
     val r_samples: Tuple2[Array[Vector], String] = (sample_arr, sample_filename)
     new PCAResult(r_eigenvectors, r_eigenvalues, r_meanvector, r_stdvector, r_samples)
-  }
-
-  /**
-   * Process the stream, writes out specified stream to an S3 bucket
-   */
-  private def process_stream(client: AmazonS3, bucket_name: String, output_dir: String, filename: String, stream: ByteArrayOutputStream): Unit = {
-    val output_bucket_name = bucket_name
-    val simple_filename = filename.split("/").last
-    val output_bucket_key = output_dir + simple_filename
-    //
-    val bytes: Array[Byte] = stream.toByteArray();
-    //
-    val in_stream: InputStream = new ByteArrayInputStream(bytes)
-    val in_stream_meta: ObjectMetadata = new ObjectMetadata()
-    in_stream_meta.setContentLength(bytes.length)
-    //
-    println("Invoking client.putObject with parameters: %s,%s".format(output_bucket_name, output_bucket_key))
-    client.putObject(output_bucket_name, output_bucket_key, in_stream, in_stream_meta)
-  }
-
-  /**
-   * Process the stream, writes out specified stream to a CSV file
-   */
-  private def process_stream(output_dir: String, filename: String, stream: ByteArrayOutputStream): Unit = {
-    val dir = new File(output_dir)
-    if (!dir.exists()) {
-      dir.mkdirs()
-    }
-    val out: OutputStream = new BufferedOutputStream(new FileOutputStream(new File(filename)))
-    try {
-      out.write(stream.toByteArray())
-    } finally {
-      out.close()
-    }
   }
 }

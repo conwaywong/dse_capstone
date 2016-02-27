@@ -17,16 +17,16 @@ import org.apache.spark.sql.SQLContext
 /**
  * Class that pivots an RDD[String] consisting of rows of individual traffic readings to
  * columns of traffic readings. The resulting RDD[Row] consists of:
- * 
+ *
  * 288 total flow 5m readings as columns
  * 288 occupancy 5m readings as columns
  * 288 speed 5m readings as columns
- * 
+ *
  * Each row represents the readings for a traffic station in a given day.
- * 
+ *
  * @author dyerke
  */
-class PivotExecutor(files: List[String], output_path: String, s3out:Boolean=true) extends Executor[Null] {
+class PivotExecutor(files: List[String], output_path: String, s3out: Boolean = true) extends Executor[Unit] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*) = {
     // execute pivot
@@ -111,10 +111,9 @@ class PivotExecutor(files: List[String], output_path: String, s3out:Boolean=true
           EMPTY_ROW
         }
     }.filter { row: Row => row.size > 0 }
-    if(s3out)
-        row_rdd.saveAsTextFile(output_path, classOf[BZip2Codec])
+    if (s3out)
+      row_rdd.saveAsTextFile(output_path, classOf[BZip2Codec])
     else
-        row_rdd.saveAsTextFile(output_path)
-    null
+      row_rdd.saveAsTextFile(output_path)
   }
 }

@@ -1,16 +1,28 @@
 package org.ucsd.dse.capstone.traffic
 
+import java.io.BufferedOutputStream
+import java.io.BufferedReader
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.io.Writer
 
 import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.DeveloperApi
+import org.apache.spark.annotation.Since
+import org.apache.spark.mllib.linalg.DenseMatrix
+import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.mllib.linalg.Matrix
+import org.apache.spark.mllib.linalg.MatrixUDT
 import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Column
@@ -19,166 +31,204 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.sql.types.SQLUserDefinedType
 import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.StructType
 
+import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.services.s3.model.ObjectMetadata
+
+import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
 import breeze.io.{ CSVWriter => BCSV }
 import breeze.linalg.{ DenseMatrix => BDM }
-
-object PivotColumnPrefixes 
-{
-  val TOTAL_FLOW = 1
-  val SPEED = 2
-  val OCCUPANCY = 3
-}
+import breeze.linalg.csvread
 
 /**
  * IO Utilities that deserializes RDD[Row] in compressed text format to RDD[Vector] for use in PCA
- * 
+ *
  * @author cwong, dyerke, jgill
  */
-object IOUtils
-{
-    var keyFldCnt:Int = 0
-    var FldCnt:Int = 288
-    
-    private def get_schema(): (StructType, IndexedSeq[String]) =
-    {
-        // Create Schema
-        var schema = new StructType()
+object IOUtils {
+  var keyFldCnt: Int = 0
+  var FldCnt: Int = 288
 
-        schema = schema.add(new StructField("station_id", IntegerType))
-        schema = schema.add(new StructField("district_id", IntegerType))
-        schema = schema.add(new StructField("year", IntegerType))
-        schema = schema.add(new StructField("day_of_year", IntegerType))
-        schema = schema.add(new StructField("day_of_week", IntegerType))
+  private def get_schema(): (StructType, IndexedSeq[String]) = {
+    // Create Schema
+    var schema = new StructType()
 
-        keyFldCnt = schema.fields.length
+    schema = schema.add(new StructField("station_id", IntegerType))
+    schema = schema.add(new StructField("district_id", IntegerType))
+    schema = schema.add(new StructField("year", IntegerType))
+    schema = schema.add(new StructField("day_of_year", IntegerType))
+    schema = schema.add(new StructField("day_of_week", IntegerType))
 
-        val m_obversation_prefixes = List("total_flow", "occupancy", "speed")
+    keyFldCnt = schema.fields.length
 
-        val m_observation_times: IndexedSeq[String] = (0 to (FldCnt-1)).map((_ * 5)).map(s => f"${s / 60}%02d${s % 60}%02dM")
-        m_obversation_prefixes.foreach { prefix =>
-            m_observation_times.foreach { time_str =>
-                schema = schema.add(StructField(s"${prefix}_${time_str}", DoubleType))
-            }
+    val m_obversation_prefixes = List("total_flow", "occupancy", "speed")
+
+    val m_observation_times: IndexedSeq[String] = (0 to (FldCnt - 1)).map((_ * 5)).map(s => f"${s / 60}%02d${s % 60}%02dM")
+    m_obversation_prefixes.foreach { prefix =>
+      m_observation_times.foreach { time_str =>
+        schema = schema.add(StructField(s"${prefix}_${time_str}", DoubleType))
+      }
+    }
+    (schema, m_observation_times)
+  }
+
+  def get_col_prefix(col_enum: PivotColumn): String = {
+    col_enum match {
+      case TOTAL_FLOW => "total_flow_"
+      case SPEED      => "speed_"
+      case OCCUPANCY  => "occupancy_"
+    }
+  }
+
+  def read_pivot_df(sc: SparkContext, sqlContext: SQLContext, path: String, table_name: String = "pivot_all"): DataFrame = {
+    // Create Schema
+    val (schema, m_observation_times) = get_schema()
+    // create DataFrame
+    val m_string_rdd: RDD[String] = sc.textFile(path)
+    val m_row_rdd: RDD[Row] = m_string_rdd.map { s =>
+      var s_csv: String = null
+      try {
+        s_csv = s.substring(1, s.length - 1) // Trim off leading and trailing '[', ']' characters
+        val s_arr: Array[String] = s_csv.split(",")
+        val key_arr: Array[Int] = s_arr.slice(0, keyFldCnt).map(_.toInt)
+        val values_arr: Array[Double] = s_arr.slice(keyFldCnt, s_arr.length).map(_.toDouble)
+        Row.fromSeq(List.concat(key_arr, values_arr))
+      } catch {
+        case e: Exception => throw new IllegalStateException("Error parsing " + s_csv, e)
+      }
+    }
+    val pivot_df: DataFrame = sqlContext.createDataFrame(m_row_rdd, schema)
+    // Register the DataFrames as a table.
+    pivot_df.registerTempTable(table_name)
+    pivot_df
+  }
+
+  def toVectorRDD_withKeys(pivotDF: DataFrame, colEnum: PivotColumn): RDD[(Array[Int], Vector)] = {
+    val data_rdd: RDD[Vector] = toVectorRDD(pivotDF, colEnum, true)
+    data_rdd.map { r => (r.toArray.slice(0, keyFldCnt).map(_.toInt), Vectors.dense(r.toArray.slice(keyFldCnt, FldCnt + keyFldCnt))) }
+  }
+
+  def toVectorRDD(pivotDF: DataFrame, colEnum: PivotColumn, includeKeys: Boolean = false): RDD[Vector] = {
+    val col_prefix = get_col_prefix(colEnum)
+    var nCols = FldCnt
+
+    val (schema, obos_times) = get_schema()
+
+    // Build total_flow column names
+    val columns: ListBuffer[Column] = new ListBuffer[Column]()
+    if (includeKeys) {
+      Seq(schema.fieldNames.slice(0, keyFldCnt).foreach { f => columns += new Column(f) })
+      nCols += keyFldCnt
+    }
+    for (i <- obos_times)
+      columns += new Column(s"${col_prefix}${i}")
+    require(columns.length == nCols, "obos_times.length= " + +obos_times.length + "; columns.length= " + +columns.length + "; Columns is not " + nCols)
+
+    // create DataFrame which only contains the desired columns
+    // Note the casting of the Seq[Column] into var args
+    // convert to RDD[Vector]
+    val rddRows = pivotDF.select(columns: _*).rdd
+    rddRows.map(row => Vectors.dense(row.toSeq.toArray.map {
+      x => if (x.isInstanceOf[Double]) x.asInstanceOf[Double] else x.asInstanceOf[Int]
+    }))
+  }
+
+  /* Wrapper to write to file */
+  def write_vectors(filename: String, m_list: TraversableOnce[Vector]): Unit = {
+    write_vectors(filename, m_list, filename => { new FileWriter(new File(filename)) })
+  }
+
+  def write_vectors(filename: String, m_list: TraversableOnce[Vector], new_writer: (String) => Writer): Unit = {
+    val csv_writer: CSVWriter = new CSVWriter(new_writer(filename))
+    try {
+      try {
+        m_list.foreach { a_vec: Vector =>
+          val m_vec = a_vec.toArray
+          val m_string_vec: Array[String] = new Array[String](m_vec.length)
+          for (i <- 0 to m_vec.length - 1) {
+            m_string_vec(i) = m_vec(i).toString()
+          }
+          csv_writer.writeNext(m_string_vec)
         }
-        (schema, m_observation_times)
+      } finally {
+        csv_writer.close()
+      }
+    } catch {
+      case e: IOException => throw new IllegalStateException(e)
     }
-    
-    def get_col_prefix(col_enum:Int) : String = 
-    {
-       col_enum match {
-            case PivotColumnPrefixes.TOTAL_FLOW => "total_flow_"
-            case PivotColumnPrefixes.SPEED      => "speed_"
-            case PivotColumnPrefixes.OCCUPANCY  => "occupancy_"
+  }
+
+  /* Wrapper to write to file */
+  def write_matrix(filename: String, m_matrix: Matrix): Unit = {
+    write_matrix(filename, m_matrix, filename => { new FileWriter(new File(filename)) })
+  }
+
+  def write_matrix(filename: String, m_matrix: Matrix, new_writer: (String) => Writer): Unit = {
+    // written out as column major matrix
+    val mat: BDM[Double] = new BDM[Double](m_matrix.numRows, m_matrix.numCols, m_matrix.toArray)
+    BCSV.write(new_writer(filename), IndexedSeq.tabulate(mat.rows, mat.cols)(mat(_, _).toString))
+  }
+
+  def read_matrix(filename: String): DenseMatrix = {
+    val file: File = new File(filename)
+    val breeze_dense_matrix: BDM[Double] = csvread(file)
+    MLibUtils.fromBreeze(breeze_dense_matrix).asInstanceOf[DenseMatrix]
+  }
+
+  def read_vectors(filename: String): List[DenseVector] = {
+    val csv_reader: CSVReader = new CSVReader(new BufferedReader(new FileReader(filename)))
+    try {
+      try {
+        val dlist: ListBuffer[DenseVector] = new ListBuffer[DenseVector]()
+        var csv_row: Array[String] = csv_reader.readNext()
+        while (csv_row != null) {
+          dlist += Vectors.dense(csv_row.map(_.toDouble)).asInstanceOf[DenseVector]
+          csv_row = csv_reader.readNext()
         }
+        dlist.toList
+      } finally {
+        csv_reader.close()
+      }
+    } catch {
+      case e: IOException => throw new IllegalStateException(e)
     }
-    
-    def read_pivot_df(sc: SparkContext, sqlContext: SQLContext, path: String, table_name: String = "pivot_all"): DataFrame = 
-    {
-        // Create Schema
-        val (schema, m_observation_times) = get_schema()
-        // create DataFrame
-        val m_string_rdd: RDD[String] = sc.textFile(path)
-        val m_row_rdd: RDD[Row] = m_string_rdd.map { s =>
-            var s_csv: String = null
-            try
-            {
-                s_csv = s.substring(1, s.length - 1) // Trim off leading and trailing '[', ']' characters
-                val s_arr: Array[String] = s_csv.split(",")
-                val key_arr: Array[Int] = s_arr.slice(0, keyFldCnt).map(_.toInt)
-                val values_arr: Array[Double] = s_arr.slice(keyFldCnt, s_arr.length).map(_.toDouble)
-                Row.fromSeq(List.concat(key_arr, values_arr))
-            }
-            catch
-            {
-                case e: Exception => throw new IllegalStateException("Error parsing " + s_csv, e)
-            }
-        }
-        val pivot_df: DataFrame = sqlContext.createDataFrame(m_row_rdd, schema)
-        // Register the DataFrames as a table.
-        pivot_df.registerTempTable(table_name)
-        pivot_df
+  }
+
+  /**
+   * Process the stream, writes out specified stream to an S3 bucket
+   */
+  def process_stream(client: AmazonS3, bucket_name: String, output_dir: String, filename: String, stream: ByteArrayOutputStream): Unit = {
+    val output_bucket_name = bucket_name
+    val simple_filename = filename.split("/").last
+    val output_bucket_key = output_dir + simple_filename
+    //
+    val bytes: Array[Byte] = stream.toByteArray();
+    //
+    val in_stream: InputStream = new ByteArrayInputStream(bytes)
+    val in_stream_meta: ObjectMetadata = new ObjectMetadata()
+    in_stream_meta.setContentLength(bytes.length)
+    //
+    println("Invoking client.putObject with parameters: %s,%s".format(output_bucket_name, output_bucket_key))
+    client.putObject(output_bucket_name, output_bucket_key, in_stream, in_stream_meta)
+  }
+
+  /**
+   * Process the stream, writes out specified stream to a CSV file
+   */
+  def process_stream(output_dir: String, filename: String, stream: ByteArrayOutputStream): Unit = {
+    val dir = new File(output_dir)
+    if (!dir.exists()) {
+      dir.mkdirs()
     }
-    
-    def toVectorRDD_withKeys(pivotDF: DataFrame, colEnum: Int) : RDD[(Array[Int], Vector)] =
-    {
-        val data_rdd:RDD[Vector] = toVectorRDD(pivotDF, colEnum, true)
-        data_rdd.map { r => (r.toArray.slice(0, keyFldCnt).map(_.toInt), Vectors.dense(r.toArray.slice(keyFldCnt, FldCnt+keyFldCnt))) }
+    val out: OutputStream = new BufferedOutputStream(new FileOutputStream(new File(filename)))
+    try {
+      out.write(stream.toByteArray())
+    } finally {
+      out.close()
     }
-
-    def toVectorRDD(pivotDF: DataFrame, colEnum: Int, includeKeys:Boolean = false): RDD[Vector] =
-    {
-        val col_prefix = get_col_prefix(colEnum)
-        var nCols = FldCnt
-
-        val (schema, obos_times) = get_schema()
-
-        // Build total_flow column names
-        val columns: ListBuffer[Column] = new ListBuffer[Column]()
-        if(includeKeys)
-        {
-            Seq(schema.fieldNames.slice(0, keyFldCnt).foreach { f => columns += new Column(f) })
-            nCols += keyFldCnt
-        }
-        for (i <- obos_times)
-            columns += new Column(s"${col_prefix}${i}")
-        require(columns.length == nCols, "obos_times.length= " + + obos_times.length + "; columns.length= " + + columns.length + "; Columns is not " + nCols)
-
-        // create DataFrame which only contains the desired columns
-        // Note the casting of the Seq[Column] into var args
-        // convert to RDD[Vector]
-        val rddRows = pivotDF.select(columns: _*).rdd
-        rddRows.map(row => Vectors.dense(row.toSeq.toArray.map {
-            x => if(x.isInstanceOf[Double]) x.asInstanceOf[Double] else x.asInstanceOf[Int]
-        }))
-    }
-
-    /* Wrapper to write to file */
-    def write_vectors(filename: String, m_list: TraversableOnce[Vector]): Unit =
-    {
-        write_vectors(filename, m_list, filename => { new FileWriter(new File(filename)) })
-    }
-
-    def write_vectors(filename: String, m_list: TraversableOnce[Vector], new_writer: (String) => Writer): Unit =
-    {
-        val csv_writer: CSVWriter = new CSVWriter(new_writer(filename))
-        try
-        {
-            try
-            {
-                m_list.foreach { a_vec: Vector =>
-                    val m_vec = a_vec.toArray
-                    val m_string_vec: Array[String] = new Array[String](m_vec.length)
-                    for (i <- 0 to m_vec.length - 1) {
-                        m_string_vec(i) = m_vec(i).toString()
-                    }
-                    csv_writer.writeNext(m_string_vec)
-                }
-            }
-            finally
-            {
-                csv_writer.close()
-            }
-        }
-        catch
-        {
-            case e: IOException => throw new IllegalStateException(e)
-        }
-    }
-
-    /* Wrapper to write to file */
-    def write_matrix(filename: String, m_matrix: Matrix): Unit =
-    {
-        write_matrix(filename, m_matrix, filename => { new FileWriter(new File(filename)) })
-    }
-
-    def write_matrix(filename: String, m_matrix: Matrix, new_writer: (String) => Writer): Unit =
-    {
-        // written out as column major matrix
-        val mat: BDM[Double] = new BDM[Double](m_matrix.numRows, m_matrix.numCols, m_matrix.toArray)
-        BCSV.write(new_writer(filename), IndexedSeq.tabulate(mat.rows, mat.cols)(mat(_, _).toString))
-    }
+  }
 }
