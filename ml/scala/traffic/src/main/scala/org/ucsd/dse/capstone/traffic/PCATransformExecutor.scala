@@ -20,7 +20,7 @@ import breeze.linalg.{ DenseVector => BDV }
  *
  * @author dyerke
  */
-class PCATransformExecutor(parameters: List[PCATransformParameter], paths: List[String], s3_param: S3Parameter = null) extends Executor[Unit] {
+class PCATransformExecutor(parameters: List[PCATransformParameter], paths: List[String]) extends Executor[Unit] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*) = {
     //
@@ -41,6 +41,7 @@ class PCATransformExecutor(parameters: List[PCATransformParameter], paths: List[
     val filename_prefix = IOUtils.get_col_prefix(parameter.m_column)
     val fid = parameter.m_output_param.m_output_fid
     val output_dir = parameter.m_output_param.m_output_dir
+    val s3_param= parameter.m_output_param.m_s3_param
     //
     // execute transform
     //

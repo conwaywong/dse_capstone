@@ -21,7 +21,7 @@ import org.apache.spark.sql.SQLContext
  *
  * @author dyerke
  */
-class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: S3Parameter = null, k: Int = 30, log_output: Boolean = true) extends Executor[PCAResults] {
+class PCAExecutor(paths: List[String], output_param: OutputParameter, k: Int = 30, log_output: Boolean = true) extends Executor[PCAResults] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*): PCAResults = {
     //
@@ -36,12 +36,15 @@ class PCAExecutor(paths: List[String], output_param: OutputParameter, s3_param: 
     val results: ListBuffer[PCAResult] = new ListBuffer[PCAResult]()
     m_column_prefixes.foreach { column_prefix =>
       val m_vector_rdd: RDD[Vector] = IOUtils.toVectorRDD(pivot_df, column_prefix)
-      results += do_execute(m_vector_rdd, column_prefix, output_param.m_output_fid, output_param.m_output_dir)
+      results += do_execute(m_vector_rdd, column_prefix, output_param)
     }
     new PCAResults(results(0), results(1), results(2))
   }
 
-  private def do_execute(m_vector_rdd: RDD[Vector], obs_enum: PivotColumn, fid: String, output_dir: String): PCAResult = {
+  private def do_execute(m_vector_rdd: RDD[Vector], obs_enum: PivotColumn, output_param: OutputParameter): PCAResult = {
+    val fid: String = output_param.m_output_fid
+    val output_dir: String = output_param.m_output_dir
+    val s3_param: S3Parameter = output_param.m_s3_param
     val filename_prefix = IOUtils.get_col_prefix(obs_enum)
     //
     // calculate summary stats

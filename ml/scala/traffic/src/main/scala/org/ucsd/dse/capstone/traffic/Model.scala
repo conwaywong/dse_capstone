@@ -61,7 +61,8 @@ class S3Parameter(client: AmazonS3, bucket_name: String) {
 /**
  * Class specifying the output directory and an output id to uniquely identify the output file.
  */
-class OutputParameter(output_fid: String, output_dir: String) {
+class OutputParameter(output_fid: String, output_dir: String, s3_param: S3Parameter = null) {
   val m_output_fid = output_fid
   val m_output_dir = FilenameUtils.normalizeNoEndSeparator(output_dir + "/").concat("/")
+  val m_s3_param= s3_param
 }

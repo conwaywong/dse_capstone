@@ -27,9 +27,6 @@ object PCATransformMain {
     //
     val mean_path = "/var/tmp/test_results/output/total_flow_mean_vector.test.csv"
     val eigenvectors_path = "/var/tmp/test_results/output/total_flow_eigenvectors.test.csv"
-
-    //
-    // column: PivotColumn, k: Int = 2, mean: DenseVector, eigenvectors: DenseMatrix, output_param: OutputParameter
     //
     val column: PivotColumn = TOTAL_FLOW
     val k: Int = 2
