@@ -1,13 +1,9 @@
 package org.ucsd.dse.capstone.traffic
 
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.DenseMatrix
 import org.apache.spark.mllib.linalg.DenseVector
-import org.apache.spark.mllib.linalg.MatrixUDT
-import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.types.SQLUserDefinedType
 
 /**
  * Driver that executes PCA transform against a compressed RDD[Row]

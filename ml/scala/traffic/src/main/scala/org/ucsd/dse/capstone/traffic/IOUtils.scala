@@ -10,19 +10,18 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.io.OutputStream
+import java.io.Reader
 import java.io.Writer
 
 import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.DenseMatrix
 import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.mllib.linalg.Matrix
-import org.apache.spark.mllib.linalg.MatrixUDT
 import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Column
@@ -31,18 +30,18 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.IntegerType
-import org.apache.spark.sql.types.SQLUserDefinedType
 import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.StructType
 
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
+import com.amazonaws.services.s3.model.S3Object
 
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
+import breeze.io.{ CSVReader => BCSVR }
 import breeze.io.{ CSVWriter => BCSV }
 import breeze.linalg.{ DenseMatrix => BDM }
-import breeze.linalg.csvread
 
 /**
  * IO Utilities that deserializes RDD[Row] in compressed text format to RDD[Vector] for use in PCA
@@ -174,13 +173,50 @@ object IOUtils {
   }
 
   def read_matrix(filename: String): DenseMatrix = {
-    val file: File = new File(filename)
-    val breeze_dense_matrix: BDM[Double] = csvread(file)
-    MLibUtils.fromBreeze(breeze_dense_matrix).asInstanceOf[DenseMatrix]
+    read_matrix(() => {
+      new BufferedReader(new FileReader(new File(filename)))
+    })
+  }
+
+  def read_matrix(new_reader: () => Reader): DenseMatrix = {
+    val reader: Reader = new_reader()
+    try {
+      try {
+        var mat = BCSVR.read(reader)
+        mat = mat.takeWhile(line => line.length != 0 && line.head.nonEmpty) // empty lines at the end
+        if (mat.length == 0) {
+          val breeze_dense_matrix: BDM[Double] = BDM.zeros[Double](0, 0)
+          MLibUtils.fromBreeze(breeze_dense_matrix).asInstanceOf[DenseMatrix]
+        } else {
+          val breeze_dense_matrix: BDM[Double] = BDM.tabulate(mat.length, mat.head.length)((i, j) => mat(i)(j).toDouble)
+          MLibUtils.fromBreeze(breeze_dense_matrix).asInstanceOf[DenseMatrix]
+        }
+      } finally {
+        if (reader != null) {
+          reader.close()
+        }
+      }
+    } catch {
+      case e: IOException => throw new IllegalStateException(e)
+    }
+  }
+
+  def read_matrix(client: AmazonS3, bucket_name: String, file_key: String): DenseMatrix = {
+    val s3_object: S3Object = client.getObject(bucket_name, file_key)
+    read_matrix(() => {
+      val in: InputStream = s3_object.getObjectContent
+      new BufferedReader(new InputStreamReader(in))
+    })
   }
 
   def read_vectors(filename: String): List[DenseVector] = {
-    val csv_reader: CSVReader = new CSVReader(new BufferedReader(new FileReader(filename)))
+    read_vectors(() => {
+      new BufferedReader(new FileReader(filename))
+    })
+  }
+
+  def read_vectors(new_reader: () => Reader): List[DenseVector] = {
+    val csv_reader: CSVReader = new CSVReader(new_reader())
     try {
       try {
         val dlist: ListBuffer[DenseVector] = new ListBuffer[DenseVector]()
@@ -196,6 +232,14 @@ object IOUtils {
     } catch {
       case e: IOException => throw new IllegalStateException(e)
     }
+  }
+
+  def read_vectors(client: AmazonS3, bucket_name: String, file_key: String): List[DenseVector] = {
+    val s3_object: S3Object = client.getObject(bucket_name, file_key)
+    read_vectors(() => {
+      val in: InputStream = s3_object.getObjectContent
+      new BufferedReader(new InputStreamReader(in))
+    })
   }
 
   /**
