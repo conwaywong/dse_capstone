@@ -49,7 +49,6 @@
       border-radius: 8px;
       pointer-events: none;
     }
-
   </style>
 
 </head>
@@ -61,20 +60,17 @@
   </div>
 
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
-  <!-- <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.7/leaflet.css" /> -->
-  <!-- <script src="http://cdn.leafletjs.com/leaflet-0.7.7/leaflet.js"></script> -->
   <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
 
   <script>
-  // Define the div for the tooltip
-var div = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+    // Define the div for the tooltip
+    var div = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
 
-    // d3.csv('data/testDataCZ.csv', function(error, incidents) {
     d3.json('data/station_meta_ML.json', function(error, incidents) {
 
       function reformat(array) {
@@ -82,7 +78,6 @@ var div = d3.select("body").append("div")
         array.map(function(d, i) {
 
           data.push({
-            // id: i,
             id: +d.station,
             name: d.name,
             direction: +d.direction,
@@ -289,8 +284,14 @@ var div = d3.select("body").append("div")
 
       }
 
+      // Mapping from direction enum to north, south, east, west
       // JSON keys cannot be a number and must start with a _ or alpha
-      var directionNames = {"_1": "N", "_2": "S", "_3": "E", "_4": "W"};
+      var directionNames = {
+        "_1": "N",
+        "_2": "S",
+        "_3": "E",
+        "_4": "W"
+      };
 
       function mapmove(e) {
         var mapBounds = leafletMap.getBounds();
