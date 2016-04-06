@@ -1,20 +1,23 @@
 package org.ucsd.dse.capstone.traffic
 
+import java.util.Arrays
+
+import org.apache.spark.annotation.Since
+import org.apache.spark.mllib.linalg.DenseMatrix
+import org.apache.spark.mllib.linalg.DenseVector
+import org.apache.spark.mllib.linalg.Matrices
+import org.apache.spark.mllib.linalg.Matrix
+import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.apache.spark.mllib.stat.MultivariateStatisticalSummary
 import org.apache.spark.mllib.stat.Statistics
 import org.apache.spark.rdd.RDD
 
-import java.util.Arrays
-
-import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.Vectors
-
-import org.apache.spark.mllib.linalg.Matrices
-import org.apache.spark.mllib.linalg.Matrix
-import org.apache.spark.mllib.linalg.distributed.RowMatrix
-
-import breeze.linalg.{ DenseVector => BDV }
 import breeze.linalg.{ DenseMatrix => BDM }
+import breeze.linalg.{ DenseVector => BDV }
+import breeze.linalg.{ Matrix => BM }
+import breeze.linalg.{ Vector => BV }
 import breeze.linalg.{ svd => brzSvd }
 
 /**
@@ -66,7 +69,7 @@ object MLibUtils {
     val Cov: BDM[Double] = toBreeze(row_matrix.computeCovariance())
 
     //
-    // Execute Singular Value Decompisition on the Covariance Matrix using Breeze
+    // Execute Singular Value Decomposition on the Covariance Matrix using Breeze
     //
     val brzSvd.SVD(u: BDM[Double], s: BDV[Double], _) = brzSvd(Cov)
 
@@ -90,6 +93,28 @@ object MLibUtils {
     } else {
       val breezeMatrix = new BDM[Double](m_matrix.numCols, m_matrix.numRows, m_matrix.toArray)
       breezeMatrix.t
+    }
+  }
+
+  def toBreeze(m_vector: Vector): BDV[Double] = {
+    new BDV[Double](m_vector.toArray)
+  }
+
+  def fromBreeze(v: BDV[Double]): Vector = {
+    if (v.offset == 0 && v.stride == 1 && v.length == v.data.length) {
+      new DenseVector(v.data)
+    } else {
+      new DenseVector(v.toArray) // Can't use underlying array directly, so make a new one
+    }
+  }
+
+  def fromBreeze(breeze: BM[Double]): Matrix = {
+    breeze match {
+      case dm: BDM[Double] =>
+        new DenseMatrix(dm.rows, dm.cols, dm.toArray, dm.isTranspose)
+      case _ =>
+        throw new UnsupportedOperationException(
+          s"Do not support conversion from type ${breeze.getClass.getName}.")
     }
   }
 }

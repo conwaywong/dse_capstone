@@ -28,7 +28,7 @@ object ReadPivotMain extends Logging {
   }
 
   // CONSTANTS
-  val input = "/tmp/test_output2"
+  val input = "/var/tmp/test_output2"
 
   def do_execute(sc: SparkContext) = {
 
