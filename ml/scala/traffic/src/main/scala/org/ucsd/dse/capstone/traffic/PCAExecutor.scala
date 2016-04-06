@@ -21,14 +21,9 @@ import org.apache.spark.sql.SQLContext
  *
  * @author dyerke
  */
-class PCAExecutor(paths: List[String], output_param: OutputParameter, k: Int = 30, log_output: Boolean = true) extends Executor[PCAResults] {
+class PCAExecutor(pivot_df: DataFrame, output_param: OutputParameter, k: Int = 30, log_output: Boolean = true) extends Executor[PCAResults] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*): PCAResults = {
-    //
-    // Read DataFrame
-    //
-    val csv_path = paths.mkString(",")
-    val pivot_df: DataFrame = IOUtils.read_pivot_df(sc, sql_context, csv_path)
     //
     // Execute PCA for each field
     //

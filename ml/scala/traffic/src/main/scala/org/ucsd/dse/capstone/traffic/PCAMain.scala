@@ -1,11 +1,12 @@
 package org.ucsd.dse.capstone.traffic
 
 import org.apache.spark.SparkContext
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.SQLContext
 
 /**
  * Driver that executes PCA against a compressed RDD[Row]
- * 
+ *
  * @author dyerke
  */
 object PCAMain {
@@ -19,9 +20,9 @@ object PCAMain {
   def do_execute(sc: SparkContext) = {
     val sqlContext: SQLContext = new SQLContext(sc)
     //
-    val paths = List[String]("/var/tmp/test_output2")
+    val path = "/home/dyerke/Documents/DSE/capstone_project/traffic/data/parquet"
     //    val output_parameter = new OutputParameter("test", "output")
-    val output_parameter = new OutputParameter("test", "/var/tmp/test_results/output")
+    val output_parameter = new OutputParameter("test", "/var/tmp/test_results/output2")
     //
     //    val output_aws_id = null // replace with access id
     //    val output_aws_secret_key = null // replace with secret key
@@ -31,7 +32,8 @@ object PCAMain {
     //    val s3_param = new S3Parameter(client, bucket_name)
     //
     //    val executor: Executor[PCAResults] = new PCAExecutor(paths, output_parameter, s3_param)
-    val executor: Executor[PCAResults] = new PCAExecutor(paths, output_parameter)
+    val pivot_df: DataFrame = IOUtils.read_pivot_df2(sqlContext, path)
+    val executor: Executor[PCAResults] = new PCAExecutor(pivot_df, output_parameter)
     executor.execute(sc, sqlContext)
   }
 }

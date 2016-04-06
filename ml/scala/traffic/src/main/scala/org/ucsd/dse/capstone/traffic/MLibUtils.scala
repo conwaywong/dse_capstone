@@ -69,7 +69,7 @@ object MLibUtils {
     val Cov: BDM[Double] = toBreeze(row_matrix.computeCovariance())
 
     //
-    // Execute Singular Value Decompisition on the Covariance Matrix using Breeze
+    // Execute Singular Value Decomposition on the Covariance Matrix using Breeze
     //
     val brzSvd.SVD(u: BDM[Double], s: BDV[Double], _) = brzSvd(Cov)
 

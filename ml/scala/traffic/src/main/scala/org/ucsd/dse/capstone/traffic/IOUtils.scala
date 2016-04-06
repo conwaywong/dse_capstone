@@ -18,10 +18,16 @@ import java.io.Writer
 import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
+import org.apache.spark.annotation.DeveloperApi
+import org.apache.spark.annotation.Experimental
+import org.apache.spark.annotation.Since
+import org.apache.spark.ml.feature.OneHotEncoder
 import org.apache.spark.mllib.linalg.DenseMatrix
 import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.mllib.linalg.Matrix
+import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Column
@@ -30,6 +36,7 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.types.DoubleType
 import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.sql.types.SQLUserDefinedType
 import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.StructType
 
@@ -49,30 +56,54 @@ import breeze.linalg.{ DenseMatrix => BDM }
  * @author cwong, dyerke, jgill
  */
 object IOUtils {
+  val OBSERVATION_COUNT: Int = 288
+  val DIRECTION_COUNT: Int = 4
+  //
   var keyFldCnt: Int = 0
-  var FldCnt: Int = 288
 
-  private def get_schema(): (StructType, IndexedSeq[String]) = {
-    // Create Schema
+  private def get_key_schema(as_int: Boolean = true): StructType = {
     var schema = new StructType()
-
-    schema = schema.add(new StructField("station_id", IntegerType))
-    schema = schema.add(new StructField("district_id", IntegerType))
-    schema = schema.add(new StructField("year", IntegerType))
-    schema = schema.add(new StructField("day_of_year", IntegerType))
-    schema = schema.add(new StructField("day_of_week", IntegerType))
+    if (as_int) {
+      schema = schema.add(new StructField("station_id", IntegerType))
+      schema = schema.add(new StructField("district_id", IntegerType))
+      schema = schema.add(new StructField("year", IntegerType))
+      schema = schema.add(new StructField("day_of_year", IntegerType))
+      schema = schema.add(new StructField("day_of_week", IntegerType))
+    } else {
+      schema = schema.add(new StructField("station_id", DoubleType))
+      schema = schema.add(new StructField("district_id", DoubleType))
+      schema = schema.add(new StructField("year", DoubleType))
+      schema = schema.add(new StructField("day_of_year", DoubleType))
+      schema = schema.add(new StructField("day_of_week", DoubleType))
+    }
 
     keyFldCnt = schema.fields.length
 
+    schema
+  }
+
+  private def get_schema(): (StructType, IndexedSeq[String]) = {
+    // Create Schema
+    var schema = get_key_schema()
+    schema = schema.add(new StructField("direction", IntegerType))
     val m_obversation_prefixes = List("total_flow", "occupancy", "speed")
 
-    val m_observation_times: IndexedSeq[String] = (0 to (FldCnt - 1)).map((_ * 5)).map(s => f"${s / 60}%02d${s % 60}%02dM")
+    val m_observation_times: IndexedSeq[String] = (0 to (OBSERVATION_COUNT - 1)).map((_ * 5)).map(s => f"${s / 60}%02d${s % 60}%02d")
     m_obversation_prefixes.foreach { prefix =>
       m_observation_times.foreach { time_str =>
         schema = schema.add(StructField(s"${prefix}_${time_str}", DoubleType))
       }
     }
     (schema, m_observation_times)
+  }
+
+  private def get_transformed_schema(k: Int): StructType = {
+    // Create Schema
+    var schema = get_key_schema(false)
+    for (i <- 0 to k - 1) {
+      schema = schema.add(StructField(s"V${i}", DoubleType))
+    }
+    schema
   }
 
   def get_col_prefix(col_enum: PivotColumn): String = {
@@ -106,34 +137,69 @@ object IOUtils {
     pivot_df
   }
 
+  def read_pivot_df2(sqlContext: SQLContext, path: String, table_name: String = "pivot_all"): DataFrame = {
+    val df: DataFrame = sqlContext.read.parquet(path)
+    val df2 = df.withColumn("directionTmp", df("direction").cast(DoubleType)).drop("direction").withColumnRenamed("directionTmp", "direction")
+    //
+    val one_hot_encoder: OneHotEncoder = new OneHotEncoder()
+    one_hot_encoder.setInputCol("direction").setOutputCol("direction_index")
+    val result_df = one_hot_encoder.transform(df2).drop("direction").withColumnRenamed("direction_index", "direction")
+
+    //
+    result_df.registerTempTable(table_name)
+    result_df
+  }
+
+  def toTransformedDf(sqlContext: SQLContext, v: Array[Vector], k: Int): DataFrame = {
+    val schema: StructType = get_transformed_schema(k)
+    val rlist: java.util.List[Row] = new java.util.ArrayList[Row]()
+    v.foreach { x =>
+      rlist.add(Row.fromSeq(x.toArray))
+    }
+    sqlContext.createDataFrame(rlist, schema)
+  }
+
   def toVectorRDD_withKeys(pivotDF: DataFrame, colEnum: PivotColumn): RDD[(Array[Int], Vector)] = {
     val data_rdd: RDD[Vector] = toVectorRDD(pivotDF, colEnum, true)
-    data_rdd.map { r => (r.toArray.slice(0, keyFldCnt).map(_.toInt), Vectors.dense(r.toArray.slice(keyFldCnt, FldCnt + keyFldCnt))) }
+    val expected_column_count = OBSERVATION_COUNT + DIRECTION_COUNT
+    data_rdd.map { r => (r.toArray.slice(0, keyFldCnt).map(_.toInt), Vectors.dense(r.toArray.slice(keyFldCnt, expected_column_count + keyFldCnt))) }
   }
 
   def toVectorRDD(pivotDF: DataFrame, colEnum: PivotColumn, includeKeys: Boolean = false): RDD[Vector] = {
     val col_prefix = get_col_prefix(colEnum)
-    var nCols = FldCnt
+    var nCols = OBSERVATION_COUNT
 
     val (schema, obos_times) = get_schema()
 
-    // Build total_flow column names
+    // Build column name projection
     val columns: ListBuffer[Column] = new ListBuffer[Column]()
     if (includeKeys) {
       Seq(schema.fieldNames.slice(0, keyFldCnt).foreach { f => columns += new Column(f) })
       nCols += keyFldCnt
     }
+    columns += new Column("direction")
     for (i <- obos_times)
       columns += new Column(s"${col_prefix}${i}")
-    require(columns.length == nCols, "obos_times.length= " + +obos_times.length + "; columns.length= " + +columns.length + "; Columns is not " + nCols)
+
+    val target_columns_size = nCols + 1
+    require(columns.length == target_columns_size, "obos_times.length= " + +obos_times.length + "; columns.length= " + +columns.length + "; Columns is not " + target_columns_size)
 
     // create DataFrame which only contains the desired columns
     // Note the casting of the Seq[Column] into var args
     // convert to RDD[Vector]
     val rddRows = pivotDF.select(columns: _*).rdd
-    rddRows.map(row => Vectors.dense(row.toSeq.toArray.map {
-      x => if (x.isInstanceOf[Double]) x.asInstanceOf[Double] else x.asInstanceOf[Int]
-    }))
+    rddRows.map { row =>
+      val target_list: ListBuffer[Double] = new ListBuffer[Double]()
+      row.toSeq.foreach { x =>
+        x match {
+          case d: Double       => target_list += d
+          case i: Int          => target_list += i.toDouble
+          case v: SparseVector => target_list.appendAll(v.toArray)
+          case _               => throw new IllegalStateException("Unknown type: " + x)
+        }
+      }
+      Vectors.dense(target_list.toArray)
+    }
   }
 
   /* Wrapper to write to file */

@@ -3,6 +3,7 @@ package org.ucsd.dse.capstone.traffic
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg.DenseMatrix
 import org.apache.spark.mllib.linalg.DenseVector
+import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.SQLContext
 
 /**
@@ -29,7 +30,7 @@ object PCATransformMain {
     val mean: DenseVector = IOUtils.read_vectors(mean_path)(0)
     val eigenvectors: DenseMatrix = IOUtils.read_matrix(eigenvectors_path)
     val output_parameter = new OutputParameter("transform", "/var/tmp/transform_results")
-    val parameter: PCATransformParameter = new PCATransformParameter(TOTAL_FLOW, k, mean, eigenvectors, output_parameter)
+    val parameter: PCATransformParameter = new PCATransformParameter(TOTAL_FLOW, mean, eigenvectors, output_parameter, k)
     //
     //    val output_aws_id = null // replace with access id
     //    val output_aws_secret_key = null // replace with secret key
@@ -39,8 +40,9 @@ object PCATransformMain {
     //    val s3_param = new S3Parameter(client, bucket_name)
     //
     //    val executor: Executor[PCAResults] = new PCAExecutor(paths, output_parameter, s3_param)
-    val paths = List[String]("/var/tmp/test_output2")
-    val executor: Executor[_] = new PCATransformExecutor(List[PCATransformParameter](parameter), paths)
+    val path = "/var/tmp/test_output2"
+    val pivot_df: DataFrame = IOUtils.read_pivot_df2(sqlContext, path)
+    val executor: Executor[_] = new PCATransformExecutor(pivot_df, parameter)
     executor.execute(sc, sqlContext)
   }
 }

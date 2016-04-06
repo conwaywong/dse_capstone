@@ -1,11 +1,11 @@
 package org.ucsd.dse.capstone.traffic
 
 import org.apache.commons.io.FilenameUtils
-import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.DenseMatrix
 import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.mllib.linalg.Matrix
 import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.mllib.linalg.Vectors
 
 import com.amazonaws.services.s3.AmazonS3
 
@@ -28,6 +28,8 @@ class PCAResult(
   val m_mean_vec = meanvector
   val m_std_vec = stdvector
   val m_samples = samples
+
+  override def toString(): String = "(m_eig=$m_eig; m_eig_values=$m_eig_values; m_mean_vec=$m_mean_vec; m_std_vec=$m_std_vec; m_samples=$m_samples)"
 }
 
 /**
@@ -37,17 +39,23 @@ class PCAResults(total_flow: PCAResult, speed: PCAResult, occupancy: PCAResult) 
   val m_total_flow = total_flow
   val m_speed = speed
   val m_occupancy = occupancy
+
+  override def toString(): String = "(m_total_flow=$m_total_flow; m_speed=$m_speed; m_occupancy=$m_occupancy)"
 }
 
 /**
  * Class defining parameter to PCA Transform
  */
-class PCATransformParameter(column: PivotColumn, k: Int = 2, mean: DenseVector, eigenvectors: DenseMatrix, output_param: OutputParameter) {
+class PCATransformParameter(column: PivotColumn, mean: DenseVector, eigenvectors: DenseMatrix, output_param: OutputParameter, k: Int = 2) {
   val m_column = column
-  val m_k = k
   val m_mean = mean
   val m_eigenvectors = eigenvectors
   val m_output_param = output_param
+  val m_k = k
+
+  def this(column: PivotColumn, pca_result: PCAResult, output_param: OutputParameter, k: Int = 2) {
+    this(column, Vectors.dense(pca_result.m_mean_vec._1).asInstanceOf[DenseVector], pca_result.m_eig._1.asInstanceOf[DenseMatrix], output_param, k)
+  }
 }
 
 /**
@@ -64,5 +72,5 @@ class S3Parameter(client: AmazonS3, bucket_name: String) {
 class OutputParameter(output_fid: String, output_dir: String, s3_param: S3Parameter = null) {
   val m_output_fid = output_fid
   val m_output_dir = FilenameUtils.normalizeNoEndSeparator(output_dir + "/").concat("/")
-  val m_s3_param= s3_param
+  val m_s3_param = s3_param
 }
