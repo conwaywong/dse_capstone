@@ -65,7 +65,7 @@ CREATE TABLE County_City (
 DROP TABLE IF EXISTS Traffic_Station CASCADE;
 CREATE TABLE Traffic_Station (
 	ID SERIAL PRIMARY KEY,
-	PEMS_ID INTEGER,
+	PEMS_ID BIGINT,
 	Effective_Start Date NOT NULL,
 	Effective_End Date,
 	Name TEXT,
@@ -83,47 +83,26 @@ CREATE TABLE Traffic_Station (
 	-- USER_ID DELETE
 );
 
-CREATE INDEX Traffic_Station_Idx ON Traffic_Station(ID);
-
 -- Phase 2
-DROP TABLE IF EXISTS Observation CASCADE;
-CREATE TABLE Observation (
-	ID BIGSERIAL PRIMARY KEY,
-	Time Timestamp NOT NULL,
+DROP TABLE IF EXISTS Observations CASCADE;
+CREATE TABLE Observations (
 	Station_ID INTEGER NOT NULL REFERENCES Traffic_Station(ID),
-	Samples INTEGER,
-	Perc_Observed FLOAT,
-	Total_Flow INTEGER,
-	Avg_Occupancy FLOAT,
-	Avg_Speed FLOAT
+	District_ID INTEGER NOT NULL REFERENCES District(ID),
+	Year SMALLINT,
+	DOY SMALLINT,
+	Flow_Coef FLOAT[10],
+	Occupancy_Coef FLOAT[10],
+	Speed_Coef FLOAT[10]
 );
+
+CREATE UNIQUE INDEX Observations_Idx ON Observations(Station_ID, Year, DOY);
 
 -- Phase 3
-DROP TABLE IF EXISTS Lane_Observation CASCADE;
-CREATE TABLE Lane_Observation (
-	Observation_ID BIGSERIAL NOT NULL REFERENCES Observation(ID),
-	Station_ID INTEGER NOT NULL REFERENCES Traffic_Station(ID),
-	L_Num INTEGER NOT NULL,
-	Samples INTEGER,
-	Flow INTEGER,
-	Occupancy FLOAT,
-	Speed FLOAT,
-	Obs_Flag SMALLINT
-);
-
-CREATE UNIQUE INDEX L_Obso_PriIdx ON Lane_Observation (Observation_ID, Station_ID, L_Num);
-CREATE INDEX L_Obos_SecIdx ON Lane_Observation(Station_ID, L_Num);
-
 DROP TABLE IF EXISTS CHP_Desc CASCADE;
 CREATE TABLE CHP_Desc (
 	ID TEXT PRIMARY KEY,
 	Description TEXT
 );
-
-CREATE OR REPLACE VIEW CHP_INC_COLLISION AS
-  SELECT *
-  FROM CHP_INC
-  WHERE Desc_ID IN ('1179', '1181', '1182', '1183', '1183H', '20001', '20002');
 
 -- CHP Data
 DROP TABLE IF EXISTS CHP_INC CASCADE;
@@ -132,7 +111,7 @@ CREATE TABLE CHP_INC (
 	CC_CODE TEXT,
 	INC_NUM INTEGER,
 	Time Timestamp NOT NULL,
-	Desc_ID TEXT NOT NULL REFERENCES CHP_Desc(ID),
+	Description TEXT NOT NULL, --REFERENCES CHP_Desc(ID),
 	-- Location DELETE
 	-- Area DELETE
 	-- Zoom_Map DELETE
@@ -148,6 +127,11 @@ CREATE TABLE CHP_INC (
 	Severity TEXT,
 	Duration INTEGER
 );
+
+-- CREATE OR REPLACE VIEW CHP_INC_COLLISION AS
+--   SELECT *
+--   FROM CHP_INC
+--   WHERE Desc_ID IN ('1179', '1181', '1182', '1183', '1183H', '20001', '20002');
 
 -- Weather Data
 DROP TABLE IF EXISTS Weather_Station CASCADE;
@@ -190,13 +174,13 @@ AS $loc_upd$
 
 	EXCEPTION
 	    WHEN data_exception THEN
-	        RAISE EXCEPTION 'Trigger ERROR [DATA EXCEPTION] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+	        RAISE EXCEPTION 'Trigger ERROR [DATA EXCEPTION] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
 	        RETURN NULL;
 	    WHEN unique_violation THEN
-	        RAISE EXCEPTION 'Trigger ERROR [UNIQUE] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+	        RAISE EXCEPTION 'Trigger ERROR [UNIQUE] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
 	        RETURN NULL;
 	    WHEN OTHERS THEN
-	        RAISE EXCEPTION 'Trigger ERROR [OTHER] - SQLSTATE: %, SQLERRM: %',SQLSTATE,SQLERRM;
+	        RAISE EXCEPTION 'Trigger ERROR [OTHER] - SQLSTATE: %, SQLERRM: %, (%, %)', SQLSTATE, SQLERRM, NEW.Longitude, NEW.Latitude;
 	        RETURN NULL;
 END;
 $loc_upd$
