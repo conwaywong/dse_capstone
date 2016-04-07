@@ -46,7 +46,7 @@ class PCAResults(total_flow: PCAResult, speed: PCAResult, occupancy: PCAResult) 
 /**
  * Class defining parameter to PCA Transform
  */
-class PCATransformParameter(column: PivotColumn, mean: DenseVector, eigenvectors: DenseMatrix, output_param: OutputParameter, k: Int = 2) {
+class PCATransformParameter(column: PivotColumn, mean: DenseVector, eigenvectors: DenseMatrix, output_param: OutputParameter, k: Int) {
   val m_column = column
   val m_mean = mean
   val m_eigenvectors = eigenvectors

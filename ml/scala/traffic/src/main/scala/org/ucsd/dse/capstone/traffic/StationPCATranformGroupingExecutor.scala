@@ -3,7 +3,9 @@ package org.ucsd.dse.capstone.traffic
 import java.io.BufferedWriter
 import java.io.ByteArrayOutputStream
 import java.io.OutputStreamWriter
+
 import scala.collection.mutable.ListBuffer
+
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.Vectors
@@ -17,7 +19,7 @@ import org.apache.spark.sql.SQLContext
  *
  * @author dyerke
  */
-class StationPCATranformGroupingExecutor(pivot_df: DataFrame, column: PivotColumn, grouping_output_parameter: OutputParameter, k: Int = 3) extends Executor[Tuple2[Array[Vector], String]] {
+class StationPCATranformGroupingExecutor(pivot_df: DataFrame, column: PivotColumn, grouping_output_parameter: OutputParameter, k: Int) extends Executor[Tuple2[Array[Vector], String]] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*): Tuple2[Array[Vector], String] = {
     do_execute(sc, sql_context, pivot_df, column, grouping_output_parameter)
@@ -25,11 +27,12 @@ class StationPCATranformGroupingExecutor(pivot_df: DataFrame, column: PivotColum
 
   private def do_execute(sc: SparkContext, sql_context: SQLContext, pivot_df: DataFrame, column: PivotColumn, grouping_output_parameter: OutputParameter): Tuple2[Array[Vector], String] = {
     val s3_param = grouping_output_parameter.m_s3_param
+    val fid = grouping_output_parameter.m_output_fid
     //
     // execute PCA
     //
-    val pca_output_parameter = if (s3_param != null) new OutputParameter("pca_tmp", "output", s3_param) else new OutputParameter("pca_tmp", "/var/tmp/output")
-    val executor: Executor[PCAResults] = new PCAExecutor(pivot_df, pca_output_parameter)
+    val pca_output_parameter = if (s3_param != null) new OutputParameter(fid + "_pca_tmp", "output", s3_param) else new OutputParameter(fid + "_pca_tmp", "/var/tmp/output")
+    val executor: Executor[PCAResults] = new PCAExecutor(pivot_df, pca_output_parameter, m_column_prefixes = List[PivotColumn](column))
     val pca_results: PCAResults = executor.execute(sc, sql_context)
     //
     // execute PCA transform
@@ -41,7 +44,7 @@ class StationPCATranformGroupingExecutor(pivot_df: DataFrame, column: PivotColum
       case SPEED      => working_pca_result = pca_results.m_speed
       case _          => throw new IllegalStateException("Unknown column type: " + column)
     }
-    val pca_trans_output_parameter = if (s3_param != null) new OutputParameter("pca_transform_tmp", "output", s3_param) else new OutputParameter("pca_transform_tmp", "/var/tmp/output")
+    val pca_trans_output_parameter = if (s3_param != null) new OutputParameter(fid + "_pca_transform_tmp", "output", s3_param) else new OutputParameter(fid + "_pca_transform_tmp", "/var/tmp/output")
     val trans_parameter: PCATransformParameter = new PCATransformParameter(column, working_pca_result, pca_trans_output_parameter, k)
     val trans_executor: Executor[Tuple2[Array[Vector], String]] = new PCATransformExecutor(pivot_df, trans_parameter)
     val trans_result: Tuple2[Array[Vector], String] = trans_executor.execute(sc, sql_context)
@@ -49,9 +52,8 @@ class StationPCATranformGroupingExecutor(pivot_df: DataFrame, column: PivotColum
     // execute grouping and obtain mean
     //
     val filename_prefix = IOUtils.get_col_prefix(column)
-    val fid = grouping_output_parameter.m_output_fid
     val output_dir = grouping_output_parameter.m_output_dir
-    val grouping_output_filename = output_dir + filename_prefix + "grouping." + fid + ".csv"
+    val grouping_output_filename = output_dir + filename_prefix + "_" + fid + ".csv"
 
     val trans_df: DataFrame = IOUtils.toTransformedDf(sql_context, trans_result._1, k)
     val groups: GroupedData = trans_df.groupBy(new Column("station_id"))

@@ -21,19 +21,25 @@ import org.apache.spark.sql.SQLContext
  *
  * @author dyerke
  */
-class PCAExecutor(pivot_df: DataFrame, output_param: OutputParameter, k: Int = 30, log_output: Boolean = true) extends Executor[PCAResults] {
+class PCAExecutor(pivot_df: DataFrame, output_param: OutputParameter, k: Int = 30, m_column_prefixes: List[PivotColumn] = List(TOTAL_FLOW, SPEED, OCCUPANCY), log_output: Boolean = true) extends Executor[PCAResults] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*): PCAResults = {
     //
     // Execute PCA for each field
     //
-    val m_column_prefixes = List(TOTAL_FLOW, SPEED, OCCUPANCY)
     val results: ListBuffer[PCAResult] = new ListBuffer[PCAResult]()
+    var total_flow_result: PCAResult = null
+    var speed_result: PCAResult = null
+    var occupancy_result: PCAResult = null
     m_column_prefixes.foreach { column_prefix =>
-      val m_vector_rdd: RDD[Vector] = IOUtils.toVectorRDD(pivot_df, column_prefix)
-      results += do_execute(m_vector_rdd, column_prefix, output_param)
+      val pca_result = do_execute(IOUtils.toVectorRDD(pivot_df, column_prefix), column_prefix, output_param)
+      column_prefix match {
+        case TOTAL_FLOW => total_flow_result = pca_result
+        case SPEED      => speed_result = pca_result
+        case OCCUPANCY  => occupancy_result = pca_result
+      }
     }
-    new PCAResults(results(0), results(1), results(2))
+    new PCAResults(total_flow_result, speed_result, occupancy_result)
   }
 
   private def do_execute(m_vector_rdd: RDD[Vector], obs_enum: PivotColumn, output_param: OutputParameter): PCAResult = {
