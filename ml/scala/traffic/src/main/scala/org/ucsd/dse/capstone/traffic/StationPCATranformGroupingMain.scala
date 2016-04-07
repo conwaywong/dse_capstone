@@ -24,7 +24,7 @@ object StationPCATranformGroupingMain {
     val pivot_df: DataFrame = IOUtils.read_pivot_df2(sqlContext, path)
     val column: PivotColumn = TOTAL_FLOW
     val grouping_output_parameter = new OutputParameter("test_grouping", "/var/tmp/stationpcaviz")
-    val k: Int = 3
+    val k: Int = 5
     //
     //    val output_aws_id = null // replace with access id
     //    val output_aws_secret_key = null // replace with secret key

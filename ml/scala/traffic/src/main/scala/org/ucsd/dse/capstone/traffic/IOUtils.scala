@@ -59,7 +59,7 @@ object IOUtils {
   val OBSERVATION_COUNT: Int = 288
   val DIRECTION_COUNT: Int = 4
   //
-  var keyFldCnt: Int = 0
+  val keyFldCnt: Int = 5
 
   private def get_key_schema(as_int: Boolean = true): StructType = {
     var schema = new StructType()
@@ -76,9 +76,6 @@ object IOUtils {
       schema = schema.add(new StructField("day_of_year", DoubleType))
       schema = schema.add(new StructField("day_of_week", DoubleType))
     }
-
-    keyFldCnt = schema.fields.length
-
     schema
   }
 

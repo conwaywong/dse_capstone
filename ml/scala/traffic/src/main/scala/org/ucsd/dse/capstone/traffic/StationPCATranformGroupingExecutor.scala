@@ -46,7 +46,9 @@ class StationPCATranformGroupingExecutor(pivot_df: DataFrame, column: PivotColum
     }
     val pca_trans_output_parameter = if (s3_param != null) new OutputParameter(fid + "_pca_transform_tmp", "output", s3_param) else new OutputParameter(fid + "_pca_transform_tmp", "/var/tmp/output")
     val trans_parameter: PCATransformParameter = new PCATransformParameter(column, working_pca_result, pca_trans_output_parameter, k)
-    val trans_executor: Executor[Tuple2[Array[Vector], String]] = new PCATransformExecutor(pivot_df, trans_parameter)
+    
+    println("Executing PCATransformExecutor2")
+    val trans_executor: Executor[Tuple2[Array[Vector], String]] = new PCATransformExecutor2(pivot_df, trans_parameter)
     val trans_result: Tuple2[Array[Vector], String] = trans_executor.execute(sc, sql_context)
     //
     // execute grouping and obtain mean
