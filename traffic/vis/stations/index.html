@@ -65,12 +65,13 @@
             $("#check").button();
             $("#format").buttonset();
 
-            console.log("1: " + $("#check0").is(':checked'));
-            console.log("2: " + $("#check1").is(':checked'));
-            console.log("3: " + $("#check2").is(':checked'));
-            console.log("4: " + $("#check3").is(':checked'));
+            console.log("1: " + $("#north_toggle").is(':checked'));
+            console.log("2: " + $("#south_toggle").is(':checked'));
+            console.log("3: " + $("#east_toggle").is(':checked'));
+            console.log("4: " + $("#west_toggle").is(':checked'));
 
-            $("#check0").change(function() {
+            // $("#check0").change(function() {
+            $(".direction_toggle").change(function() {
                 if ($(this).is(':checked')) {
                     console.log(true);
                 } else {
@@ -183,17 +184,17 @@
 
                 Freeway Direction:
                 <div id="format">
-                    <input type="checkbox" id="check0" checked="checked">
-                    <label for="check0"><i class="fa fa-arrow-up" aria-hidden="true"></i>
+                    <input type="checkbox" id="north_toggle" class="direction_toggle" checked="checked">
+                    <label for="north_toggle"><i class="fa fa-arrow-up" aria-hidden="true"></i>
                         <br>North</label>
-                    <input type="checkbox" id="check1" checked="checked">
-                    <label for="check1"><i class="fa fa-arrow-down" aria-hidden="true"></i>
+                    <input type="checkbox" id="south_toggle" class="direction_toggle" checked="checked">
+                    <label for="south_toggle"><i class="fa fa-arrow-down" aria-hidden="true"></i>
                         <br>South</label>
-                    <input type="checkbox" id="check2" checked="checked">
-                    <label for="check2"><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                    <input type="checkbox" id="east_toggle" class="direction_toggle" checked="checked">
+                    <label for="east_toggle"><i class="fa fa-arrow-right" aria-hidden="true"></i>
                         <br>East</label>
-                    <input type="checkbox" id="check3" checked="checked">
-                    <label for="check3"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    <input type="checkbox" id="west_toggle" class="direction_toggle" checked="checked">
+                    <label for="west_toggle"><i class="fa fa-arrow-left" aria-hidden="true"></i>
                         <br>West</label>
                 </div>
             </div>
@@ -222,7 +223,36 @@
             .attr("class", "tooltip")
             .style("opacity", 0);
 
+        var station_data;
+
+        function filter_stations() {
+            var clone = station_data.slice(0);
+            if (!($("#north_toggle").is(':checked'))) {
+                clone = clone.filter(function(d) {
+                    return +d.direction !== 1;
+                });
+            }
+            if (!($("#south_toggle").is(':checked'))) {
+                clone = clone.filter(function(d) {
+                    return +d.direction !== 2;
+                });
+            }
+            if (!($("#east_toggle").is(':checked'))) {
+                clone = clone.filter(function(d) {
+                    return +d.direction !== 3;
+                });
+            }
+            if (!($("#west_toggle").is(':checked'))) {
+                clone = clone.filter(function(d) {
+                    return +d.direction !== 4;
+                });
+            }
+            return clone;
+        }
+
         d3.json('data/station_meta_ML.json', function(error, incidents) {
+
+            station_data = incidents;
 
             function reformat(array) {
                 var data = [];
@@ -246,7 +276,8 @@
             }
             var geoData = {
                 type: "FeatureCollection",
-                features: reformat(incidents)
+                // features: reformat(incidents)
+                features: reformat(filter_stations())
             };
 
 
@@ -415,7 +446,8 @@
                             .duration(200)
                             .style("opacity", 0.9);
                         div.html(d.id + "<br/>" + d.name + "<br/>" + d.freeway + "<br/>" + directionNames["_" + d.direction.toString()])
-                            .style("left", (d3.event.pageX) + "px")
+                            // .style("left", (d3.event.pageX) + "px")
+                            .style("left", (d3.event.pageX + 10) + "px")
                             .style("top", (d3.event.pageY - 28) + "px");
                     })
                     .on("mouseout", function(d) {
