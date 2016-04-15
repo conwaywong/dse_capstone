@@ -98,8 +98,16 @@
             });
 
             $("#eig_radio input[type='radio']").change(function() {
-                console.log($(this).attr('value'));
+                // console.log($(this).attr('value'));
+                current_vec = $(this).attr('value');
+                create_colors();
+                // console.log("Changing data to " + current_vec);
+                redraw();
             });
+
+            // Get the currently selected vector.
+            current_vec = $("#eig_radio input[type='radio']:checked").attr('value');
+            // console.log(current_vec);
         });
     </script>
     <style>
@@ -195,7 +203,7 @@
             <div class="sidebar-pane" id="references">
                 <h1 class="sidebar-header">Reference<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
                 <svg width="500" height="600">
-                    <g id="v1_color_bar"></g>
+                    <g id="color_bar"></g>
                 </svg>
             </div>
 
@@ -216,8 +224,9 @@
         var qtree;
         var station_map;
         var joined_data;
-        var v1_color_scale;
-        var v1_colorbar, v1_pointer;
+        var color_scale;
+        var colorbar, pointer;
+        var current_vec;
 
         function load_dataset(csv) {
             var new_data = [];
@@ -249,35 +258,63 @@
 
             joined_data = new_data;
 
-            var minVal = d3.min(joined_data, function(d) {
-                return d.v1;
-            });
+            create_colors();
 
-            var maxVal = d3.max(joined_data, function(d) {
-                return d.v1;
-            });
-
-            var meanVal = d3.mean(joined_data, function(d) {
-                return d.v1;
-            });
-            v1_color_scale = d3.scale.linear()
-                .domain([minVal, meanVal, maxVal])
-                .range(["green", "yellow", "red"]);
-            v1_colorbar = Colorbar()
-                .origin([15, 60])
-                .barlength(300)
-                .thickness(100)
-                .margin({
-                    top: 5,
-                    right: 80,
-                    bottom: 25,
-                    left: 0
-                })
-                .scale(v1_color_scale)
-                .orient("vertical");
-            v1_pointer = d3.selectAll("#v1_color_bar").call(v1_colorbar);
             d3.select("#load_file_result").text("File load successful. Loaded " + joined_data.length + " stations.");
             redraw();
+        }
+
+        function create_colors() {
+
+            var domain = joined_data.map(function(d) {
+                return d[current_vec];
+            });
+
+            if (current_vec === 'v1') {
+
+                var minVal = d3.min(domain);
+                var maxVal = d3.max(domain);
+                var meanVal = d3.mean(domain);
+
+                color_scale = d3.scale.linear()
+                    .domain([minVal, meanVal, maxVal])
+                    .range(["green", "yellow", "red"]);
+                colorbar = Colorbar()
+                    .origin([15, 60])
+                    .barlength(300)
+                    .thickness(100)
+                    .margin({
+                        top: 5,
+                        right: 80,
+                        bottom: 25,
+                        left: 0
+                    })
+                    .scale(color_scale)
+                    .orient("vertical");
+                pointer = d3.selectAll("#color_bar").call(colorbar);
+
+            } else {
+
+                console.log("coloring v2");
+
+                color_scale = d3.scale.quantile()
+                    .domain(domain)
+                    // .range(["green", "yellow", "red"]);
+                    .range(['#fc8d59','#ffffbf','#91cf60']);
+                colorbar = Colorbar()
+                    .origin([15, 60])
+                    .barlength(300)
+                    .thickness(100)
+                    .margin({
+                        top: 5,
+                        right: 80,
+                        bottom: 25,
+                        left: 0
+                    })
+                    .scale(color_scale)
+                    .orient("vertical");
+                pointer = d3.selectAll("#color_bar").call(colorbar);
+            }
         }
 
         // handle upload button
@@ -348,7 +385,7 @@
                         type: "Point"
                     }
                 };
-                if (d.v1 !== undefined) {
+                if (d[current_vec] !== undefined) {
                     next.v1 = +d.v1;
                     next.v2 = +d.v2;
                 }
@@ -529,7 +566,7 @@
                     div.transition()
                         .duration(200)
                         .style("opacity", 0.99);
-                    div.html(d.id + "<br/>" + d.name + "<br/>" + d.freeway + "<br/>" + directionNames["_" + d.direction.toString()] + (d.v1 !== undefined ? "<br/>" + d.v1 : ""))
+                    div.html(d.id + "<br/>" + d.name + "<br/>" + d.freeway + "<br/>" + directionNames["_" + d.direction.toString()] + (d[current_vec] !== undefined ? "<br/>" + d[current_vec] : ""))
                         // .style("left", (d3.event.pageX) + "px")
                         .style("left", (d3.event.pageX + 10) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
@@ -545,8 +582,8 @@
                     return (d.group * 0.1) + 0.2;
                 }
             }).style("fill", function(d) {
-                if (d.v1 !== undefined) {
-                    return v1_color_scale(d.v1);
+                if (d[current_vec] !== undefined) {
+                    return color_scale(d[current_vec]);
                 } else {
                     return "blue";
                 }
