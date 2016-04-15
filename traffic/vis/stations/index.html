@@ -64,8 +64,8 @@
         }
     </style>
 
-    <link rel="stylesheet" href="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
-    <script src="//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
 
     <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
@@ -82,12 +82,6 @@
             $("#check").button();
             $("#format").buttonset();
             $("#eig_radio").buttonset();
-            // console.log("1: " + $("#north_toggle").is(':checked'));
-            // console.log("2: " + $("#south_toggle").is(':checked'));
-            // console.log("3: " + $("#east_toggle").is(':checked'));
-            // console.log("4: " + $("#west_toggle").is(':checked'));
-
-            // $("#check0").change(function() {
             $(".direction_toggle").change(function() {
                 if ($(this).is(':checked')) {
                     console.log(true);
@@ -98,16 +92,13 @@
             });
 
             $("#eig_radio input[type='radio']").change(function() {
-                // console.log($(this).attr('value'));
                 current_vec = $(this).attr('value');
                 create_colors();
-                // console.log("Changing data to " + current_vec);
                 redraw();
             });
 
             // Get the currently selected vector.
             current_vec = $("#eig_radio input[type='radio']:checked").attr('value');
-            // console.log(current_vec);
         });
     </script>
     <style>
@@ -138,7 +129,6 @@
                 <li><a href="#load_file" role="tab"><i class="fa fa-file"></i></a></li>
                 <li><a href="#filter_pane" role="tab"><i class="fa fa-check-square"></i></a></li>
                 <li><a href="#references" role="tab"><i class="fa fa-bar-chart"></i></a></li>
-                <!-- <li class="disabled"><a href="#messages" role="tab"><i class="fa fa-envelope"></i></a></li> -->
             </ul>
 
             <ul role="tablist">
@@ -166,7 +156,6 @@
 
                 <p class="lorem">Load a CSV file.</p>
                 <input type="file" id="uploader">
-                <!-- <button id="file-button">Select file</button> -->
                 <p id="load_file_result"></p>
             </div>
 
@@ -233,10 +222,13 @@
             try {
                 vector_data = d3.csv.parseRows(csv, function(d) {
                     var station = {
-                        "station": parseInt(d[0])
+                        "station": Number(d[0])
                     };
-                    for (var i = 1; i < d.length; i = i + 1) {
-                        station["v" + i.toString()] = +d[i];
+
+                    // The second field is the station direction. Eigenvector coefficients start at third element.
+                    for (var i = 2; i < d.length; i = i + 1) {
+                        var vec = i -1;
+                        station["v" + vec.toString()] = +d[i];
                     }
                     return station;
                 });
@@ -249,7 +241,7 @@
             // Join station data with vector data.
             vector_data.forEach(function(d) {
                 if (!station_map.has(d.station)) {
-                    console.error("Cannot find station ID " + d.station.toString());
+                    console.error("Cannot find station ID " + d.station);
                 } else {
                     var station = station_map.get(d.station);
                     new_data.push($.extend(d, station));
@@ -278,7 +270,7 @@
 
                 color_scale = d3.scale.linear()
                     .domain([minVal, meanVal, maxVal])
-                    .range(["green", "yellow", "red"]);
+                    .range(["red", "yellow", "green"]);
                 colorbar = Colorbar()
                     .origin([15, 60])
                     .barlength(300)
@@ -295,11 +287,8 @@
 
             } else {
 
-                console.log("coloring v2");
-
                 color_scale = d3.scale.quantile()
                     .domain(domain)
-                    // .range(["green", "yellow", "red"]);
                     .range(['#fc8d59','#ffffbf','#91cf60']);
                 colorbar = Colorbar()
                     .origin([15, 60])
@@ -399,7 +388,6 @@
 
             geoData = {
                 type: "FeatureCollection",
-                // features: reformat(incidents)
                 features: reformat(filter_stations())
             };
 
@@ -506,7 +494,6 @@
         });
         OpenStreetMap_BlackAndWhite.addTo(leafletMap);
 
-        // L.tileLayer("http://{s}.sm.mapstack.stamen.com/(toner-lite,$fff[difference],$fff[@23],$fff[hsl-saturation@20])/{z}/{x}/{y}.png").addTo(leafletMap);
         var sidebar = L.control.sidebar('sidebar').addTo(leafletMap);
 
         var svg = d3.select(leafletMap.getPanes().overlayPane).append("svg");
