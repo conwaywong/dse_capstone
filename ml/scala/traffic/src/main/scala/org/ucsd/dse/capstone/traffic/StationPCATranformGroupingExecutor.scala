@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter
 import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
+import org.apache.spark.annotation.Experimental
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.sql.Column
@@ -46,7 +47,7 @@ class StationPCATranformGroupingExecutor(pivot_df: DataFrame, column: PivotColum
     }
     val pca_trans_output_parameter = if (s3_param != null) new OutputParameter(fid + "_pca_transform_tmp", "output", s3_param) else new OutputParameter(fid + "_pca_transform_tmp", "/var/tmp/output")
     val trans_parameter: PCATransformParameter = new PCATransformParameter(column, working_pca_result, pca_trans_output_parameter, k)
-    
+
     println("Executing PCATransformExecutor2")
     val trans_executor: Executor[Tuple2[Array[Vector], String]] = new PCATransformExecutor2(pivot_df, trans_parameter)
     val trans_result: Tuple2[Array[Vector], String] = trans_executor.execute(sc, sql_context)
@@ -58,7 +59,8 @@ class StationPCATranformGroupingExecutor(pivot_df: DataFrame, column: PivotColum
     val grouping_output_filename = output_dir + filename_prefix + "_" + fid + ".csv"
 
     val trans_df: DataFrame = IOUtils.toTransformedDf(sql_context, trans_result._1, k)
-    val groups: GroupedData = trans_df.groupBy(new Column("station_id"))
+    val groupby_columns: List[Column] = List[Column](new Column("station_id"), new Column("direction"))
+    val groups: GroupedData = trans_df.groupBy(groupby_columns: _*)
     val colnames: ListBuffer[String] = new ListBuffer[String]()
     for (i <- 0 to k - 1) {
       colnames += ("V" + i).toString()

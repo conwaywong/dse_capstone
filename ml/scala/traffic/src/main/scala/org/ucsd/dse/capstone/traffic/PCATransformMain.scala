@@ -1,6 +1,7 @@
 package org.ucsd.dse.capstone.traffic
 
 import org.apache.spark.SparkContext
+import org.apache.spark.annotation.Experimental
 import org.apache.spark.mllib.linalg.DenseMatrix
 import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.sql.DataFrame
@@ -42,7 +43,7 @@ object PCATransformMain {
     //    val executor: Executor[PCAResults] = new PCAExecutor(paths, output_parameter, s3_param)
     val path = "/var/tmp/test_output2"
     val pivot_df: DataFrame = IOUtils.read_pivot_df2(sqlContext, path)
-    val executor: Executor[_] = new PCATransformExecutor(pivot_df, parameter)
+    val executor: Executor[_] = new PCATransformExecutor2(pivot_df, parameter)
     executor.execute(sc, sqlContext)
   }
 }

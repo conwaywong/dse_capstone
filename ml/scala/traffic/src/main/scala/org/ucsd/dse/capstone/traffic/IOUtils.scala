@@ -18,13 +18,13 @@ import java.io.Writer
 import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.annotation.Experimental
 import org.apache.spark.annotation.Since
 import org.apache.spark.ml.feature.OneHotEncoder
 import org.apache.spark.mllib.linalg.DenseMatrix
 import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.mllib.linalg.Matrix
+import org.apache.spark.mllib.linalg.MatrixUDT
 import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.VectorUDT
@@ -57,9 +57,9 @@ import breeze.linalg.{ DenseMatrix => BDM }
  */
 object IOUtils {
   val OBSERVATION_COUNT: Int = 288
-  val DIRECTION_COUNT: Int = 4
+  val DIRECTION_INDEX_COUNT: Int = 4
   //
-  val keyFldCnt: Int = 5
+  val keyFldCnt: Int = 6
 
   private def get_key_schema(as_int: Boolean = true): StructType = {
     var schema = new StructType()
@@ -69,12 +69,14 @@ object IOUtils {
       schema = schema.add(new StructField("year", IntegerType))
       schema = schema.add(new StructField("day_of_year", IntegerType))
       schema = schema.add(new StructField("day_of_week", IntegerType))
+      schema = schema.add(new StructField("direction", IntegerType))
     } else {
       schema = schema.add(new StructField("station_id", DoubleType))
       schema = schema.add(new StructField("district_id", DoubleType))
       schema = schema.add(new StructField("year", DoubleType))
       schema = schema.add(new StructField("day_of_year", DoubleType))
       schema = schema.add(new StructField("day_of_week", DoubleType))
+      schema = schema.add(new StructField("direction", DoubleType))
     }
     schema
   }
@@ -82,7 +84,6 @@ object IOUtils {
   private def get_schema(): (StructType, IndexedSeq[String]) = {
     // Create Schema
     var schema = get_key_schema()
-    schema = schema.add(new StructField("direction", IntegerType))
     val m_obversation_prefixes = List("total_flow", "occupancy", "speed")
 
     val m_observation_times: IndexedSeq[String] = (0 to (OBSERVATION_COUNT - 1)).map((_ * 5)).map(s => f"${s / 60}%02d${s % 60}%02d")
@@ -140,7 +141,7 @@ object IOUtils {
     //
     val one_hot_encoder: OneHotEncoder = new OneHotEncoder()
     one_hot_encoder.setInputCol("direction").setOutputCol("direction_index")
-    val result_df = one_hot_encoder.transform(df2).drop("direction").withColumnRenamed("direction_index", "direction")
+    val result_df = one_hot_encoder.transform(df2)
 
     //
     result_df.registerTempTable(table_name)
@@ -158,7 +159,7 @@ object IOUtils {
 
   def toVectorRDD_withKeys(pivotDF: DataFrame, colEnum: PivotColumn): RDD[(Array[Int], Vector)] = {
     val data_rdd: RDD[Vector] = toVectorRDD(pivotDF, colEnum, true)
-    val expected_column_count = OBSERVATION_COUNT + DIRECTION_COUNT
+    val expected_column_count = OBSERVATION_COUNT + DIRECTION_INDEX_COUNT
     data_rdd.map { r => (r.toArray.slice(0, keyFldCnt).map(_.toInt), Vectors.dense(r.toArray.slice(keyFldCnt, expected_column_count + keyFldCnt))) }
   }
 
@@ -174,11 +175,10 @@ object IOUtils {
       Seq(schema.fieldNames.slice(0, keyFldCnt).foreach { f => columns += new Column(f) })
       nCols += keyFldCnt
     }
-    columns += new Column("direction")
     for (i <- obos_times)
       columns += new Column(s"${col_prefix}${i}")
 
-    val target_columns_size = nCols + 1
+    val target_columns_size = nCols
     require(columns.length == target_columns_size, "obos_times.length= " + +obos_times.length + "; columns.length= " + +columns.length + "; Columns is not " + target_columns_size)
 
     // create DataFrame which only contains the desired columns
