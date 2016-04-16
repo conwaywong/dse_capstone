@@ -8,19 +8,20 @@
     <style>
         body {
             /*font-size: 12px;*/
-            font-size: 24px;
+            /*font-size: 24px;*/
         }
 
-        text {
+        /*text {
             fill: white;
         }
-
+*/
         svg {
             position: relative;
         }
 
         path {
-            fill: #ff0000;
+            font-size: 24px;
+            /*fill: #ff0000;*/
             /*fill-opacity: .9;*/
             /*fill-opacity: .2;*/
         }
@@ -62,6 +63,15 @@
             font-size: 11px;
             fill: black;
         }
+
+        #format {
+            margin-top: 2em;
+        }
+
+        div.sidebar-content {
+            font-family: "Trebuchet MS", "Helvetica", "Arial", "Verdana", "sans-serif";
+            font-size: 62.5%;
+        }
     </style>
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
@@ -73,21 +83,31 @@
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 
-    <script src="//d3js.org/d3-queue.v2.min.js"></script>
+    <!-- <script src="//d3js.org/d3-queue.v2.min.js"></script> -->
 
     <script src="js/colorbar.js"></script>
 
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/leaflet-sidebar.css" />
+    <script src="js/leaflet-sidebar.js"></script>
+
     <script>
         $(function() {
+
+            resetForms();
+
             $("#check").button();
             $("#format").buttonset();
             $("#eig_radio").buttonset();
             $(".direction_toggle").change(function() {
-                if ($(this).is(':checked')) {
-                    console.log(true);
-                } else {
-                    console.log(false);
-                }
+                // if ($(this).is(':checked')) {
+                //     console.log(true);
+                // } else {
+                //     console.log(false);
+                // }
                 redraw();
             });
 
@@ -99,24 +119,10 @@
 
             // Get the currently selected vector.
             current_vec = $("#eig_radio input[type='radio']:checked").attr('value');
+
+
         });
     </script>
-    <style>
-        #format {
-            margin-top: 2em;
-        }
-    </style>
-
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/leaflet-sidebar.css" />
-    <script src="js/leaflet-sidebar.js"></script>
-
-    <style>
-        div.sidebar-content {
-            font-family: "Trebuchet MS", "Helvetica", "Arial", "Verdana", "sans-serif";
-            font-size: 62.5%;
-        }
-    </style>
 
 </head>
 
@@ -155,8 +161,10 @@
                     </h1>
 
                 <p class="lorem">Load a CSV file.</p>
-                <input type="file" id="uploader">
-                <p id="load_file_result"></p>
+                <form>
+                    <input type="file" id="uploader">
+                    <p id="load_file_result"></p>
+                </form>
             </div>
 
             <div class="sidebar-pane" id="filter_pane">
@@ -191,9 +199,10 @@
 
             <div class="sidebar-pane" id="references">
                 <h1 class="sidebar-header">Reference<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-                <svg width="500" height="600">
-                    <g id="color_bar"></g>
+                <svg width="300" height="320">
+                    <g id="color_bar" v></g>
                 </svg>
+                <div id="barchart"></div>
             </div>
 
             <div class="sidebar-pane" id="settings">
@@ -216,6 +225,7 @@
         var color_scale;
         var colorbar, pointer;
         var current_vec;
+        var station_chart;
 
         function load_dataset(csv) {
             var new_data = [];
@@ -227,7 +237,7 @@
 
                     // The second field is the station direction. Eigenvector coefficients start at third element.
                     for (var i = 2; i < d.length; i = i + 1) {
-                        var vec = i -1;
+                        var vec = i - 1;
                         station["v" + vec.toString()] = +d[i];
                     }
                     return station;
@@ -262,6 +272,18 @@
                 return d[current_vec];
             });
 
+            colorbar = Colorbar()
+                .origin([15, 10])
+                .barlength(300)
+                .thickness(100)
+                .margin({
+                    top: 5,
+                    right: 80,
+                    bottom: 25,
+                    left: 0
+                })
+                .orient("vertical");
+
             if (current_vec === 'v1') {
 
                 var minVal = d3.min(domain);
@@ -271,39 +293,19 @@
                 color_scale = d3.scale.linear()
                     .domain([minVal, meanVal, maxVal])
                     .range(["red", "yellow", "green"]);
-                colorbar = Colorbar()
-                    .origin([15, 60])
-                    .barlength(300)
-                    .thickness(100)
-                    .margin({
-                        top: 5,
-                        right: 80,
-                        bottom: 25,
-                        left: 0
-                    })
-                    .scale(color_scale)
-                    .orient("vertical");
-                pointer = d3.selectAll("#color_bar").call(colorbar);
+                colorbar.scale(color_scale);
 
             } else {
 
                 color_scale = d3.scale.quantile()
                     .domain(domain)
-                    .range(['#fc8d59','#ffffbf','#91cf60']);
-                colorbar = Colorbar()
-                    .origin([15, 60])
-                    .barlength(300)
-                    .thickness(100)
-                    .margin({
-                        top: 5,
-                        right: 80,
-                        bottom: 25,
-                        left: 0
-                    })
-                    .scale(color_scale)
-                    .orient("vertical");
-                pointer = d3.selectAll("#color_bar").call(colorbar);
+                    .range(['#fc8d59', '#ffffbf', '#91cf60']);
+                colorbar.scale(color_scale);
+
             }
+
+            pointer = d3.selectAll("#color_bar").call(colorbar);
+
         }
 
         // handle upload button
@@ -484,7 +486,6 @@
         MercatorYofLatitude = function(lat) {
             return (Math.log(Math.tan((90 + lat) * Math.PI / 360)) / (Math.PI / 180)) * 20037508.34 / 180;
         };
-        var cscale = d3.scale.linear().domain([1, 3]).range(["#ff0000", "#ff6a00", "#ffd800", "#b6ff00", "#00ffff", "#0094ff"]); //"#00FF00","#FFA500"
         var leafletMap = L.map('map').setView([33.542674, -117.057767], 9);
 
         // L.tileLayer("https://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png").addTo(leafletMap);
@@ -554,15 +555,32 @@
                         .duration(200)
                         .style("opacity", 0.99);
                     div.html(d.id + "<br/>" + d.name + "<br/>" + d.freeway + "<br/>" + directionNames["_" + d.direction.toString()] + (d[current_vec] !== undefined ? "<br/>" + d[current_vec] : ""))
-                        // .style("left", (d3.event.pageX) + "px")
                         .style("left", (d3.event.pageX + 10) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
+                    if (d[current_vec] !== undefined) {
+                        pointer.pointTo(d[current_vec]);
+                    }
                 })
                 .on("mouseout", function(d) {
                     div.transition()
                         .duration(500)
                         .style("opacity", 0);
+                })
+                .on("click", function(d) {
+                    station_chart = c3.generate({
+                        size: {
+                            width: 300,
+                        },
+                        bindto: '#barchart',
+                        data: {
+                            columns: [
+                                ['data1', 30, 200, 100, 400, 150, 250],
+                                ['data2', 50, 20, 10, 40, 15, 25]
+                            ]
+                        }
+                    });
                 });
+
 
             points.style("fill-opacity", function(d) {
                 if (d.group) {
@@ -618,6 +636,12 @@
 
             redraw();
         });
+
+        function resetForms() {
+            for (i = 0; i < document.forms.length; i++) {
+                document.forms[i].reset();
+            }
+        }
     </script>
 </body>
 
