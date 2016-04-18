@@ -10,11 +10,11 @@
             /*font-size: 12px;*/
             /*font-size: 24px;*/
         }
-
         /*text {
             fill: white;
         }
 */
+
         svg {
             position: relative;
         }
@@ -83,8 +83,6 @@
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 
-    <!-- <script src="//d3js.org/d3-queue.v2.min.js"></script> -->
-
     <script src="js/colorbar.js"></script>
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" />
@@ -93,6 +91,8 @@
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/leaflet-sidebar.css" />
     <script src="js/leaflet-sidebar.js"></script>
+
+    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script> -->
 
     <script>
         $(function() {
@@ -103,23 +103,21 @@
             $("#format").buttonset();
             $("#eig_radio").buttonset();
             $(".direction_toggle").change(function() {
-                // if ($(this).is(':checked')) {
-                //     console.log(true);
-                // } else {
-                //     console.log(false);
-                // }
                 redraw();
             });
 
             $("#eig_radio input[type='radio']").change(function() {
                 current_vec = $(this).attr('value');
                 create_colors();
+                update_slider();
                 redraw();
             });
 
             // Get the currently selected vector.
             current_vec = $("#eig_radio input[type='radio']:checked").attr('value');
 
+            $("#eig_radio").hide();
+            $("#vec_slider").hide();
 
         });
     </script>
@@ -186,15 +184,24 @@
                         <br>West</label>
                 </div>
 
-                <h2 align="center">Vector Selection</h2>
                 <form>
                     <div id="eig_radio" align="center">
+                        <h2 align="center">Vector Selection</h2>
                         <input type="radio" id="v1_radio" name="radio" value="v1" checked="checked">
                         <label for="v1_radio">V1</label>
                         <input type="radio" id="v2_radio" name="radio" value="v2">
                         <label for="v2_radio">V2</label>
                     </div>
                 </form>
+
+                <div id="vec_slider">
+                    <p>
+                        <label for="amount">Value</label>
+                        <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+                    </p>
+
+                    <div id="slider-range"></div>
+                </div>
             </div>
 
             <div class="sidebar-pane" id="references">
@@ -217,15 +224,20 @@
     </div>
 
     <script>
-        var station_data;
-        var geoData;
-        var qtree;
-        var station_map;
-        var joined_data;
-        var color_scale;
-        var colorbar, pointer;
-        var current_vec;
-        var station_chart;
+        var station_data,
+            geoData,
+            qtree,
+            station_map,
+            joined_data,
+            color_scale,
+            colorbar, pointer,
+            current_vec,
+            station_chart;
+
+        // var cf,
+        //     dim_vector,
+        //     dim_direction,
+        //     dim_range;
 
         function load_dataset(csv) {
             var new_data = [];
@@ -260,10 +272,50 @@
 
             joined_data = new_data;
 
+            // cf = crossfilter(joined_data);
+            // dim_range = cf.dimension(function(d) {
+            //     return d[current_vec];
+            // });
+            // dim_direction = cf.dimension(function(d) {
+            //     return d.direction;
+            // });
+
             create_colors();
 
             d3.select("#load_file_result").text("File load successful. Loaded " + joined_data.length + " stations.");
             redraw();
+
+            update_slider();
+
+            $("#eig_radio").show();
+            $("#vec_slider").show();
+
+        }
+
+        function update_slider() {
+            var domain = joined_data.map(function(d) {
+                return d[current_vec];
+            });
+
+            var min = d3.min(domain);
+            var max = d3.max(domain);
+
+            $("#slider-range").slider({
+                range: true,
+                step: 0.01,
+                min: min,
+                max: max,
+                values: [min, max],
+                slide: function(event, ui) {
+                    $("#amount").val(ui.values[0].toFixed(2) + " - " + ui.values[1].toFixed(2));
+                },
+                stop: function(event, ui) {
+                    redraw();
+                }
+            });
+            $("#amount").val($("#slider-range").slider("values", 0).toFixed(2) +
+                " - " + $("#slider-range").slider("values", 1).toFixed(2));
+
         }
 
         function create_colors() {
@@ -358,6 +410,13 @@
                     return +d.direction !== 4;
                 });
             }
+
+            if ($("#slider-range").data('ui-slider')) {
+                clone = clone.filter(function(d) {
+                    return d[current_vec] >= $("#slider-range").slider("values", 0) && d[current_vec] <= $("#slider-range").slider("values", 1);
+                });
+            }
+
             return clone;
         }
 
