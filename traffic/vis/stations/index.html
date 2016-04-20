@@ -10,10 +10,6 @@
             /*font-size: 12px;*/
             /*font-size: 24px;*/
         }
-        /*text {
-            fill: white;
-        }
-*/
 
         svg {
             position: relative;
@@ -116,7 +112,32 @@
                 redraw();
             });
 
-            $("#freeway_select").multiselect();
+            $("#freeway_select").multiselect({
+                selectedText: "# of # selected",
+                click: function(event, ui) {
+                    if (!ui.checked) {
+                        delete selected_freeways[ui.value];
+                        console.log("disabled freeway", ui.value);
+                    } else {
+                        selected_freeways[ui.value] = 1;
+                        console.log("enabled freeway", ui.value);
+                    }
+                    update_freeway_filter();
+                    redraw();
+                },
+                checkAll: function(event, ui) {
+                    selected_freeways = jQuery.extend({}, all_freeways);
+                    console.log("checkall");
+                    update_freeway_filter();
+                    redraw();
+                },
+                uncheckAll: function(event, ui) {
+                    selected_freeways = {};
+                    console.log("uncheckall");
+                    update_freeway_filter();
+                    redraw();
+                },
+            });
 
             // Get the currently selected vector.
             current_vec = $("#eig_radio input[type='radio']:checked").attr('value');
@@ -212,6 +233,7 @@
                 <div id="freeway_selection_div" align="center>">
                     <h2 align="center">Freeway Selection</h2>
                     <select id="freeway_select" name="freeway_select" multiple="multiple">
+                        <!-- it doesn't matter what the options are here. They will be replaced by freeway data when a file is loaded -->
                         <option value="1">Option 1</option>
                         <option value="2">Option 2</option>
                         <option value="3">Option 3</option>
@@ -257,6 +279,9 @@
             dim_direction,
             dim_range;
 
+        var all_freeways,
+            selected_freeways = {};
+
         function load_dataset(csv) {
             var new_data = [];
             try {
@@ -301,21 +326,30 @@
                 return d.direction;
             });
 
+            dim_freeway.filterFunction(function(d) {
+                return d in selected_freeways;
+            });
+
             // Determine the freeways in the dataset.
             var freeway_group = dim_freeway.group();
 
-            // Although hacky, the only way to update the freeway selection widget is to delete the old elements and create a new one.
-            d3.select("#freeway_select").remove();
-            d3.select("#freeway_select_ms").remove();
-            d3.select("#freeway_selection_div").append("select").attr("id", "freeway_select").attr("name", "freeway_select").attr("multiple", "multiple");
-
+            all_freeways = {};
+            d3.selectAll("#freeway_select option").remove();
             freeway_group.all().forEach(function(d) {
-              d3.select("#freeway_select").append("option").attr("value", d.key).attr("selected", "selected").text(d.key);
+                d3.select("#freeway_select").append("option").attr("value", d.key).attr("selected", "selected").text(d.key);
+                all_freeways[d.key] = 1;
             });
 
-            $("#freeway_select").multiselect({
-              selectedText: "# of # selected",
+            selected_freeways = jQuery.extend({}, all_freeways); // shallow copy is adequate for this object
+
+            dim_freeway.filterFunction(function(d) {
+                return d in selected_freeways;
             });
+
+            $("#freeway_select").multiselect("refresh");
+
+            console.log("Start");
+            console.log("End");
 
             create_colors();
 
@@ -328,6 +362,12 @@
             $("#vec_slider").show();
             $("#freeway_selection_div").show();
 
+        }
+
+        function update_freeway_filter() {
+            dim_freeway.filterFunction(function(d) {
+                return d in selected_freeways;
+            });
         }
 
         function update_slider() {
@@ -427,7 +467,13 @@
 
 
         function filter_stations() {
-            var clone = joined_data.slice(0);
+            var clone;
+            if (cf === undefined) {
+                clone = joined_data.slice(0);
+            } else {
+                clone = dim_freeway.top(Infinity);
+            }
+
             if (!($("#north_toggle").is(':checked'))) {
                 clone = clone.filter(function(d) {
                     return +d.direction !== 1;
