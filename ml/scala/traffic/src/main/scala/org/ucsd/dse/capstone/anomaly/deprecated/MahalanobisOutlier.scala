@@ -1,4 +1,4 @@
-package org.ucsd.dse.capstone.anomaly
+package org.ucsd.dse.capstone.anomaly.deprecated
 
 /* Other UCSD Utilities */
 import org.ucsd.dse.capstone.traffic.MLibUtils

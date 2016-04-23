@@ -1,4 +1,4 @@
-package org.ucsd.dse.capstone.traffic
+package org.ucsd.dse.capstone.traffic.deprecated
 
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.DataFrame
@@ -22,6 +22,7 @@ object StationPCATranformGroupingMain {
     //
     val path = "/home/dyerke/Documents/DSE/capstone_project/traffic/data/parquet"
     val pivot_df: DataFrame = IOUtils.read_pivot_df2(sqlContext, path)
+    val column: PivotColumn = TOTAL_FLOW
     val grouping_output_parameter = new OutputParameter("test_grouping", "/var/tmp/stationpcaviz")
     val k: Int = 5
     //
@@ -33,7 +34,7 @@ object StationPCATranformGroupingMain {
     //    val s3_param = new S3Parameter(client, bucket_name)
     //
     //    val executor: Executor[PCAResults] = new PCAExecutor(paths, output_parameter, s3_param)
-    val executor: Executor[_] = new StationPCATranformGroupingExecutor(pivot_df, grouping_output_parameter, k)
+    val executor: Executor[_] = new StationPCATranformGroupingExecutor(pivot_df, column, grouping_output_parameter, k)
     executor.execute(sc, sqlContext)
   }
 }

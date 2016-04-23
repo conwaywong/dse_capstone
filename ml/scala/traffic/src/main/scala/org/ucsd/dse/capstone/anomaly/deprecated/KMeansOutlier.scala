@@ -1,4 +1,4 @@
-package org.ucsd.dse.capstone.anomaly
+package org.ucsd.dse.capstone.anomaly.deprecated
 
 import scala.collection.Map
 

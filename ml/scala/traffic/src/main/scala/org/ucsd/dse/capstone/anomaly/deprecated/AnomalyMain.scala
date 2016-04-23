@@ -1,12 +1,11 @@
-package org.ucsd.dse.capstone.anomaly
+package org.ucsd.dse.capstone.anomaly.deprecated
 
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.rdd.RDD
-
-import org.ucsd.dse.capstone.traffic._
+import org.ucsd.dse.capstone.traffic.deprecated._
 
 object AnomalyMain {
   private def parseVector(line: String): Vector =

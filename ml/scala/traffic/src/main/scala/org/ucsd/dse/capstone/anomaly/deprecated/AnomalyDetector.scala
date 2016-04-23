@@ -1,4 +1,4 @@
-package org.ucsd.dse.capstone.anomaly
+package org.ucsd.dse.capstone.anomaly.deprecated
 
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.rdd.RDD

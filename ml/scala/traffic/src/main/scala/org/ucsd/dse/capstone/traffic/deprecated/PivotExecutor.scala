@@ -1,4 +1,4 @@
-package org.ucsd.dse.capstone.traffic
+package org.ucsd.dse.capstone.traffic.deprecated
 
 import java.text.SimpleDateFormat
 import java.util.Calendar

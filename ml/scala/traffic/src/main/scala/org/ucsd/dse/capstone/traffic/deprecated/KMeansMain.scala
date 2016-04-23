@@ -1,4 +1,4 @@
-package org.ucsd.dse.capstone.traffic
+package org.ucsd.dse.capstone.traffic.deprecated
 
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg.Vector

@@ -17,7 +17,7 @@
 
 // scalastyle:off println
 //package org.apache.spark.examples
-package org.ucsd.dse.capstone.anomaly
+package org.ucsd.dse.capstone.anomaly.deprecated
 
 import breeze.linalg.{Vector, DenseVector, squaredDistance}
 

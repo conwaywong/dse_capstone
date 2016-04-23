@@ -1,8 +1,7 @@
-package org.ucsd.dse.capstone.traffic
+package org.ucsd.dse.capstone.traffic.deprecated
 
 import java.io.BufferedOutputStream
 import java.io.BufferedReader
-import java.io.BufferedWriter
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -13,12 +12,9 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
-import java.io.OutputStreamWriter
 import java.io.Reader
 import java.io.Writer
-
 import scala.collection.mutable.ListBuffer
-
 import org.apache.spark.SparkContext
 import org.apache.spark.annotation.Experimental
 import org.apache.spark.annotation.Since
@@ -26,6 +22,7 @@ import org.apache.spark.ml.feature.OneHotEncoder
 import org.apache.spark.mllib.linalg.DenseMatrix
 import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.mllib.linalg.Matrix
+import org.apache.spark.mllib.linalg.MatrixUDT
 import org.apache.spark.mllib.linalg.SparseVector
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.VectorUDT
@@ -40,16 +37,16 @@ import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.types.SQLUserDefinedType
 import org.apache.spark.sql.types.StructField
 import org.apache.spark.sql.types.StructType
-
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.S3Object
-
 import au.com.bytecode.opencsv.CSVReader
 import au.com.bytecode.opencsv.CSVWriter
 import breeze.io.{ CSVReader => BCSVR }
 import breeze.io.{ CSVWriter => BCSV }
 import breeze.linalg.{ DenseMatrix => BDM }
+import java.io.OutputStreamWriter
+import java.io.BufferedWriter
 
 /**
  * IO Utilities that deserializes RDD[Row] in compressed text format to RDD[Vector] for use in PCA
@@ -105,38 +102,11 @@ object IOUtils {
     schema
   }
 
-  def get_total_flow_rdd_partitions(sc: SparkContext, pivot_df: DataFrame): List[RDD[(Array[Int], Vector)]] = {
-    val isweekend: Set[Int] = Set(1, 6, 7)
-    val broadcast_isweekend = sc.broadcast(isweekend)
-    val broadcast_empty = sc.broadcast(Vectors.zeros(0))
-    val rdd: RDD[(Array[Int], Vector)] = IOUtils.toVectorRDD_withKeys(pivot_df, TOTAL_FLOW).cache()
-    //
-    // execute TOTAL_FLOW weekday PCA
-    //
-    val weekday_rdd: RDD[(Array[Int], Vector)] = rdd.map { e =>
-      val id_arr = e._1
-      val vec = e._2
-      //
-      val dayofweek = id_arr(4)
-      if (!broadcast_isweekend.value.contains(dayofweek)) (id_arr, vec) else (id_arr, broadcast_empty.value)
-    }.filter(_._2.size > 0)
-    //
-    // execute TOTAL_FLOW weekend PCA
-    //
-    val weekend_rdd: RDD[(Array[Int], Vector)] = rdd.map { e =>
-      val id_arr = e._1
-      val vec = e._2
-      //
-      val dayofweek = id_arr(4)
-      if (broadcast_isweekend.value.contains(dayofweek)) (id_arr, vec) else (id_arr, broadcast_empty.value)
-    }.filter(_._2.size > 0)
-    //
-    List[RDD[(Array[Int], Vector)]](weekday_rdd, weekend_rdd)
-  }
-
   def get_col_prefix(col_enum: PivotColumn): String = {
     col_enum match {
       case TOTAL_FLOW => "total_flow_"
+      case SPEED      => "speed_"
+      case OCCUPANCY  => "occupancy_"
     }
   }
 
@@ -367,7 +337,7 @@ object IOUtils {
     }
   }
 
-  def dump_vec_to_output(target_list: TraversableOnce[Vector], token_name: String, output_parameter: OutputParameter, colEnum: PivotColumn = TOTAL_FLOW): Unit = {
+  def dump_to_output(target_list: TraversableOnce[Vector], colEnum: PivotColumn, token_name: String, output_parameter: OutputParameter): Unit = {
     val filename_prefix = IOUtils.get_col_prefix(colEnum)
     val fid = output_parameter.m_output_fid
     val output_dir = output_parameter.m_output_dir
@@ -385,21 +355,4 @@ object IOUtils {
     }
   }
 
-  def dump_mat_to_output(target: Matrix, token_name: String, output_parameter: OutputParameter, colEnum: PivotColumn = TOTAL_FLOW): Unit = {
-    val filename_prefix = IOUtils.get_col_prefix(colEnum)
-    val fid = output_parameter.m_output_fid
-    val output_dir = output_parameter.m_output_dir
-    val s3_param = output_parameter.m_s3_param
-    //
-    val out_filename = output_dir + filename_prefix + token_name + "." + fid + ".csv"
-    val out_stream = new ByteArrayOutputStream();
-    IOUtils.write_matrix(out_filename, target, filename => {
-      new BufferedWriter(new OutputStreamWriter(out_stream))
-    })
-    if (s3_param != null) {
-      IOUtils.process_stream(s3_param.m_client, s3_param.m_bucket_name, output_dir, out_filename, out_stream)
-    } else {
-      IOUtils.process_stream(output_dir, out_filename, out_stream)
-    }
-  }
 }
