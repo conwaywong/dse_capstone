@@ -111,7 +111,7 @@ object IOUtils {
     val broadcast_empty = sc.broadcast(Vectors.zeros(0))
     val rdd: RDD[(Array[Int], Vector)] = IOUtils.toVectorRDD_withKeys(pivot_df, TOTAL_FLOW).cache()
     //
-    // execute TOTAL_FLOW weekday PCA
+    // weekday
     //
     val weekday_rdd: RDD[(Array[Int], Vector)] = rdd.map { e =>
       val id_arr = e._1
@@ -121,7 +121,7 @@ object IOUtils {
       if (!broadcast_isweekend.value.contains(dayofweek)) (id_arr, vec) else (id_arr, broadcast_empty.value)
     }.filter(_._2.size > 0)
     //
-    // execute TOTAL_FLOW weekend PCA
+    // weekend
     //
     val weekend_rdd: RDD[(Array[Int], Vector)] = rdd.map { e =>
       val id_arr = e._1
