@@ -61,6 +61,24 @@ CREATE TABLE County_City (
 	City_FIPS_ID INTEGER
 );
 
+DROP TABLE IF EXISTS County_Zip CASCADE;
+CREATE TABLE County_Zip (
+	ZIPCODE INTEGER PRIMARY KEY,
+	City TEXT NOT NULL,
+	State TEXT NOT NULL,
+	Metro TEXT NOT NULL,
+	CountyName TEXT NOT NULL
+);
+
+DROP TABLE IF EXISTS Zillo_Home_Value CASCADE;
+CREATE TABLE Zillo_Home_Value (
+	ZIPCODE INTEGER REFERENCES County_Zip(ZIPCODE),
+	Month Date,
+	Avg_Value INTEGER
+);
+
+CREATE UNIQUE INDEX ZipCode_Month ON Zillo_Home_Value(ZIPCODE, Month);
+
 -- Phase 1
 DROP TABLE IF EXISTS Traffic_Station CASCADE;
 CREATE TABLE Traffic_Station (
@@ -83,6 +101,19 @@ CREATE TABLE Traffic_Station (
 	-- USER_ID DELETE
 );
 
+CREATE INDEX PemsIdx ON Traffic_Station(PEMS_ID);
+
+-- Add addtiional fields
+ALTER TABLE Traffic_Station
+	ADD ZIPCODE INTEGER REFERENCES County_Zip(ZIPCODE),
+	ADD Urban BOOLEAN,
+	ADD Density FLOAT;
+
+ALTER TABLE Traffic_Station ADD CONSTRAINT traffic_station_zipcode_fkey FOREIGN KEY (ZIPCODE) REFERENCES County_Zip(ZIPCODE);
+
+-- Insert a dummy row to detect observations that may need to be thrown away
+INSERT INTO Traffic_Station VALUES (-1, -1, '01-01-1970', NULL, 'Unknown', 0, 0, 1, 0.0, 0.0, 0.0, 0.0, NULL, NULL, 6, -1);
+
 -- Phase 2
 DROP TABLE IF EXISTS Observations CASCADE;
 CREATE TABLE Observations (
@@ -95,23 +126,27 @@ CREATE TABLE Observations (
 	Speed_Coef FLOAT[10]
 );
 
-CREATE UNIQUE INDEX Observations_Idx ON Observations(Station_ID, Year, DOY);
-
--- Phase 3
-DROP TABLE IF EXISTS CHP_Desc CASCADE;
-CREATE TABLE CHP_Desc (
-	ID TEXT PRIMARY KEY,
-	Description TEXT
+DROP TABLE IF EXISTS Observations_Unknown CASCADE;
+CREATE TABLE Observations_Unknown (
+	Station_ID INTEGER NOT NULL REFERENCES Traffic_Station(ID),
+	District_ID INTEGER NOT NULL REFERENCES District(ID),
+	Year SMALLINT,
+	DOY SMALLINT,
+	Flow_Coef FLOAT[10],
+	Occupancy_Coef FLOAT[10],
+	Speed_Coef FLOAT[10]
 );
+
+CREATE UNIQUE INDEX Observations_Idx ON Observations(Station_ID, Year, DOY);
 
 -- CHP Data
 DROP TABLE IF EXISTS CHP_INC CASCADE;
 CREATE TABLE CHP_INC (
 	ID SERIAL PRIMARY KEY,
 	CC_CODE TEXT,
-	INC_NUM INTEGER,
+	INC_NUM BIGINT,
 	Time Timestamp NOT NULL,
-	Description TEXT NOT NULL, --REFERENCES CHP_Desc(ID),
+	Description TEXT NOT NULL,
 	-- Location DELETE
 	-- Area DELETE
 	-- Zoom_Map DELETE
@@ -128,6 +163,7 @@ CREATE TABLE CHP_INC (
 	Duration INTEGER
 );
 
+-- TODO Maybe reparse out Description
 -- CREATE OR REPLACE VIEW CHP_INC_COLLISION AS
 --   SELECT *
 --   FROM CHP_INC
@@ -189,3 +225,42 @@ LANGUAGE plpgsql;
 CREATE TRIGGER InsLoc BEFORE INSERT ON Traffic_Station FOR EACH ROW EXECUTE PROCEDURE LocationTrigger();
 CREATE TRIGGER InsLoc BEFORE INSERT ON CHP_INC FOR EACH ROW EXECUTE PROCEDURE LocationTrigger();
 CREATE TRIGGER InsLoc BEFORE INSERT ON Weather_Station FOR EACH ROW EXECUTE PROCEDURE LocationTrigger();
+
+
+CREATE OR REPLACE FUNCTION StationIDTrigger()
+RETURNS trigger
+AS $sid_upd$
+	BEGIN
+		NEW.Station_ID = (
+			SELECT ID
+			FROM Traffic_Station ts
+			WHERE ts.PEMS_ID = NEW.Station_ID
+			AND ((EXTRACT(YEAR FROM Effective_Start) < NEW.Year)
+				  OR (EXTRACT(YEAR FROM Effective_Start) = NEW.Year AND EXTRACT(DOY FROM Effective_Start) <= NEW.DOY))
+			AND ((NEW.Year = EXTRACT(YEAR FROM Effective_End) AND NEW.DOY < EXTRACT(DOY FROM Effective_End))
+				 OR (NEW.Year < EXTRACT(YEAR FROM Effective_End))
+				 OR (Effective_End IS NULL))
+		);
+
+		IF NEW.Station_ID IS NULL THEN
+			NEW.Station_ID = -1;
+		END IF;
+
+	RETURN NEW;
+
+	EXCEPTION
+	    WHEN data_exception THEN
+	        RAISE EXCEPTION 'Trigger ERROR [DATA EXCEPTION] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
+	        RETURN NULL;
+	    WHEN unique_violation THEN
+	        RAISE EXCEPTION 'Trigger ERROR [UNIQUE] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
+	        RETURN NULL;
+	    WHEN OTHERS THEN
+	        RAISE EXCEPTION 'Trigger ERROR [OTHER] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
+	        RETURN NULL;
+END;
+$sid_upd$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER UpdSID BEFORE INSERT ON Observations FOR EACH ROW EXECUTE PROCEDURE StationIDTrigger();
+CREATE TRIGGER UpdSIDu BEFORE UPDATE ON Observations FOR EACH ROW EXECUTE PROCEDURE StationIDTrigger();
