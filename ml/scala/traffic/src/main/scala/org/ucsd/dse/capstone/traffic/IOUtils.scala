@@ -2,6 +2,7 @@ package org.ucsd.dse.capstone.traffic
 
 import java.io.BufferedOutputStream
 import java.io.BufferedReader
+import java.io.BufferedWriter
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -12,13 +13,13 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStream
+import java.io.OutputStreamWriter
 import java.io.Reader
 import java.io.Writer
 
 import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.annotation.Experimental
 import org.apache.spark.annotation.Since
 import org.apache.spark.ml.feature.OneHotEncoder
@@ -57,9 +58,9 @@ import breeze.linalg.{ DenseMatrix => BDM }
  */
 object IOUtils {
   val OBSERVATION_COUNT: Int = 288
-  val DIRECTION_COUNT: Int = 4
+  val DIRECTION_INDEX_COUNT: Int = 4
   //
-  var keyFldCnt: Int = 0
+  val keyFldCnt: Int = 6
 
   private def get_key_schema(as_int: Boolean = true): StructType = {
     var schema = new StructType()
@@ -69,23 +70,21 @@ object IOUtils {
       schema = schema.add(new StructField("year", IntegerType))
       schema = schema.add(new StructField("day_of_year", IntegerType))
       schema = schema.add(new StructField("day_of_week", IntegerType))
+      schema = schema.add(new StructField("direction", IntegerType))
     } else {
       schema = schema.add(new StructField("station_id", DoubleType))
       schema = schema.add(new StructField("district_id", DoubleType))
       schema = schema.add(new StructField("year", DoubleType))
       schema = schema.add(new StructField("day_of_year", DoubleType))
       schema = schema.add(new StructField("day_of_week", DoubleType))
+      schema = schema.add(new StructField("direction", DoubleType))
     }
-
-    keyFldCnt = schema.fields.length
-
     schema
   }
 
   private def get_schema(): (StructType, IndexedSeq[String]) = {
     // Create Schema
     var schema = get_key_schema()
-    schema = schema.add(new StructField("direction", IntegerType))
     val m_obversation_prefixes = List("total_flow", "occupancy", "speed")
 
     val m_observation_times: IndexedSeq[String] = (0 to (OBSERVATION_COUNT - 1)).map((_ * 5)).map(s => f"${s / 60}%02d${s % 60}%02d")
@@ -106,11 +105,38 @@ object IOUtils {
     schema
   }
 
+  def get_total_flow_rdd_partitions(sc: SparkContext, pivot_df: DataFrame): List[RDD[(Array[Int], Vector)]] = {
+    val isweekend: Set[Int] = Set(1, 6, 7)
+    val broadcast_isweekend = sc.broadcast(isweekend)
+    val broadcast_empty = sc.broadcast(Vectors.zeros(0))
+    val rdd: RDD[(Array[Int], Vector)] = IOUtils.toVectorRDD_withKeys(pivot_df, TOTAL_FLOW).cache()
+    //
+    // weekday
+    //
+    val weekday_rdd: RDD[(Array[Int], Vector)] = rdd.map { e =>
+      val id_arr = e._1
+      val vec = e._2
+      //
+      val dayofweek = id_arr(4)
+      if (!broadcast_isweekend.value.contains(dayofweek)) (id_arr, vec) else (id_arr, broadcast_empty.value)
+    }.filter(_._2.size > 0)
+    //
+    // weekend
+    //
+    val weekend_rdd: RDD[(Array[Int], Vector)] = rdd.map { e =>
+      val id_arr = e._1
+      val vec = e._2
+      //
+      val dayofweek = id_arr(4)
+      if (broadcast_isweekend.value.contains(dayofweek)) (id_arr, vec) else (id_arr, broadcast_empty.value)
+    }.filter(_._2.size > 0)
+    //
+    List[RDD[(Array[Int], Vector)]](weekday_rdd, weekend_rdd)
+  }
+
   def get_col_prefix(col_enum: PivotColumn): String = {
     col_enum match {
       case TOTAL_FLOW => "total_flow_"
-      case SPEED      => "speed_"
-      case OCCUPANCY  => "occupancy_"
     }
   }
 
@@ -143,7 +169,7 @@ object IOUtils {
     //
     val one_hot_encoder: OneHotEncoder = new OneHotEncoder()
     one_hot_encoder.setInputCol("direction").setOutputCol("direction_index")
-    val result_df = one_hot_encoder.transform(df2).drop("direction").withColumnRenamed("direction_index", "direction")
+    val result_df = one_hot_encoder.transform(df2)
 
     //
     result_df.registerTempTable(table_name)
@@ -161,7 +187,7 @@ object IOUtils {
 
   def toVectorRDD_withKeys(pivotDF: DataFrame, colEnum: PivotColumn): RDD[(Array[Int], Vector)] = {
     val data_rdd: RDD[Vector] = toVectorRDD(pivotDF, colEnum, true)
-    val expected_column_count = OBSERVATION_COUNT + DIRECTION_COUNT
+    val expected_column_count = OBSERVATION_COUNT + DIRECTION_INDEX_COUNT
     data_rdd.map { r => (r.toArray.slice(0, keyFldCnt).map(_.toInt), Vectors.dense(r.toArray.slice(keyFldCnt, expected_column_count + keyFldCnt))) }
   }
 
@@ -177,11 +203,10 @@ object IOUtils {
       Seq(schema.fieldNames.slice(0, keyFldCnt).foreach { f => columns += new Column(f) })
       nCols += keyFldCnt
     }
-    columns += new Column("direction")
     for (i <- obos_times)
       columns += new Column(s"${col_prefix}${i}")
 
-    val target_columns_size = nCols + 1
+    val target_columns_size = nCols
     require(columns.length == target_columns_size, "obos_times.length= " + +obos_times.length + "; columns.length= " + +columns.length + "; Columns is not " + target_columns_size)
 
     // create DataFrame which only contains the desired columns
@@ -339,6 +364,42 @@ object IOUtils {
       out.write(stream.toByteArray())
     } finally {
       out.close()
+    }
+  }
+
+  def dump_vec_to_output(target_list: TraversableOnce[Vector], token_name: String, output_parameter: OutputParameter, colEnum: PivotColumn = TOTAL_FLOW): Unit = {
+    val filename_prefix = IOUtils.get_col_prefix(colEnum)
+    val fid = output_parameter.m_output_fid
+    val output_dir = output_parameter.m_output_dir
+    val s3_param = output_parameter.m_s3_param
+    //
+    val out_filename = output_dir + filename_prefix + token_name + "." + fid + ".csv"
+    val out_stream = new ByteArrayOutputStream();
+    IOUtils.write_vectors(out_filename, target_list, filename => {
+      new BufferedWriter(new OutputStreamWriter(out_stream))
+    })
+    if (s3_param != null) {
+      IOUtils.process_stream(s3_param.m_client, s3_param.m_bucket_name, output_dir, out_filename, out_stream)
+    } else {
+      IOUtils.process_stream(output_dir, out_filename, out_stream)
+    }
+  }
+
+  def dump_mat_to_output(target: Matrix, token_name: String, output_parameter: OutputParameter, colEnum: PivotColumn = TOTAL_FLOW): Unit = {
+    val filename_prefix = IOUtils.get_col_prefix(colEnum)
+    val fid = output_parameter.m_output_fid
+    val output_dir = output_parameter.m_output_dir
+    val s3_param = output_parameter.m_s3_param
+    //
+    val out_filename = output_dir + filename_prefix + token_name + "." + fid + ".csv"
+    val out_stream = new ByteArrayOutputStream();
+    IOUtils.write_matrix(out_filename, target, filename => {
+      new BufferedWriter(new OutputStreamWriter(out_stream))
+    })
+    if (s3_param != null) {
+      IOUtils.process_stream(s3_param.m_client, s3_param.m_bucket_name, output_dir, out_filename, out_stream)
+    } else {
+      IOUtils.process_stream(output_dir, out_filename, out_stream)
     }
   }
 }

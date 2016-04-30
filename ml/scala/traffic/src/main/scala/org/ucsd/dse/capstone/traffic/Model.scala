@@ -1,60 +1,64 @@
 package org.ucsd.dse.capstone.traffic
 
 import org.apache.commons.io.FilenameUtils
-import org.apache.spark.mllib.linalg.DenseMatrix
-import org.apache.spark.mllib.linalg.DenseVector
+import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Matrix
+import org.apache.spark.mllib.linalg.MatrixUDT
 import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.linalg.VectorUDT
+import org.apache.spark.sql.types.SQLUserDefinedType
 
 import com.amazonaws.services.s3.AmazonS3
 
 sealed trait PivotColumn
 case object TOTAL_FLOW extends PivotColumn
-case object SPEED extends PivotColumn
-case object OCCUPANCY extends PivotColumn
 
 /**
  * Class to hold the PCA result
  */
 class PCAResult(
-    eigenvectors: Tuple2[Matrix, String],
-    eigenvalues: Tuple2[Vector, String],
-    meanvector: Tuple2[Array[Double], String],
-    stdvector: Tuple2[Array[Double], String],
-    samples: Tuple2[Array[Vector], String]) {
+    eigenvectors: Matrix,
+    eigenvalues: Vector,
+    meanvector: Vector) {
   val m_eig = eigenvectors
   val m_eig_values = eigenvalues
   val m_mean_vec = meanvector
-  val m_std_vec = stdvector
-  val m_samples = samples
 
-  override def toString(): String = "(m_eig=$m_eig; m_eig_values=$m_eig_values; m_mean_vec=$m_mean_vec; m_std_vec=$m_std_vec; m_samples=$m_samples)"
+  override def toString(): String = s"(m_eig=$m_eig; m_eig_values=$m_eig_values; m_mean_vec=$m_mean_vec)"
 }
 
 /**
- * Class to hold the PCAResult for each observation (total flow, speed, occupancy)
+ * Class to hold the PCAResult for each weekday total flow and weekend total flow
  */
-class PCAResults(total_flow: PCAResult, speed: PCAResult, occupancy: PCAResult) {
-  val m_total_flow = total_flow
-  val m_speed = speed
-  val m_occupancy = occupancy
+class PCAResults(total_flow_weekday: PCAResult, total_flow_weekend: PCAResult) {
+  val m_total_flow_weekday = total_flow_weekday
+  val m_total_flow_weekend = total_flow_weekend
 
-  override def toString(): String = "(m_total_flow=$m_total_flow; m_speed=$m_speed; m_occupancy=$m_occupancy)"
+  override def toString(): String = s"(m_total_flow_weekday=$m_total_flow_weekday; m_total_flow_weekend=$m_total_flow_weekend)"
+}
+
+/**
+ * Class to hold the PCAResult for each weekday total flow and weekend total flow
+ */
+class PCATransformGroupResults(trans_total_flow_weekday: Array[Vector], trans_total_flow_weekend: Array[Vector]) {
+  val m_trans_total_flow_weekday = trans_total_flow_weekday
+  val m_trans_total_flow_weekend = trans_total_flow_weekend
+
+  override def toString(): String = s"(m_trans_total_flow_weekday=$m_trans_total_flow_weekday; m_trans_total_flow_weekend=$m_trans_total_flow_weekend)"
 }
 
 /**
  * Class defining parameter to PCA Transform
  */
-class PCATransformParameter(column: PivotColumn, mean: DenseVector, eigenvectors: DenseMatrix, output_param: OutputParameter, k: Int = 2) {
+class PCATransformParameter(column: PivotColumn, mean: Vector, eigenvectors: Matrix, output_param: OutputParameter, k: Int) {
   val m_column = column
   val m_mean = mean
   val m_eigenvectors = eigenvectors
   val m_output_param = output_param
   val m_k = k
 
-  def this(column: PivotColumn, pca_result: PCAResult, output_param: OutputParameter, k: Int = 2) {
-    this(column, Vectors.dense(pca_result.m_mean_vec._1).asInstanceOf[DenseVector], pca_result.m_eig._1.asInstanceOf[DenseMatrix], output_param, k)
+  def this(column: PivotColumn, pca_result: PCAResult, output_param: OutputParameter, k: Int) {
+    this(column, pca_result.m_mean_vec, pca_result.m_eig, output_param, k)
   }
 }
 

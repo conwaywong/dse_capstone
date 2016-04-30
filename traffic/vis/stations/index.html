@@ -2,308 +2,623 @@
 <html>
 
 <head>
-  <title>CalTrans ML Stations</title>
-  <meta charset="utf-8">
+    <title>CalTrans ML Stations</title>
+    <meta charset="utf-8">
 
-  <style>
-    body {
-      /*font-size: 12px;*/
-      font-size: 24px;
-    }
+    <style>
+        body {
+            /*font-size: 12px;*/
+            font-size: 24px;
+        }
 
-    text {
-      fill: white;
-    }
+        text {
+            fill: white;
+        }
 
-    svg {
-      position: relative;
-    }
+        svg {
+            position: relative;
+        }
 
-    path {
-      fill: #ff0000;
-      fill-opacity: .7;
-      /*fill-opacity: .2;*/
-    }
+        path {
+            fill: #ff0000;
+            /*fill-opacity: .9;*/
+            /*fill-opacity: .2;*/
+        }
 
-    path:hover {
-      fill: brown;
-      fill-opacity: .7;
-    }
+        path:hover {
+            fill: brown;
+            fill-opacity: .7;
+        }
 
-    #map {
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      background-color: #333;
-    }
+        #map {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background-color: #333;
+        }
 
-    div.tooltip {
-      position: absolute;
-      text-align: center;
-      width: 120;
-      height: 60;
-      padding: 2px;
-      font: 16px sans-serif;
-      background: lightsteelblue;
-      border: 0px;
-      border-radius: 8px;
-      pointer-events: none;
-    }
-  </style>
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width: 120;
+            height: 60;
+            padding: 2px;
+            font: 16px sans-serif;
+            background: lightsteelblue;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+            fill: black;
+        }
+    </style>
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
+
+    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+
+    <script src="//d3js.org/d3-queue.v2.min.js"></script>
+
+    <script src="js/colorbar.js"></script>
+
+    <script>
+        $(function() {
+            $("#check").button();
+            $("#format").buttonset();
+            $("#eig_radio").buttonset();
+            $(".direction_toggle").change(function() {
+                if ($(this).is(':checked')) {
+                    console.log(true);
+                } else {
+                    console.log(false);
+                }
+                redraw();
+            });
+
+            $("#eig_radio input[type='radio']").change(function() {
+                current_vec = $(this).attr('value');
+                create_colors();
+                redraw();
+            });
+
+            // Get the currently selected vector.
+            current_vec = $("#eig_radio input[type='radio']:checked").attr('value');
+        });
+    </script>
+    <style>
+        #format {
+            margin-top: 2em;
+        }
+    </style>
+
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/leaflet-sidebar.css" />
+    <script src="js/leaflet-sidebar.js"></script>
+
+    <style>
+        div.sidebar-content {
+            font-family: "Trebuchet MS", "Helvetica", "Arial", "Verdana", "sans-serif";
+            font-size: 62.5%;
+        }
+    </style>
 
 </head>
 
 <body>
-  <div id="map"></div>
-  <div id="tooltip">
-    <svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" />
-  </div>
+    <div id="sidebar" class="sidebar collapsed">
+        <!-- Nav tabs -->
+        <div class="sidebar-tabs">
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
+                <li><a href="#load_file" role="tab"><i class="fa fa-file"></i></a></li>
+                <li><a href="#filter_pane" role="tab"><i class="fa fa-check-square"></i></a></li>
+                <li><a href="#references" role="tab"><i class="fa fa-bar-chart"></i></a></li>
+            </ul>
 
-  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
-  <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+            <ul role="tablist">
+                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
+            </ul>
+        </div>
 
-  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <!-- Tab panes -->
+        <div class="sidebar-content">
+            <div class="sidebar-pane" id="home">
+                <h1 class="sidebar-header">
+                        sidebar-v2
+                        <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                    </h1>
 
+                <p>A responsive sidebar for mapping libraries like <a href="http://leafletjs.com/">Leaflet</a> or <a href="http://openlayers.org/">OpenLayers</a>.</p>
 
-  <script>
-    // Define the div for the tooltip
-    var div = d3.select("body").append("div")
-      .attr("class", "tooltip")
-      .style("opacity", 0);
+            </div>
 
-    d3.json('data/station_meta_ML.json', function(error, incidents) {
+            <div class="sidebar-pane" id="load_file">
+                <h1 class="sidebar-header">
+                            Load File
+                        <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
+                    </h1>
 
-      function reformat(array) {
-        var data = [];
-        array.map(function(d, i) {
+                <p class="lorem">Load a CSV file.</p>
+                <input type="file" id="uploader">
+                <p id="load_file_result"></p>
+            </div>
 
-          data.push({
-            id: +d.station,
-            name: d.name,
-            direction: +d.direction,
-            freeway: +d.freeway,
-            type: "Feature",
-            geometry: {
-              coordinates: [+d.longitude, +d.latitude],
-              type: "Point"
+            <div class="sidebar-pane" id="filter_pane">
+                <h1 class="sidebar-header">Filters<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+
+                <h2 align="center">Direction Toggle</h2>
+                <div id="format" align="center">
+                    <input type="checkbox" id="north_toggle" class="direction_toggle" checked="checked">
+                    <label for="north_toggle"><i class="fa fa-arrow-up" aria-hidden="true"></i>
+                        <br>North</label>
+                    <input type="checkbox" id="south_toggle" class="direction_toggle" checked="checked">
+                    <label for="south_toggle"><i class="fa fa-arrow-down" aria-hidden="true"></i>
+                        <br>South</label>
+                    <input type="checkbox" id="east_toggle" class="direction_toggle" checked="checked">
+                    <label for="east_toggle"><i class="fa fa-arrow-right" aria-hidden="true"></i>
+                        <br>East</label>
+                    <input type="checkbox" id="west_toggle" class="direction_toggle" checked="checked">
+                    <label for="west_toggle"><i class="fa fa-arrow-left" aria-hidden="true"></i>
+                        <br>West</label>
+                </div>
+
+                <h2 align="center">Vector Selection</h2>
+                <form>
+                    <div id="eig_radio" align="center">
+                        <input type="radio" id="v1_radio" name="radio" value="v1" checked="checked">
+                        <label for="v1_radio">V1</label>
+                        <input type="radio" id="v2_radio" name="radio" value="v2">
+                        <label for="v2_radio">V2</label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="sidebar-pane" id="references">
+                <h1 class="sidebar-header">Reference<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+                <svg width="500" height="600">
+                    <g id="color_bar"></g>
+                </svg>
+            </div>
+
+            <div class="sidebar-pane" id="settings">
+                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+    <div id="tooltip">
+        <svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" />
+    </div>
+
+    <script>
+        var station_data;
+        var geoData;
+        var qtree;
+        var station_map;
+        var joined_data;
+        var color_scale;
+        var colorbar, pointer;
+        var current_vec;
+
+        function load_dataset(csv) {
+            var new_data = [];
+            try {
+                vector_data = d3.csv.parseRows(csv, function(d) {
+                    var station = {
+                        "station": Number(d[0])
+                    };
+
+                    // The second field is the station direction. Eigenvector coefficients start at third element.
+                    for (var i = 2; i < d.length; i = i + 1) {
+                        var vec = i -1;
+                        station["v" + vec.toString()] = +d[i];
+                    }
+                    return station;
+                });
+            } catch (err) {
+                d3.select("#load_file_result").text("Could not load file! " + err.toString());
+                console.log(err);
+                return;
             }
 
+            // Join station data with vector data.
+            vector_data.forEach(function(d) {
+                if (!station_map.has(d.station)) {
+                    console.error("Cannot find station ID " + d.station);
+                } else {
+                    var station = station_map.get(d.station);
+                    new_data.push($.extend(d, station));
+                }
+            });
 
-          });
-        });
-        return data;
-      }
-      var geoData = {
-        type: "FeatureCollection",
-        features: reformat(incidents)
-      };
+            joined_data = new_data;
 
+            create_colors();
 
+            d3.select("#load_file_result").text("File load successful. Loaded " + joined_data.length + " stations.");
+            redraw();
+        }
 
-      var qtree = d3.geom.quadtree(geoData.features.map(function(data, i) {
-        return {
-          x: data.geometry.coordinates[0],
-          y: data.geometry.coordinates[1],
-          all: data
-        };
-      }));
+        function create_colors() {
 
+            var domain = joined_data.map(function(d) {
+                return d[current_vec];
+            });
 
-      // Find the nodes within the specified rectangle.
-      function search(quadtree, x0, y0, x3, y3) {
-        var pts = [];
-        var subPixel = false;
-        var subPts = [];
-        var scale = getZoomScale();
-        console.log(" scale: " + scale);
-        var counter = 0;
-        quadtree.visit(function(node, x1, y1, x2, y2) {
-          var p = node.point;
-          var pwidth = node.width * scale;
-          var pheight = node.height * scale;
+            if (current_vec === 'v1') {
 
-          // -- if this is too small rectangle only count the branch and set opacity
-          if ((pwidth * pheight) <= 1) {
-            // start collecting sub Pixel points
-            subPixel = true;
-          }
-          // -- jumped to super node large than 1 pixel
-          else {
-            // end collecting sub Pixel points
-            if (subPixel && subPts && subPts.length > 0) {
+                var minVal = d3.min(domain);
+                var maxVal = d3.max(domain);
+                var meanVal = d3.mean(domain);
 
-              subPts[0].group = subPts.length;
-              pts.push(subPts[0]); // add only one todo calculate intensity
-              counter += subPts.length - 1;
-              subPts = [];
-            }
-            subPixel = false;
-          }
+                color_scale = d3.scale.linear()
+                    .domain([minVal, meanVal, maxVal])
+                    .range(["red", "yellow", "green"]);
+                colorbar = Colorbar()
+                    .origin([15, 60])
+                    .barlength(300)
+                    .thickness(100)
+                    .margin({
+                        top: 5,
+                        right: 80,
+                        bottom: 25,
+                        left: 0
+                    })
+                    .scale(color_scale)
+                    .orient("vertical");
+                pointer = d3.selectAll("#color_bar").call(colorbar);
 
-          if ((p) && (p.x >= x0) && (p.x < x3) && (p.y >= y0) && (p.y < y3)) {
-
-            if (subPixel) {
-              subPts.push(p.all);
             } else {
-              if (p.all.group) {
-                delete(p.all.group);
-              }
-              pts.push(p.all);
+
+                color_scale = d3.scale.quantile()
+                    .domain(domain)
+                    .range(['#fc8d59','#ffffbf','#91cf60']);
+                colorbar = Colorbar()
+                    .origin([15, 60])
+                    .barlength(300)
+                    .thickness(100)
+                    .margin({
+                        top: 5,
+                        right: 80,
+                        bottom: 25,
+                        left: 0
+                    })
+                    .scale(color_scale)
+                    .orient("vertical");
+                pointer = d3.selectAll("#color_bar").call(colorbar);
             }
+        }
 
-          }
-          // if quad rect is outside of the search rect do nto search in sub nodes (returns true)
-          return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
+        // handle upload button
+        function upload_button(el, callback) {
+            var uploader = document.getElementById(el);
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var contents = e.target.result;
+                callback(contents);
+            };
+
+            uploader.addEventListener("change", handleFiles, false);
+
+            function handleFiles() {
+                d3.select("#table").text("loading...");
+                var file = this.files[0];
+                reader.readAsText(file);
+            }
+        }
+
+        // associate the file load button with events
+        upload_button("uploader", load_dataset);
+
+        // Define the div for the tooltip
+        var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+
+        function filter_stations() {
+            var clone = joined_data.slice(0);
+            if (!($("#north_toggle").is(':checked'))) {
+                clone = clone.filter(function(d) {
+                    return +d.direction !== 1;
+                });
+            }
+            if (!($("#south_toggle").is(':checked'))) {
+                clone = clone.filter(function(d) {
+                    return +d.direction !== 2;
+                });
+            }
+            if (!($("#east_toggle").is(':checked'))) {
+                clone = clone.filter(function(d) {
+                    return +d.direction !== 3;
+                });
+            }
+            if (!($("#west_toggle").is(':checked'))) {
+                clone = clone.filter(function(d) {
+                    return +d.direction !== 4;
+                });
+            }
+            return clone;
+        }
+
+        function reformat(array) {
+            var data = [];
+            array.map(function(d, i) {
+
+                var next = {
+                    id: +d.station,
+                    name: d.name,
+                    direction: +d.direction,
+                    freeway: +d.freeway,
+                    type: "Feature",
+                    geometry: {
+                        coordinates: [+d.longitude, +d.latitude],
+                        type: "Point"
+                    }
+                };
+                if (d[current_vec] !== undefined) {
+                    next.v1 = +d.v1;
+                    next.v2 = +d.v2;
+                }
+
+                data.push(next);
+            });
+            return data;
+        }
+
+        function generate_geoData() {
+
+            geoData = {
+                type: "FeatureCollection",
+                features: reformat(filter_stations())
+            };
+
+            qtree = d3.geom.quadtree(geoData.features.map(function(data, i) {
+                return {
+                    x: data.geometry.coordinates[0],
+                    y: data.geometry.coordinates[1],
+                    all: data
+                };
+            }));
+
+        }
+
+        // Find the nodes within the specified rectangle.
+        function search(quadtree, x0, y0, x3, y3) {
+            var pts = [];
+            var subPixel = false;
+            var subPts = [];
+            var scale = getZoomScale();
+            console.log(" scale: " + scale);
+            var counter = 0;
+            quadtree.visit(function(node, x1, y1, x2, y2) {
+                var p = node.point;
+                var pwidth = node.width * scale;
+                var pheight = node.height * scale;
+
+                // -- if this is too small rectangle only count the branch and set opacity
+                if ((pwidth * pheight) <= 1) {
+                    // start collecting sub Pixel points
+                    subPixel = true;
+                }
+                // -- jumped to super node large than 1 pixel
+                else {
+                    // end collecting sub Pixel points
+                    if (subPixel && subPts && subPts.length > 0) {
+
+                        subPts[0].group = subPts.length;
+                        pts.push(subPts[0]); // add only one todo calculate intensity
+                        counter += subPts.length - 1;
+                        subPts = [];
+                    }
+                    subPixel = false;
+                }
+
+                if ((p) && (p.x >= x0) && (p.x < x3) && (p.y >= y0) && (p.y < y3)) {
+
+                    if (subPixel) {
+                        subPts.push(p.all);
+                    } else {
+                        if (p.all.group) {
+                            delete(p.all.group);
+                        }
+                        pts.push(p.all);
+                    }
+
+                }
+                // if quad rect is outside of the search rect do nto search in sub nodes (returns true)
+                return x1 >= x3 || y1 >= y3 || x2 < x0 || y2 < y0;
+            });
+            console.log(" Number of removed  points: " + counter);
+            return pts;
+
+        }
+
+        function updateNodes(quadtree) {
+            var nodes = [];
+            quadtree.depth = 0; // root
+
+            quadtree.visit(function(node, x1, y1, x2, y2) {
+                var nodeRect = {
+                    left: MercatorXofLongitude(x1),
+                    right: MercatorXofLongitude(x2),
+                    bottom: MercatorYofLatitude(y1),
+                    top: MercatorYofLatitude(y2),
+                };
+                node.width = (nodeRect.right - nodeRect.left);
+                node.height = (nodeRect.top - nodeRect.bottom);
+
+                if (node.depth === 0) {
+                    console.log(" width: " + node.width + "height: " + node.height);
+                }
+                nodes.push(node);
+                for (var i = 0; i < 4; i++) {
+                    if (node.nodes[i]) node.nodes[i].depth = node.depth + 1;
+                }
+            });
+            return nodes;
+        }
+
+        MercatorXofLongitude = function(lon) {
+            return lon * 20037508.34 / 180;
+        };
+
+        MercatorYofLatitude = function(lat) {
+            return (Math.log(Math.tan((90 + lat) * Math.PI / 360)) / (Math.PI / 180)) * 20037508.34 / 180;
+        };
+        var cscale = d3.scale.linear().domain([1, 3]).range(["#ff0000", "#ff6a00", "#ffd800", "#b6ff00", "#00ffff", "#0094ff"]); //"#00FF00","#FFA500"
+        var leafletMap = L.map('map').setView([33.542674, -117.057767], 9);
+
+        // L.tileLayer("https://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png").addTo(leafletMap);
+        var OpenStreetMap_BlackAndWhite = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         });
-        console.log(" Number of removed  points: " + counter);
-        return pts;
+        OpenStreetMap_BlackAndWhite.addTo(leafletMap);
 
-      }
+        var sidebar = L.control.sidebar('sidebar').addTo(leafletMap);
 
-      function updateNodes(quadtree) {
-        var nodes = [];
-        quadtree.depth = 0; // root
+        var svg = d3.select(leafletMap.getPanes().overlayPane).append("svg");
+        var g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-        quadtree.visit(function(node, x1, y1, x2, y2) {
-          var nodeRect = {
-            left: MercatorXofLongitude(x1),
-            right: MercatorXofLongitude(x2),
-            bottom: MercatorYofLatitude(y1),
-            top: MercatorYofLatitude(y2),
-          };
-          node.width = (nodeRect.right - nodeRect.left);
-          node.height = (nodeRect.top - nodeRect.bottom);
+        // Use Leaflet to implement a D3 geometric transformation.
+        function projectPoint(x, y) {
+            var point = leafletMap.latLngToLayerPoint(new L.LatLng(y, x));
+            this.stream.point(point.x, point.y);
+        }
 
-          if (node.depth === 0) {
-            console.log(" width: " + node.width + "height: " + node.height);
-          }
-          nodes.push(node);
-          for (var i = 0; i < 4; i++) {
-            if (node.nodes[i]) node.nodes[i].depth = node.depth + 1;
-          }
+        var transform = d3.geo.transform({
+            point: projectPoint
         });
-        return nodes;
-      }
+        var path = d3.geo.path().projection(transform);
 
-      //-------------------------------------------------------------------------------------
-      MercatorXofLongitude = function(lon) {
-        return lon * 20037508.34 / 180;
-      };
+        leafletMap.on('moveend', mapmove);
 
-      MercatorYofLatitude = function(lat) {
-        return (Math.log(Math.tan((90 + lat) * Math.PI / 360)) / (Math.PI / 180)) * 20037508.34 / 180;
-      };
-      var cscale = d3.scale.linear().domain([1, 3]).range(["#ff0000", "#ff6a00", "#ffd800", "#b6ff00", "#00ffff", "#0094ff"]); //"#00FF00","#FFA500"
-      var leafletMap = L.map('map').setView([33.542674, -117.057767], 9);
+        function getZoomScale() {
+            var mapWidth = leafletMap.getSize().x;
+            var bounds = leafletMap.getBounds();
+            var planarWidth = MercatorXofLongitude(bounds.getEast()) - MercatorXofLongitude(bounds.getWest());
+            var zoomScale = mapWidth / planarWidth;
+            return zoomScale;
 
-      L.tileLayer("https://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png").addTo(leafletMap);
-      // L.tileLayer("http://{s}.sm.mapstack.stamen.com/(toner-lite,$fff[difference],$fff[@23],$fff[hsl-saturation@20])/{z}/{x}/{y}.png").addTo(leafletMap);
+        }
 
-      var svg = d3.select(leafletMap.getPanes().overlayPane).append("svg");
-      var g = svg.append("g").attr("class", "leaflet-zoom-hide");
-
-
-      // Use Leaflet to implement a D3 geometric transformation.
-      function projectPoint(x, y) {
-        var point = leafletMap.latLngToLayerPoint(new L.LatLng(y, x));
-        this.stream.point(point.x, point.y);
-      }
-
-      var transform = d3.geo.transform({
-        point: projectPoint
-      });
-      var path = d3.geo.path().projection(transform);
+        function redrawSubset(subset) {
+            path.pointRadius(8); // * scale);
+            var bounds = path.bounds({
+                type: "FeatureCollection",
+                features: subset
+            });
+            var topLeft = bounds[0];
+            var bottomRight = bounds[1];
 
 
-      updateNodes(qtree);
+            svg.attr("width", bottomRight[0] - topLeft[0])
+                .attr("height", bottomRight[1] - topLeft[1])
+                .style("left", topLeft[0] + "px")
+                .style("top", topLeft[1] + "px");
 
-      leafletMap.on('moveend', mapmove);
 
-      mapmove();
+            g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
 
-      function getZoomScale() {
-        var mapWidth = leafletMap.getSize().x;
-        var bounds = leafletMap.getBounds();
-        var planarWidth = MercatorXofLongitude(bounds.getEast()) - MercatorXofLongitude(bounds.getWest());
-        var zoomScale = mapWidth / planarWidth;
-        return zoomScale;
+            var start = new Date();
 
-      }
+            var points = g.selectAll("path")
+                .data(subset, function(d) {
+                    return d.id;
+                });
+            points.enter().append("path");
+            points.exit().remove();
 
-      function redrawSubset(subset) {
-        path.pointRadius(4); // * scale);
+            points.attr("d", path)
+                .on("mouseover", function(d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", 0.99);
+                    div.html(d.id + "<br/>" + d.name + "<br/>" + d.freeway + "<br/>" + directionNames["_" + d.direction.toString()] + (d[current_vec] !== undefined ? "<br/>" + d[current_vec] : ""))
+                        // .style("left", (d3.event.pageX) + "px")
+                        .style("left", (d3.event.pageX + 10) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function(d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                });
 
-        var bounds = path.bounds({
-          type: "FeatureCollection",
-          features: subset
+            points.style("fill-opacity", function(d) {
+                if (d.group) {
+                    return (d.group * 0.1) + 0.2;
+                }
+            }).style("fill", function(d) {
+                if (d[current_vec] !== undefined) {
+                    return color_scale(d[current_vec]);
+                } else {
+                    return "blue";
+                }
+            });
+
+
+            console.log("updated at  " + new Date().setTime(new Date().getTime() - start.getTime()) + " ms ");
+
+        }
+
+        // Mapping from direction enum to north, south, east, west
+        // JSON keys cannot be a number and must start with a _ or alpha
+        var directionNames = {
+            "_1": "N",
+            "_2": "S",
+            "_3": "E",
+            "_4": "W"
+        };
+
+        function mapmove(e) {
+            var mapBounds = leafletMap.getBounds();
+            var subset = search(qtree, mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth());
+            console.log("subset: " + subset.length);
+
+            redrawSubset(subset);
+
+        }
+
+        function redraw() {
+            generate_geoData();
+            updateNodes(qtree);
+            mapmove();
+        }
+
+        d3.json('data/station_meta_ML.json', function(error, incidents) {
+            // save the original stations data
+            joined_data = incidents;
+
+            // Create a mapping of station_id -> object
+            station_map = new Map();
+            incidents.forEach(function(s) {
+                // console.log(s.station);
+                station_map.set(s.station, s);
+            });
+
+            redraw();
         });
-        var topLeft = bounds[0];
-        var bottomRight = bounds[1];
-
-
-        svg.attr("width", bottomRight[0] - topLeft[0])
-          .attr("height", bottomRight[1] - topLeft[1])
-          .style("left", topLeft[0] + "px")
-          .style("top", topLeft[1] + "px");
-
-
-        g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
-
-        var start = new Date();
-
-        var points = g.selectAll("path")
-          .data(subset, function(d) {
-            return d.id;
-          });
-        points.enter().append("path");
-        points.exit().remove();
-
-        points.attr("d", path)
-          .on("mouseover", function(d) {
-            div.transition()
-              .duration(200)
-              .style("opacity", 0.9);
-            div.html(d.id + "<br/>" + d.name + "<br/>" + d.freeway + "<br/>" + directionNames["_" + d.direction.toString()])
-              .style("left", (d3.event.pageX) + "px")
-              .style("top", (d3.event.pageY - 28) + "px");
-          })
-          .on("mouseout", function(d) {
-            div.transition()
-              .duration(500)
-              .style("opacity", 0);
-          });
-
-        points.style("fill-opacity", function(d) {
-          if (d.group) {
-            return (d.group * 0.1) + 0.2;
-          }
-        });
-
-
-        console.log("updated at  " + new Date().setTime(new Date().getTime() - start.getTime()) + " ms ");
-
-      }
-
-      // Mapping from direction enum to north, south, east, west
-      // JSON keys cannot be a number and must start with a _ or alpha
-      var directionNames = {
-        "_1": "N",
-        "_2": "S",
-        "_3": "E",
-        "_4": "W"
-      };
-
-      function mapmove(e) {
-        var mapBounds = leafletMap.getBounds();
-        var subset = search(qtree, mapBounds.getWest(), mapBounds.getSouth(), mapBounds.getEast(), mapBounds.getNorth());
-        console.log("subset: " + subset.length);
-
-        redrawSubset(subset);
-
-      }
-
-    });
-  </script>
+    </script>
 </body>
 
 </html>
