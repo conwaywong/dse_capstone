@@ -3,28 +3,21 @@
 # postgresql-9.4.1208.jre7.jar
 # time spark-submit --driver-class-path postgresql-9.4.1208.jre7.jar  --jars postgresql-9.4.1208.jre7.jar --master local[4] traffic_etl_spark.py 2>spark.log
 import os
-import sys
 import datetime
-import tempfile
-import pandas as pd
-# Pandas display options
-pd.options.display.max_rows = 999
-pd.options.display.max_columns = 999
-pd.set_option('expand_frame_repr', False)
 from glob import glob
 from pyspark import SparkContext
 from pyspark.sql import SQLContext, Row
 from pyspark.sql.functions import UserDefinedFunction
-from pyspark.sql.types import *
-from sqlalchemy import *
+from pyspark.sql.types import StructType, StructField, LongType, FloatType, IntegerType
+from sqlalchemy import create_engine
 
 sc = SparkContext("local", "Capstone ETL")
 sqlContext = SQLContext(sc)
 url = "jdbc:postgresql://localhost/dse_traffic"
 #"jdbc:postgresql://localhost:3306/employees?user=" + MYSQL_USERNAME + "&password=" + MYSQL_PWD;
+engine = create_engine('postgresql://johngill@localhost:5432/dse_traffic', echo=True)
 
 def truncTable(name):
-    engine = create_engine('postgresql://johngill@localhost:5432/dse_traffic', echo=True)
     print 'Truncating table',name
     connection = engine.connect()
     trans = connection.begin()
@@ -33,32 +26,6 @@ def truncTable(name):
         trans.commit()
     except:
         trans.rollback()
-    connection.close()
-
-def writeTSRow(group):
-    ts_cols = ['id', 'pems_id', 'effective_start', 'effective_end', 'name', 'fwy_id', 'ccid_id',
-                'district_id', 'state_pm', 'abs_pm', 'latitude', 'longitude', 'length', 'type_id', 'num_lanes']
-
-    temp_file, tf_name = tempfile.mkstemp()
-
-    ts_data = pd.DataFrame([r.asDict(True) for r in group[1]])
-    ts_data['num_lanes'] = ts_data['num_lanes'].astype(int)
-    with open(tf_name, 'w') as f:
-        ts_data.to_csv(f, columns=ts_cols, index=False)
-
-    engine = create_engine('postgresql://johngill@localhost:5432/dse_traffic', echo=True)
-    conn = engine.raw_connection()
-
-    with conn.cursor() as cur:
-        with open(tf_name, 'r') as f:
-            sql = "COPY {schema_name}.{table_name} ({columns}) FROM STDIN WITH (FORMAT CSV, HEADER TRUE)".format(
-                                                schema_name="public", table_name='traffic_station', columns=','.join(ts_cols))
-            cur.copy_expert(sql, f)
-    conn.commit()
-    os.remove(tf_name)
-
-def writeCHPRow(group):
-    pass
 
 truncTable('freeways')
 truncTable('county_city')
@@ -100,8 +67,8 @@ udf = UserDefinedFunction(lambda x: stripSPM(x), FloatType())
 s_type = sqlContext.read.format('jdbc').options(url=url, dbtable='public.st_type').load()
 
 # Read in the Metadata files
-# path = 'meta/*/*/*'
-path = 'meta/2008/d3/*'
+path = 'meta/*/*/*'
+# path = 'meta/2008/*/*'
 allFiles = glob(path + ".txt")
 meta_files = sc.union([date_row(f) for f in allFiles])
 
@@ -176,17 +143,11 @@ for v,c in station_meta['pems_id'].value_counts().iteritems():
         cnt += 1
 
 station_meta.reset_index(drop=True, inplace=True)
-station_meta.reset_index(inplace=True)
-station_meta.rename(columns={'index': 'id'}, inplace=True)
-station_meta = sqlContext.createDataFrame(station_meta)
-
-station_meta.rdd.groupBy(lambda r: r['id'] % 4).foreach(writeTSRow)
-
-sys.exit(0)
+station_meta.to_sql('traffic_station', con=engine, if_exists='append', index_label='id')
 
 # Read in the CHP files
-# path = 'chp_incidents_day/*/*/*'
-path = 'chp_incidents_day/2008/*/*'
+path = 'chp_incidents_day/*/*/*'
+# path = 'chp_incidents_day/2008/*/*'
 allFiles = glob(path + ".txt.gz")
 chp_files = sc.textFile(','.join(allFiles))
 
@@ -217,4 +178,5 @@ chp_incidents = chp_incidents.join(county_city, cond, 'inner').select(chp_cols).
 chp_incidents.withColumnRenamed('cc_id', 'id')
 chp_incidents.cache()
 
-chp_incidents.foreach(writeCHPRow)
+chp_incidents = chp_incidents.toPandas()
+chp_incidents.to_sql('chp_inc', con=engine, if_exists='append', index=False, chunksize=200000)

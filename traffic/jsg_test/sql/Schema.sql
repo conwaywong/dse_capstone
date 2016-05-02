@@ -61,24 +61,6 @@ CREATE TABLE County_City (
 	City_FIPS_ID INTEGER
 );
 
-DROP TABLE IF EXISTS County_Zip CASCADE;
-CREATE TABLE County_Zip (
-	ZIPCODE INTEGER PRIMARY KEY,
-	City TEXT NOT NULL,
-	State TEXT NOT NULL,
-	Metro TEXT NOT NULL,
-	CountyName TEXT NOT NULL
-);
-
-DROP TABLE IF EXISTS Zillo_Home_Value CASCADE;
-CREATE TABLE Zillo_Home_Value (
-	ZIPCODE INTEGER REFERENCES County_Zip(ZIPCODE),
-	Month Date,
-	Avg_Value INTEGER
-);
-
-CREATE UNIQUE INDEX ZipCode_Month ON Zillo_Home_Value(ZIPCODE, Month);
-
 -- Phase 1
 DROP TABLE IF EXISTS Traffic_Station CASCADE;
 CREATE TABLE Traffic_Station (
@@ -100,19 +82,6 @@ CREATE TABLE Traffic_Station (
 	Num_Lanes INTEGER NOT NULL
 	-- USER_ID DELETE
 );
-
-CREATE INDEX PemsIdx ON Traffic_Station(PEMS_ID);
-
--- Add addtiional fields
-ALTER TABLE Traffic_Station
-	ADD ZIPCODE INTEGER REFERENCES County_Zip(ZIPCODE),
-	ADD Urban BOOLEAN,
-	ADD Density FLOAT;
-
-ALTER TABLE Traffic_Station ADD CONSTRAINT traffic_station_zipcode_fkey FOREIGN KEY (ZIPCODE) REFERENCES County_Zip(ZIPCODE);
-
--- Insert a dummy row to detect observations that may need to be thrown away
-INSERT INTO Traffic_Station VALUES (-1, -1, '01-01-1970', NULL, 'Unknown', 0, 0, 1, 0.0, 0.0, 0.0, 0.0, NULL, NULL, 6, -1);
 
 -- Phase 2
 DROP TABLE IF EXISTS Observations CASCADE;
@@ -151,14 +120,21 @@ ALTER TABLE Observations_Unknown
 	DROP COLUMN Occupancy_Coef,
 	DROP COLUMN Speed_Coef;
 
+-- Phase 3
+DROP TABLE IF EXISTS CHP_Desc CASCADE;
+CREATE TABLE CHP_Desc (
+	ID TEXT PRIMARY KEY,
+	Description TEXT
+);
+
 -- CHP Data
 DROP TABLE IF EXISTS CHP_INC CASCADE;
 CREATE TABLE CHP_INC (
 	ID SERIAL PRIMARY KEY,
 	CC_CODE TEXT,
-	INC_NUM BIGINT,
+	INC_NUM INTEGER,
 	Time Timestamp NOT NULL,
-	Description TEXT NOT NULL,
+	Description TEXT NOT NULL, --REFERENCES CHP_Desc(ID),
 	-- Location DELETE
 	-- Area DELETE
 	-- Zoom_Map DELETE
@@ -175,7 +151,6 @@ CREATE TABLE CHP_INC (
 	Duration INTEGER
 );
 
--- TODO Maybe reparse out Description
 -- CREATE OR REPLACE VIEW CHP_INC_COLLISION AS
 --   SELECT *
 --   FROM CHP_INC
