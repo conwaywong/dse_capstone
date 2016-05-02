@@ -126,6 +126,16 @@ CREATE TABLE Observations (
 	Speed_Coef FLOAT[10]
 );
 
+CREATE UNIQUE INDEX Observations_Idx ON Observations(Station_ID, Year, DOY);
+
+ALTER TABLE Observations
+	DROP COLUMN Occupancy_Coef,
+	DROP COLUMN Speed_Coef;
+
+ALTER TABLE Observations
+	ADD COLUMN Weekend_Coef FLOAT[5],
+	ADD COLUMN Weekday_Coef FLOAT[5];
+
 DROP TABLE IF EXISTS Observations_Unknown CASCADE;
 CREATE TABLE Observations_Unknown (
 	Station_ID INTEGER NOT NULL REFERENCES Traffic_Station(ID),
@@ -137,7 +147,9 @@ CREATE TABLE Observations_Unknown (
 	Speed_Coef FLOAT[10]
 );
 
-CREATE UNIQUE INDEX Observations_Idx ON Observations(Station_ID, Year, DOY);
+ALTER TABLE Observations_Unknown
+	DROP COLUMN Occupancy_Coef,
+	DROP COLUMN Speed_Coef;
 
 -- CHP Data
 DROP TABLE IF EXISTS CHP_INC CASCADE;
@@ -263,4 +275,12 @@ $sid_upd$
 LANGUAGE plpgsql;
 
 CREATE TRIGGER UpdSID BEFORE INSERT ON Observations FOR EACH ROW EXECUTE PROCEDURE StationIDTrigger();
-CREATE TRIGGER UpdSIDu BEFORE UPDATE ON Observations FOR EACH ROW EXECUTE PROCEDURE StationIDTrigger();
+
+CREATE OR REPLACE FUNCTION YearDOYToDate(IN Year SMALLINT, IN DOY SMALLINT)
+RETURNS Date
+AS $$
+BEGIN
+    RETURN (date (Year || '-01-01') + (interval '1 day'*(DOY-1)))::date;
+END;
+$$
+LANGUAGE plpgsql;
