@@ -97,6 +97,36 @@ CREATE TABLE Observations (
 
 CREATE UNIQUE INDEX Observations_Idx ON Observations(Station_ID, Year, DOY);
 
+ALTER TABLE Observations
+	DROP COLUMN Occupancy_Coef,
+	DROP COLUMN Speed_Coef;
+
+ALTER TABLE Observations
+	ADD COLUMN Weekend_Coef FLOAT[5],
+	ADD COLUMN Weekday_Coef FLOAT[5];
+
+DROP TABLE IF EXISTS Observations_Unknown CASCADE;
+CREATE TABLE Observations_Unknown (
+	Station_ID INTEGER NOT NULL REFERENCES Traffic_Station(ID),
+	District_ID INTEGER NOT NULL REFERENCES District(ID),
+	Year SMALLINT,
+	DOY SMALLINT,
+	Flow_Coef FLOAT[10],
+	Occupancy_Coef FLOAT[10],
+	Speed_Coef FLOAT[10]
+);
+
+ALTER TABLE Observations_Unknown
+	DROP COLUMN Occupancy_Coef,
+	DROP COLUMN Speed_Coef;
+
+-- Phase 3
+DROP TABLE IF EXISTS CHP_Desc CASCADE;
+CREATE TABLE CHP_Desc (
+	ID TEXT PRIMARY KEY,
+	Description TEXT
+);
+
 -- Phase 3
 DROP TABLE IF EXISTS CHP_Desc CASCADE;
 CREATE TABLE CHP_Desc (
@@ -189,3 +219,50 @@ LANGUAGE plpgsql;
 CREATE TRIGGER InsLoc BEFORE INSERT ON Traffic_Station FOR EACH ROW EXECUTE PROCEDURE LocationTrigger();
 CREATE TRIGGER InsLoc BEFORE INSERT ON CHP_INC FOR EACH ROW EXECUTE PROCEDURE LocationTrigger();
 CREATE TRIGGER InsLoc BEFORE INSERT ON Weather_Station FOR EACH ROW EXECUTE PROCEDURE LocationTrigger();
+
+
+CREATE OR REPLACE FUNCTION StationIDTrigger()
+RETURNS trigger
+AS $sid_upd$
+	BEGIN
+		NEW.Station_ID = (
+			SELECT ID
+			FROM Traffic_Station ts
+			WHERE ts.PEMS_ID = NEW.Station_ID
+			AND ((EXTRACT(YEAR FROM Effective_Start) < NEW.Year)
+				  OR (EXTRACT(YEAR FROM Effective_Start) = NEW.Year AND EXTRACT(DOY FROM Effective_Start) <= NEW.DOY))
+			AND ((NEW.Year = EXTRACT(YEAR FROM Effective_End) AND NEW.DOY < EXTRACT(DOY FROM Effective_End))
+				 OR (NEW.Year < EXTRACT(YEAR FROM Effective_End))
+				 OR (Effective_End IS NULL))
+		);
+
+		IF NEW.Station_ID IS NULL THEN
+			NEW.Station_ID = -1;
+		END IF;
+
+	RETURN NEW;
+
+	EXCEPTION
+	    WHEN data_exception THEN
+	        RAISE EXCEPTION 'Trigger ERROR [DATA EXCEPTION] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
+	        RETURN NULL;
+	    WHEN unique_violation THEN
+	        RAISE EXCEPTION 'Trigger ERROR [UNIQUE] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
+	        RETURN NULL;
+	    WHEN OTHERS THEN
+	        RAISE EXCEPTION 'Trigger ERROR [OTHER] - SQLSTATE: %, SQLERRM: %', SQLSTATE, SQLERRM;
+	        RETURN NULL;
+END;
+$sid_upd$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER UpdSID BEFORE INSERT ON Observations FOR EACH ROW EXECUTE PROCEDURE StationIDTrigger();
+
+CREATE OR REPLACE FUNCTION YearDOYToDate(IN Year SMALLINT, IN DOY SMALLINT)
+RETURNS Date
+AS $$
+BEGIN
+    RETURN (date (Year || '-01-01') + (interval '1 day'*(DOY-1)))::date;
+END;
+$$
+LANGUAGE plpgsql;
