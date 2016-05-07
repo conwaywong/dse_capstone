@@ -20,7 +20,7 @@ import org.apache.spark.sql.SQLContext
  *
  * @author dyerke
  */
-class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: PivotColumn, output_parameter: OutputParameter) extends Executor[Unit] {
+class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: PivotColumn, output_parameter: OutputParameter, max_iter: Int= 35, num_clusters: Int= 7) extends Executor[Unit] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*): Unit = {
     val working_vectors: List[Vector] = list_vectors.map { v =>
@@ -33,8 +33,6 @@ class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: P
     //
     println("execute KMeans and obtain labels for transformed vectors")
     val rdd: RDD[Vector] = sc.parallelize(working_vectors).cache()
-    val num_clusters = 7
-    val max_iter = 10
     val kmeans_model: KMeansModel = KMeans.train(rdd, num_clusters, max_iter)
     //
     val labels_list: List[(String, Int)] = list_vectors.map { v =>
