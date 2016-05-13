@@ -32,10 +32,10 @@ def get_reconstruction(eigenvectors, m_projection, Mean):
     return rec
 
 
-eigfilepath= './data/weekday/total_flow_weekday_eigenvectors.pivot_2010_grouping_pca_tmp.csv'
-meanvecpath= './data/weekday/total_flow_weekday_mean_vector.pivot_2010_grouping_pca_tmp.csv'
-sourcetranspath= './data/weekday/total_flow_transformed.pivot_2010_grouping_weekday_pca_transform_tmp.csv.tar.gz'
-transpath= './total_flow_transformed.pivot_2010_grouping_weekday_pca_transform_tmp.csv'
+eigfilepath= './data/weekday/total_flow_weekday_eigenvectors.pivot_2009_grouping_pca_tmp.csv'
+meanvecpath= './data/weekday/total_flow_weekday_mean_vector.pivot_2009_grouping_pca_tmp.csv'
+sourcetranspath= './data/weekday/total_flow_transformed.pivot_2009_grouping_weekday_pca_transform_tmp.csv.tar.gz'
+transpath= './total_flow_transformed.pivot_2009_grouping_weekday_pca_transform_tmp.csv'
 
 with tarfile.open(sourcetranspath) as tar:
     tar.extractall()
