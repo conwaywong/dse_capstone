@@ -6,7 +6,6 @@
     <meta charset="utf-8">
 
     <style>
-
         svg {
             position: relative;
         }
@@ -61,12 +60,33 @@
             font-family: "Trebuchet MS", "Helvetica", "Arial", "Verdana", "sans-serif";
             font-size: 62.5%;
         }
+
+        fieldset {
+            border: 0;
+        }
+
+        #data_select_form label {
+            display: block;
+            margin: 30px 0 0 0;
+        }
+
+        #data_select_form select {
+            width: 200px;
+        }
+
+        #data_select_form .overflow {
+            height: 200px;
+        }
+        /*.ui-dialog-title {
+            display: none;
+        }*/
     </style>
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
     <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
 
-    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="//d3js.org/d3-queue.v2.min.js"></script>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
@@ -86,6 +106,8 @@
     <script src="js/jquery.multiselect.js"></script>
     <link rel="stylesheet" href="css/jquery.multiselect.css" />
 
+    <script src="js/numeric-1.2.6.js"></script>
+
     <script>
         $(function() {
 
@@ -97,6 +119,13 @@
             $(".direction_toggle").change(function() {
                 redraw();
             });
+
+            $("#speed").selectmenu();
+
+            $("#files").selectmenu();
+
+            // Make sure drop-down menu is always on top
+            $('.ui-selectmenu-menu').css('z-index', 9999);
 
             $("#eig_radio input[type='radio']").change(function() {
                 current_vec = $(this).attr('value');
@@ -138,6 +167,30 @@
             $("#eig_radio").hide();
             $("#vec_slider").hide();
             $("#freeway_selection_div").hide();
+
+            $("button[id=year_submit]")
+                .button()
+                .click(function(event) {
+                    var selected_year = $("#speed option:selected").text();
+                    var wkend_file = "data/total_flow_weekend_agg_transformed.pivot_" + selected_year + "_grouping.csv";
+                    var wkday_file = "data/total_flow_weekday_agg_transformed.pivot_" + selected_year + "_grouping.csv";
+                    var wkend_eig_vec_file = "data/total_flow_weekend_eigenvectors.pivot_" + selected_year + "_grouping_pca_tmp.csv";
+                    var wkday_eig_vec_file = "data/total_flow_weekday_eigenvectors.pivot_" + selected_year + "_grouping_pca_tmp.csv";
+
+                    var q = d3_queue.queue();
+                    q
+                        .defer(load_data_file, wkday_file)
+                        .defer(load_data_file, wkend_file)
+                        .defer(load_eig, wkday_eig_vec_file)
+                        .defer(load_eig, wkend_eig_vec_file)
+                        .await(function(error, wkday, wkend, wkday_eig, wkend_eig) {
+                            if (error) throw error;
+                            wkday_data = wkday;
+                            wkend_data = wkend;
+                            wkday_eig_vec = wkday_eig;
+                            wkend_eig_vec = wkend_eig;
+                        });
+                });
 
         });
     </script>
@@ -183,6 +236,32 @@
                     <input type="file" id="uploader">
                     <p id="load_file_result"></p>
                 </form>
+
+                <div>
+                    <form id="data_select_form" action="#">
+
+                        <fieldset>
+                            <label for="speed">Select Year</label>
+                            <select name="speed" id="speed">
+                                <option selected="selected">2008</option>
+                                <option>2009</option>
+                                <option>2010</option>
+                                <option>2011</option>
+                                <option>2013</option>
+                                <option>2014</option>
+                                <option>2015</option>
+                            </select>
+
+                            <label for="files">Select Days</label>
+                            <select name="files" id="files">
+                                <option value="all_days" selected="selected">All days</option>
+                                <option value="weekdays">Weekdays</option>
+                                <option value="weekends">Weekends</option>
+                            </select>
+                        </fieldset>
+                    </form>
+                    <button id="year_submit">Load Year</button>
+                </div>
             </div>
 
             <div class="sidebar-pane" id="filter_pane">
@@ -263,8 +342,7 @@
             joined_data,
             color_scale,
             colorbar, pointer,
-            current_vec,
-            station_chart;
+            current_vec;
 
         var cf,
             dim_freeway,
@@ -274,6 +352,48 @@
 
         var all_freeways,
             selected_freeways = {};
+
+        var
+            wkday_data,
+            wkend_data,
+            wkday_eig_vec,
+            wkend_eig_vec;
+
+        // Function that left pads zeros to an positive integer
+        function pad(num, size) {
+            var s = num + "";
+            while (s.length < size) s = "0" + s;
+            return s;
+        }
+
+        function load_eig(file, callback) {
+            eig_vec = [];
+            d3.text(file, function(text) {
+                d3.csv.parseRows(text, function(d) {
+                    eig_vec.push(d.map(parseFloat));
+                });
+                eig_vec = numeric.transpose(eig_vec);
+                callback(null, eig_vec);
+            });
+        }
+
+        function load_data_file(file, callback) {
+            d3.text(file, function(text) {
+                var file_data = d3.csv.parseRows(text, function(d) {
+                    var station = {
+                        "station": Number(d[0])
+                    };
+
+                    // The second field is the station direction. Eigenvector coefficients start at third element.
+                    for (var i = 2; i < d.length; i = i + 1) {
+                        var vec = i - 1;
+                        station["v" + vec.toString()] = +d[i];
+                    }
+                    return station;
+                });
+                callback(null, file_data);
+            });
+        }
 
         function load_dataset(csv) {
             var new_data = [];
@@ -509,6 +629,9 @@
                 if (d[current_vec] !== undefined) {
                     next.v1 = +d.v1;
                     next.v2 = +d.v2;
+                    next.v3 = +d.v3;
+                    next.v4 = +d.v4;
+                    next.v5 = +d.v5;
                 }
 
                 data.push(next);
@@ -671,16 +794,42 @@
                         .style("opacity", 0);
                 })
                 .on("click", function(d) {
-                    station_chart = c3.generate({
+                    // Create coefficient vectors
+
+                    var wkday_coeff = [d.v1, d.v2, d.v3, d.v4, d.v5];
+                    var wkday_reconstruction = numeric.dot(wkday_coeff, wkday_eig_vec);
+                    wkday_reconstruction.unshift("Weekday");
+
+                    // Create an JQuery UI dialog with the clicked station ID as the div's ID.
+                    $("<div id=\"popup_" + d.id + "\" title=\"" + d.name + " (" + d.id + ")\"></div>").dialog({
+                        width: 550,
+                        height: 350,
+                    });
+
+                    // Generate a chart and bind it to the previously created div.
+                    c3.generate({
                         size: {
-                            width: 300,
+                            width: 480,
+                            height: 270,
                         },
-                        bindto: '#barchart',
+                        bindto: "#popup_" + d.id,
                         data: {
                             columns: [
-                                ['data1', 30, 200, 100, 400, 150, 250],
-                                ['data2', 50, 20, 10, 40, 15, 25]
+                                wkday_reconstruction,
                             ]
+                        },
+                        axis: {
+                            x: {
+                                tick: {
+                                    values: [36, 72, 108, 144, 180, 216, 252], // 3-hour x-axis ticks
+                                    format: function(x) { // set ticks to HH:mm
+                                        var total_min = x * 5;
+                                        var hr = Math.floor(total_min / 60);
+                                        var min = total_min % 60;
+                                        return pad(hr, 2) + ":" + pad(min, 2);
+                                    },
+                                },
+                            }
                         }
                     });
                 });
