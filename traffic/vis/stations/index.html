@@ -6,23 +6,12 @@
     <meta charset="utf-8">
 
     <style>
-        body {
-            /*font-size: 12px;*/
-            font-size: 24px;
-        }
-
-        text {
-            fill: white;
-        }
-
         svg {
             position: relative;
         }
 
         path {
-            fill: #ff0000;
-            /*fill-opacity: .9;*/
-            /*fill-opacity: .2;*/
+            font-size: 24px;
         }
 
         path:hover {
@@ -62,61 +51,149 @@
             font-size: 11px;
             fill: black;
         }
+
+        #format {
+            margin-top: 2em;
+        }
+
+        div.sidebar-content {
+            font-family: "Trebuchet MS", "Helvetica", "Arial", "Verdana", "sans-serif";
+            font-size: 62.5%;
+        }
+
+        fieldset {
+            border: 0;
+        }
+
+        #data_select_form label {
+            display: block;
+            margin: 30px 0 0 0;
+        }
+
+        #data_select_form select {
+            width: 200px;
+        }
+
+        #data_select_form .overflow {
+            height: 200px;
+        }
+        /*.ui-dialog-title {
+            display: none;
+        }*/
     </style>
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
     <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js"></script>
 
-    <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="//d3js.org/d3-queue.v2.min.js"></script>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 
-    <script src="//d3js.org/d3-queue.v2.min.js"></script>
-
     <script src="js/colorbar.js"></script>
 
-    <script>
-        $(function() {
-            $("#check").button();
-            $("#format").buttonset();
-            $("#eig_radio").buttonset();
-            $(".direction_toggle").change(function() {
-                if ($(this).is(':checked')) {
-                    console.log(true);
-                } else {
-                    console.log(false);
-                }
-                redraw();
-            });
-
-            $("#eig_radio input[type='radio']").change(function() {
-                current_vec = $(this).attr('value');
-                create_colors();
-                redraw();
-            });
-
-            // Get the currently selected vector.
-            current_vec = $("#eig_radio input[type='radio']:checked").attr('value');
-        });
-    </script>
-    <style>
-        #format {
-            margin-top: 2em;
-        }
-    </style>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/leaflet-sidebar.css" />
     <script src="js/leaflet-sidebar.js"></script>
 
-    <style>
-        div.sidebar-content {
-            font-family: "Trebuchet MS", "Helvetica", "Arial", "Verdana", "sans-serif";
-            font-size: 62.5%;
-        }
-    </style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
+
+    <script src="js/jquery.multiselect.js"></script>
+    <link rel="stylesheet" href="css/jquery.multiselect.css" />
+
+    <script src="js/numeric-1.2.6.js"></script>
+
+    <script>
+        $(function() {
+
+            resetForms();
+
+            $("#check").button();
+            $("#format").buttonset();
+            $("#eig_radio").buttonset();
+            $(".direction_toggle").change(function() {
+                redraw();
+            });
+
+            $("#speed").selectmenu();
+
+            $("#files").selectmenu();
+
+            // Make sure drop-down menu is always on top
+            $('.ui-selectmenu-menu').css('z-index', 9999);
+
+            $("#eig_radio input[type='radio']").change(function() {
+                current_vec = $(this).attr('value');
+                create_colors();
+                update_slider();
+                redraw();
+            });
+
+            $("#freeway_select").multiselect({
+                selectedText: "# of # selected",
+                click: function(event, ui) {
+                    if (!ui.checked) {
+                        delete selected_freeways[ui.value];
+                        console.log("disabled freeway", ui.value);
+                    } else {
+                        selected_freeways[ui.value] = 1;
+                        console.log("enabled freeway", ui.value);
+                    }
+                    update_freeway_filter();
+                    redraw();
+                },
+                checkAll: function(event, ui) {
+                    selected_freeways = jQuery.extend({}, all_freeways);
+                    console.log("checkall");
+                    update_freeway_filter();
+                    redraw();
+                },
+                uncheckAll: function(event, ui) {
+                    selected_freeways = {};
+                    console.log("uncheckall");
+                    update_freeway_filter();
+                    redraw();
+                },
+            });
+
+            // Get the currently selected vector.
+            current_vec = $("#eig_radio input[type='radio']:checked").attr('value');
+
+            $("#eig_radio").hide();
+            $("#vec_slider").hide();
+            $("#freeway_selection_div").hide();
+
+            $("button[id=year_submit]")
+                .button()
+                .click(function(event) {
+                    var selected_year = $("#speed option:selected").text();
+                    var wkend_file = "data/total_flow_weekend_agg_transformed.pivot_" + selected_year + "_grouping.csv";
+                    var wkday_file = "data/total_flow_weekday_agg_transformed.pivot_" + selected_year + "_grouping.csv";
+                    var wkend_eig_vec_file = "data/total_flow_weekend_eigenvectors.pivot_" + selected_year + "_grouping_pca_tmp.csv";
+                    var wkday_eig_vec_file = "data/total_flow_weekday_eigenvectors.pivot_" + selected_year + "_grouping_pca_tmp.csv";
+
+                    var q = d3_queue.queue();
+                    q
+                        .defer(load_data_file, wkday_file)
+                        .defer(load_data_file, wkend_file)
+                        .defer(load_eig, wkday_eig_vec_file)
+                        .defer(load_eig, wkend_eig_vec_file)
+                        .await(function(error, wkday, wkend, wkday_eig, wkend_eig) {
+                            if (error) throw error;
+                            wkday_data = wkday;
+                            wkend_data = wkend;
+                            wkday_eig_vec = wkday_eig;
+                            wkend_eig_vec = wkend_eig;
+                        });
+                });
+
+        });
+    </script>
 
 </head>
 
@@ -155,8 +232,36 @@
                     </h1>
 
                 <p class="lorem">Load a CSV file.</p>
-                <input type="file" id="uploader">
-                <p id="load_file_result"></p>
+                <form>
+                    <input type="file" id="uploader">
+                    <p id="load_file_result"></p>
+                </form>
+
+                <div>
+                    <form id="data_select_form" action="#">
+
+                        <fieldset>
+                            <label for="speed">Select Year</label>
+                            <select name="speed" id="speed">
+                                <option selected="selected">2008</option>
+                                <option>2009</option>
+                                <option>2010</option>
+                                <option>2011</option>
+                                <option>2013</option>
+                                <option>2014</option>
+                                <option>2015</option>
+                            </select>
+
+                            <label for="files">Select Days</label>
+                            <select name="files" id="files">
+                                <option value="all_days" selected="selected">All days</option>
+                                <option value="weekdays">Weekdays</option>
+                                <option value="weekends">Weekends</option>
+                            </select>
+                        </fieldset>
+                    </form>
+                    <button id="year_submit">Load Year</button>
+                </div>
             </div>
 
             <div class="sidebar-pane" id="filter_pane">
@@ -178,22 +283,44 @@
                         <br>West</label>
                 </div>
 
-                <h2 align="center">Vector Selection</h2>
                 <form>
                     <div id="eig_radio" align="center">
+                        <h2 align="center">Vector Selection</h2>
                         <input type="radio" id="v1_radio" name="radio" value="v1" checked="checked">
                         <label for="v1_radio">V1</label>
                         <input type="radio" id="v2_radio" name="radio" value="v2">
                         <label for="v2_radio">V2</label>
                     </div>
                 </form>
+
+                <div id="vec_slider">
+                    <p>
+                        <label for="amount">Value</label>
+                        <input type="text" id="amount" readonly style="border:0; font-weight:bold;">
+                    </p>
+
+                    <div id="slider-range"></div>
+                </div>
+
+                <div id="freeway_selection_div" align="center>">
+                    <h2 align="center">Freeway Selection</h2>
+                    <select id="freeway_select" name="freeway_select" multiple="multiple">
+                        <!-- it doesn't matter what the options are here. They will be replaced by freeway data when a file is loaded -->
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                        <option value="4">Option 4</option>
+                        <option value="5">Option 5</option>
+                    </select>
+                </div>
             </div>
 
             <div class="sidebar-pane" id="references">
                 <h1 class="sidebar-header">Reference<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-                <svg width="500" height="600">
-                    <g id="color_bar"></g>
+                <svg width="300" height="320">
+                    <g id="color_bar" v></g>
                 </svg>
+                <div id="barchart"></div>
             </div>
 
             <div class="sidebar-pane" id="settings">
@@ -208,14 +335,65 @@
     </div>
 
     <script>
-        var station_data;
-        var geoData;
-        var qtree;
-        var station_map;
-        var joined_data;
-        var color_scale;
-        var colorbar, pointer;
-        var current_vec;
+        var station_data,
+            geoData,
+            qtree,
+            station_map,
+            joined_data,
+            color_scale,
+            colorbar, pointer,
+            current_vec;
+
+        var cf,
+            dim_freeway,
+            dim_vector,
+            dim_direction,
+            dim_range;
+
+        var all_freeways,
+            selected_freeways = {};
+
+        var
+            wkday_data,
+            wkend_data,
+            wkday_eig_vec,
+            wkend_eig_vec;
+
+        // Function that left pads zeros to an positive integer
+        function pad(num, size) {
+            var s = num + "";
+            while (s.length < size) s = "0" + s;
+            return s;
+        }
+
+        function load_eig(file, callback) {
+            eig_vec = [];
+            d3.text(file, function(text) {
+                d3.csv.parseRows(text, function(d) {
+                    eig_vec.push(d.map(parseFloat));
+                });
+                eig_vec = numeric.transpose(eig_vec);
+                callback(null, eig_vec);
+            });
+        }
+
+        function load_data_file(file, callback) {
+            d3.text(file, function(text) {
+                var file_data = d3.csv.parseRows(text, function(d) {
+                    var station = {
+                        "station": Number(d[0])
+                    };
+
+                    // The second field is the station direction. Eigenvector coefficients start at third element.
+                    for (var i = 2; i < d.length; i = i + 1) {
+                        var vec = i - 1;
+                        station["v" + vec.toString()] = +d[i];
+                    }
+                    return station;
+                });
+                callback(null, file_data);
+            });
+        }
 
         function load_dataset(csv) {
             var new_data = [];
@@ -227,7 +405,7 @@
 
                     // The second field is the station direction. Eigenvector coefficients start at third element.
                     for (var i = 2; i < d.length; i = i + 1) {
-                        var vec = i -1;
+                        var vec = i - 1;
                         station["v" + vec.toString()] = +d[i];
                     }
                     return station;
@@ -250,10 +428,85 @@
 
             joined_data = new_data;
 
+            cf = crossfilter(joined_data);
+            dim_freeway = cf.dimension(function(d) {
+                return d.freeway;
+            });
+            dim_range = cf.dimension(function(d) {
+                return d[current_vec];
+            });
+            dim_direction = cf.dimension(function(d) {
+                return d.direction;
+            });
+
+            dim_freeway.filterFunction(function(d) {
+                return d in selected_freeways;
+            });
+
+            // Determine the freeways in the dataset.
+            var freeway_group = dim_freeway.group();
+
+            all_freeways = {};
+            d3.selectAll("#freeway_select option").remove();
+            freeway_group.all().forEach(function(d) {
+                d3.select("#freeway_select").append("option").attr("value", d.key).attr("selected", "selected").text(d.key);
+                all_freeways[d.key] = 1;
+            });
+
+            selected_freeways = jQuery.extend({}, all_freeways); // shallow copy is adequate for this object
+
+            dim_freeway.filterFunction(function(d) {
+                return d in selected_freeways;
+            });
+
+            $("#freeway_select").multiselect("refresh");
+
+            console.log("Start");
+            console.log("End");
+
             create_colors();
 
             d3.select("#load_file_result").text("File load successful. Loaded " + joined_data.length + " stations.");
             redraw();
+
+            update_slider();
+
+            $("#eig_radio").show();
+            $("#vec_slider").show();
+            $("#freeway_selection_div").show();
+
+        }
+
+        function update_freeway_filter() {
+            dim_freeway.filterFunction(function(d) {
+                return d in selected_freeways;
+            });
+        }
+
+        function update_slider() {
+            var domain = joined_data.map(function(d) {
+                return d[current_vec];
+            });
+
+            var min = d3.min(domain);
+            var max = d3.max(domain);
+
+            $("#slider-range").slider({
+                range: true,
+                step: 0.01,
+                min: min,
+                max: max,
+                values: [min, max],
+                slide: function(event, ui) {
+                    $("#amount").val(ui.values[0].toFixed(2) + " to " + ui.values[1].toFixed(2));
+                },
+                stop: function(event, ui) {
+                    redraw();
+                }
+            });
+            $("#amount").val($("#slider-range").slider("values", 0).toFixed(2) +
+                " to " + $("#slider-range").slider("values", 1).toFixed(2));
+
         }
 
         function create_colors() {
@@ -262,48 +515,34 @@
                 return d[current_vec];
             });
 
+            colorbar = Colorbar()
+                .origin([15, 10])
+                .barlength(300)
+                .thickness(100)
+                .margin({
+                    top: 5,
+                    right: 80,
+                    bottom: 25,
+                    left: 0
+                })
+                .orient("vertical");
+
+            var minVal = d3.min(domain);
+            var maxVal = d3.max(domain);
+            var meanVal = d3.mean(domain);
+
+            color_scale = d3.scale.linear()
+                .domain([minVal, meanVal, maxVal]);
+
             if (current_vec === 'v1') {
-
-                var minVal = d3.min(domain);
-                var maxVal = d3.max(domain);
-                var meanVal = d3.mean(domain);
-
-                color_scale = d3.scale.linear()
-                    .domain([minVal, meanVal, maxVal])
-                    .range(["red", "yellow", "green"]);
-                colorbar = Colorbar()
-                    .origin([15, 60])
-                    .barlength(300)
-                    .thickness(100)
-                    .margin({
-                        top: 5,
-                        right: 80,
-                        bottom: 25,
-                        left: 0
-                    })
-                    .scale(color_scale)
-                    .orient("vertical");
-                pointer = d3.selectAll("#color_bar").call(colorbar);
-
+                color_scale.range(["red", "yellow", "green"]);
             } else {
-
-                color_scale = d3.scale.quantile()
-                    .domain(domain)
-                    .range(['#fc8d59','#ffffbf','#91cf60']);
-                colorbar = Colorbar()
-                    .origin([15, 60])
-                    .barlength(300)
-                    .thickness(100)
-                    .margin({
-                        top: 5,
-                        right: 80,
-                        bottom: 25,
-                        left: 0
-                    })
-                    .scale(color_scale)
-                    .orient("vertical");
-                pointer = d3.selectAll("#color_bar").call(colorbar);
+                color_scale.range(["#a50026", "#ffffbf", "#006837"]);
             }
+
+            colorbar.scale(color_scale);
+            pointer = d3.selectAll("#color_bar").call(colorbar);
+
         }
 
         // handle upload button
@@ -335,7 +574,13 @@
 
 
         function filter_stations() {
-            var clone = joined_data.slice(0);
+            var clone;
+            if (cf === undefined) {
+                clone = joined_data.slice(0);
+            } else {
+                clone = dim_freeway.top(Infinity);
+            }
+
             if (!($("#north_toggle").is(':checked'))) {
                 clone = clone.filter(function(d) {
                     return +d.direction !== 1;
@@ -356,6 +601,13 @@
                     return +d.direction !== 4;
                 });
             }
+
+            if ($("#slider-range").data('ui-slider')) {
+                clone = clone.filter(function(d) {
+                    return d[current_vec] >= $("#slider-range").slider("values", 0) && d[current_vec] <= $("#slider-range").slider("values", 1);
+                });
+            }
+
             return clone;
         }
 
@@ -377,6 +629,9 @@
                 if (d[current_vec] !== undefined) {
                     next.v1 = +d.v1;
                     next.v2 = +d.v2;
+                    next.v3 = +d.v3;
+                    next.v4 = +d.v4;
+                    next.v5 = +d.v5;
                 }
 
                 data.push(next);
@@ -452,31 +707,6 @@
 
         }
 
-        function updateNodes(quadtree) {
-            var nodes = [];
-            quadtree.depth = 0; // root
-
-            quadtree.visit(function(node, x1, y1, x2, y2) {
-                var nodeRect = {
-                    left: MercatorXofLongitude(x1),
-                    right: MercatorXofLongitude(x2),
-                    bottom: MercatorYofLatitude(y1),
-                    top: MercatorYofLatitude(y2),
-                };
-                node.width = (nodeRect.right - nodeRect.left);
-                node.height = (nodeRect.top - nodeRect.bottom);
-
-                if (node.depth === 0) {
-                    console.log(" width: " + node.width + "height: " + node.height);
-                }
-                nodes.push(node);
-                for (var i = 0; i < 4; i++) {
-                    if (node.nodes[i]) node.nodes[i].depth = node.depth + 1;
-                }
-            });
-            return nodes;
-        }
-
         MercatorXofLongitude = function(lon) {
             return lon * 20037508.34 / 180;
         };
@@ -484,10 +714,8 @@
         MercatorYofLatitude = function(lat) {
             return (Math.log(Math.tan((90 + lat) * Math.PI / 360)) / (Math.PI / 180)) * 20037508.34 / 180;
         };
-        var cscale = d3.scale.linear().domain([1, 3]).range(["#ff0000", "#ff6a00", "#ffd800", "#b6ff00", "#00ffff", "#0094ff"]); //"#00FF00","#FFA500"
         var leafletMap = L.map('map').setView([33.542674, -117.057767], 9);
 
-        // L.tileLayer("https://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png").addTo(leafletMap);
         var OpenStreetMap_BlackAndWhite = L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -554,15 +782,58 @@
                         .duration(200)
                         .style("opacity", 0.99);
                     div.html(d.id + "<br/>" + d.name + "<br/>" + d.freeway + "<br/>" + directionNames["_" + d.direction.toString()] + (d[current_vec] !== undefined ? "<br/>" + d[current_vec] : ""))
-                        // .style("left", (d3.event.pageX) + "px")
                         .style("left", (d3.event.pageX + 10) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
+                    if (d[current_vec] !== undefined) {
+                        pointer.pointTo(d[current_vec]);
+                    }
                 })
                 .on("mouseout", function(d) {
                     div.transition()
                         .duration(500)
                         .style("opacity", 0);
+                })
+                .on("click", function(d) {
+                    // Create coefficient vectors
+
+                    var wkday_coeff = [d.v1, d.v2, d.v3, d.v4, d.v5];
+                    var wkday_reconstruction = numeric.dot(wkday_coeff, wkday_eig_vec);
+                    wkday_reconstruction.unshift("Weekday");
+
+                    // Create an JQuery UI dialog with the clicked station ID as the div's ID.
+                    $("<div id=\"popup_" + d.id + "\" title=\"" + d.name + " (" + d.id + ")\"></div>").dialog({
+                        width: 550,
+                        height: 350,
+                    });
+
+                    // Generate a chart and bind it to the previously created div.
+                    c3.generate({
+                        size: {
+                            width: 480,
+                            height: 270,
+                        },
+                        bindto: "#popup_" + d.id,
+                        data: {
+                            columns: [
+                                wkday_reconstruction,
+                            ]
+                        },
+                        axis: {
+                            x: {
+                                tick: {
+                                    values: [36, 72, 108, 144, 180, 216, 252], // 3-hour x-axis ticks
+                                    format: function(x) { // set ticks to HH:mm
+                                        var total_min = x * 5;
+                                        var hr = Math.floor(total_min / 60);
+                                        var min = total_min % 60;
+                                        return pad(hr, 2) + ":" + pad(min, 2);
+                                    },
+                                },
+                            }
+                        }
+                    });
                 });
+
 
             points.style("fill-opacity", function(d) {
                 if (d.group) {
@@ -601,7 +872,6 @@
 
         function redraw() {
             generate_geoData();
-            updateNodes(qtree);
             mapmove();
         }
 
@@ -612,12 +882,17 @@
             // Create a mapping of station_id -> object
             station_map = new Map();
             incidents.forEach(function(s) {
-                // console.log(s.station);
                 station_map.set(s.station, s);
             });
 
             redraw();
         });
+
+        function resetForms() {
+            for (i = 0; i < document.forms.length; i++) {
+                document.forms[i].reset();
+            }
+        }
     </script>
 </body>
 
