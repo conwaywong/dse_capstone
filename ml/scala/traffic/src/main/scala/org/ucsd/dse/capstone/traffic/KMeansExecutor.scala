@@ -52,6 +52,7 @@ class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: P
       val vec: Vector = entry._2
       //
       val id = id_arr.map(_.toString).mkString(",")
+      
       (id, vec)
     }
     val labeled_pair: PairRDDFunctions[String, Int] = RDD.rddToPairRDDFunctions(rdd_key_labels)

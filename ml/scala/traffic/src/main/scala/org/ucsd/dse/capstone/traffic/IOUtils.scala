@@ -106,7 +106,7 @@ object IOUtils {
   }
 
   def get_total_flow_rdd_partitions(sc: SparkContext, pivot_df: DataFrame): List[RDD[(Array[Int], Vector)]] = {
-    val isweekend: Set[Int] = Set(1, 6, 7)
+    val isweekend: Set[Int] = Set(1, 7)
     val broadcast_isweekend = sc.broadcast(isweekend)
     val broadcast_empty = sc.broadcast(Vectors.zeros(0))
     val rdd: RDD[(Array[Int], Vector)] = IOUtils.toVectorRDD_withKeys(pivot_df, TOTAL_FLOW).cache()
