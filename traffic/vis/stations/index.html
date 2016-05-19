@@ -178,11 +178,13 @@
             $("button[id=year_submit]")
                 .button()
                 .click(function(event) {
-                    var selected_year = $("#speed option:selected").text();
+                    selected_year = $("#speed option:selected").text();
                     var wkend_file = "data/total_flow_weekend_agg_transformed.pivot_" + selected_year + "_grouping.csv";
                     var wkday_file = "data/total_flow_weekday_agg_transformed.pivot_" + selected_year + "_grouping.csv";
                     var wkend_eig_vec_file = "data/total_flow_weekend_eigenvectors.pivot_" + selected_year + "_grouping_pca_tmp.csv";
                     var wkday_eig_vec_file = "data/total_flow_weekday_eigenvectors.pivot_" + selected_year + "_grouping_pca_tmp.csv";
+                    var wkday_daily_file = "data/daily/" + selected_year + "_weekday.csv";
+                    var wkend_daily_file = "data/daily/" + selected_year + "_weekend.csv";
 
                     var q = d3_queue.queue();
                     q
@@ -190,12 +192,16 @@
                         .defer(load_data_file, wkend_file)
                         .defer(load_eig, wkday_eig_vec_file)
                         .defer(load_eig, wkend_eig_vec_file)
-                        .await(function(error, wkday, wkend, wkday_eig, wkend_eig) {
+                        .defer(load_daily_data_file, wkday_daily_file)
+                        .defer(load_daily_data_file, wkend_daily_file)
+                        .await(function(error, wkday, wkend, wkday_eig, wkend_eig, wkday_daily, wkend_daily) {
                             if (error) throw error;
                             wkday_data = wkday;
                             wkend_data = wkend;
                             wkday_eig_vec = wkday_eig;
                             wkend_eig_vec = wkend_eig;
+                            wkday_daily_data = wkday_daily;
+                            wkend_daily_data = wkend_daily;
                         });
                 });
 
@@ -371,7 +377,8 @@
             joined_data,
             color_scale,
             colorbar, pointer,
-            current_vec;
+            current_vec,
+            current_year;
 
         var cf,
             dim_freeway,
@@ -386,7 +393,9 @@
             wkday_data,
             wkend_data,
             wkday_eig_vec,
-            wkend_eig_vec;
+            wkend_eig_vec,
+            wkday_daily_data,
+            wkend_daily_data;
 
         // Function that left pads zeros to an positive integer
         function pad(num, size) {
@@ -396,8 +405,8 @@
         }
 
         function load_eig(file, callback) {
-            eig_vec = [];
             d3.text(file, function(text) {
+                var eig_vec = [];
                 d3.csv.parseRows(text, function(d) {
                     eig_vec.push(d.map(parseFloat));
                 });
@@ -421,6 +430,26 @@
                     return station;
                 });
                 callback(null, file_data);
+            });
+        }
+
+        function load_daily_data_file(file, callback) {
+            d3.text(file, function(text) {
+                var daily_map = new Map();
+                d3.csv.parseRows(text, function(d) {
+                    var station = Number(d[0]);
+                    var date = d[1];
+                    var coeff = [];
+                    for (var i = 2; i < d.length; i = i + 1) {
+                        coeff.push(+d[i]);
+                    }
+                    if (!daily_map.has(station)) {
+                        daily_map.set(station, new Map());
+                    }
+                    daily_map.get(station).set(date, coeff);
+                });
+                console.log(daily_map.size);
+                callback(null, daily_map);
             });
         }
 
@@ -824,46 +853,107 @@
                         .style("opacity", 0);
                 })
                 .on("click", function(d) {
-                    // Create coefficient vectors
 
-                    var wkday_coeff = [d.v1, d.v2, d.v3, d.v4, d.v5];
-                    var wkday_reconstruction = numeric.dot(wkday_coeff, wkday_eig_vec);
-                    wkday_reconstruction.unshift("Weekday");
+                    if (selected_year !== undefined) {
+                        // Create coefficient vectors
 
-                    // Create an JQuery UI dialog with the clicked station ID as the div's ID.
-                    $("<div id=\"popup_" + d.id + "\" title=\"" + d.name + " (" + d.id + ")\"></div>").dialog({
-                        width: 550,
-                        height: 350,
-                    });
+                        var wkday_coeff = [d.v1, d.v2, d.v3, d.v4, d.v5];
+                        var wkday_reconstruction = numeric.dot(wkday_coeff, wkday_eig_vec);
+                        wkday_reconstruction.unshift("Weekday");
 
-                    // Generate a chart and bind it to the previously created div.
-                    c3.generate({
-                        size: {
-                            width: 480,
-                            height: 270,
-                        },
-                        bindto: "#popup_" + d.id,
-                        data: {
-                            columns: [
-                                wkday_reconstruction,
-                            ]
-                        },
-                        axis: {
-                            x: {
-                                tick: {
-                                    values: [36, 72, 108, 144, 180, 216, 252], // 3-hour x-axis ticks
-                                    format: function(x) { // set ticks to HH:mm
-                                        var total_min = x * 5;
-                                        var hr = Math.floor(total_min / 60);
-                                        var min = total_min % 60;
-                                        return pad(hr, 2) + ":" + pad(min, 2);
-                                    },
+                        // Create an JQuery UI dialog with the clicked station ID as the div's ID.
+                        $("<div id=\"popup_" + d.id + "\" title=\"" + d.name + " (" + d.id + ")\"><div id=\"chart_div_" + d.id + "\"></div><p align=\"center\">Date: <input type=\"text\" size=\"10\" class=\"datepicker\" id=\"datepicker_" + d.id +
+                            "\"><br><input chart_id=\"" + d.id + "\" class=\"chart_load\" type=\"submit\" value=\"Load\"><input chart_id=\"" + d.id + "\" class=\"chart_clear\" type=\"submit\" value=\"Clear\"></p></div>").dialog({
+                            width: 550,
+                            height: 450,
+                        });
+
+                        // Generate a chart and bind it to the previously created div.
+                        window["chart_" + d.id] = c3.generate({
+                            size: {
+                                width: 480,
+                                height: 270,
+                            },
+                            bindto: "#chart_div_" + d.id,
+                            data: {
+                                empty: {
+                                    label: {
+                                        text: "Select date",
+                                    }
                                 },
+                                columns: [
+                                    // Initialize with empty data.
+                                ]
+                            },
+                            axis: {
+                                x: {
+                                    tick: {
+                                        values: [36, 72, 108, 144, 180, 216, 252], // 3-hour x-axis ticks
+                                        format: function(x) { // set ticks to HH:mm
+                                            var total_min = x * 5;
+                                            var hr = Math.floor(total_min / 60);
+                                            var min = total_min % 60;
+                                            return pad(hr, 2) + ":" + pad(min, 2);
+                                        },
+                                    },
+                                }
                             }
-                        }
-                    });
+                        });
+
+                        $("#datepicker_" + d.id).datepicker({
+                            minDate: selected_year + "-01-01",
+                            maxDate: selected_year + "-12-31",
+                            dateFormat: "yy-mm-dd",
+                            defaultDate: new Date(Number(selected_year), 06, 01),
+                        });
+                        $("input.chart_load[chart_id=" + d.id + "]")
+                            .button()
+                            .click(function(event) {
+                                // var id = $(this).attr("chart_id");
+                                var date = $("#datepicker_" + d.id).val();
+                                // console.log("Load " + d.id + " " + date);
+                                update_chart(d.id, date);
+                            });
+                        $("input.chart_clear")
+                            .button()
+                            .click(function(event) {
+                                var id = $(this).attr("chart_id");
+                            });
+                    }
                 });
 
+            function update_chart(id, date_str) {
+                // console.log("data " + wkday_daily_data.get(Number(id)).get(date));
+                var reconstruction;
+                var date = new Date(date_str);
+                  console.log("Reconstruct " + date);
+                if (date.getUTCDay() % 6 === 0) { // 0 = Sunday, 6 = Saturday
+                    // Load weekend eigenvectors
+                    var wkend_coeff = wkend_daily_data.get(Number(id)).get(date_str);
+                    if (wkend_coeff === undefined) {
+                        console.log("No data for " + id + " " + date_str);
+                        return;
+                    }
+                    reconstruction = numeric.dot(wkend_coeff, wkend_eig_vec);
+                    reconstruction.unshift(date_str);
+                } else {
+                    // Load weekday eigenvectors
+                    var wkday_coeff = wkday_daily_data.get(Number(id)).get(date_str);
+                    if (wkday_coeff === undefined) {
+                        console.log("No data for " + id + " " + date_str);
+                        return;
+                    }
+                    reconstruction = numeric.dot(wkday_coeff, wkday_eig_vec);
+                    reconstruction.unshift(date_str);
+                }
+
+
+                window["chart_" + id].load({
+                    columns: [
+                        reconstruction,
+                    ]
+                });
+            }
 
             points.style("fill-opacity", function(d) {
                 if (d.group) {
