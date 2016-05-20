@@ -84,9 +84,6 @@
             /* prevent horizontal scrollbar */
             overflow-x: hidden;
         }
-        /*.ui-dialog-title {
-            display: none;
-        }*/
     </style>
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" />
@@ -178,7 +175,12 @@
             $("button[id=year_submit]")
                 .button()
                 .click(function(event) {
+                    $("#load_year_result").text("Loading...");
+                    $("#progressbar").progressbar({
+                        value: false
+                    });
                     selected_year = $("#speed option:selected").text();
+                    load_dataset("data/agg/total_flow__pivot_" + selected_year + "_grouping.csv");
                     var wkend_file = "data/total_flow_weekend_agg_transformed.pivot_" + selected_year + "_grouping.csv";
                     var wkday_file = "data/total_flow_weekday_agg_transformed.pivot_" + selected_year + "_grouping.csv";
                     var wkend_eig_vec_file = "data/total_flow_weekend_eigenvectors.pivot_" + selected_year + "_grouping_pca_tmp.csv";
@@ -202,6 +204,8 @@
                             wkend_eig_vec = wkend_eig;
                             wkday_daily_data = wkday_daily;
                             wkend_daily_data = wkend_daily;
+                            $("#progressbar").progressbar("destroy");
+                            $("#load_year_result").text("Loaded " + joined_data.length + " stations.");
                         });
                 });
 
@@ -211,9 +215,19 @@
                     var station_tag = $("#station-tags").val();
                     var s = station_map.get(+station_tag);
                     leafletMap.setView([s.latitude, s.longitude], 15);
-                    L.marker([s.latitude, s.longitude]).addTo(leafletMap);
+                    marker = L.marker([s.latitude, s.longitude]);
+                    marker.addTo(leafletMap);
                 });
-
+            $("button[id=station_clear]")
+                .button()
+                .click(function(event) {
+                    console.log("Clear clicked");
+                    $.each(leafletMap._layers, function(ml) {
+                        if (leafletMap._layers[ml]._latlng) {
+                            leafletMap.removeLayer(this);
+                        }
+                    });
+                });
         });
     </script>
 
@@ -250,15 +264,9 @@
 
             <div class="sidebar-pane" id="load_file">
                 <h1 class="sidebar-header">
-                            Load File
+                            Load Data
                         <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
                     </h1>
-
-                <p class="lorem">Load a CSV file.</p>
-                <form>
-                    <input type="file" id="uploader">
-                    <p id="load_file_result"></p>
-                </form>
 
                 <div>
                     <form id="data_select_form" action="#">
@@ -275,15 +283,11 @@
                                 <option>2015</option>
                             </select>
 
-                            <label for="files">Select Days</label>
-                            <select name="files" id="files">
-                                <option value="all_days" selected="selected">All days</option>
-                                <option value="weekdays">Weekdays</option>
-                                <option value="weekends">Weekends</option>
-                            </select>
                         </fieldset>
                     </form>
                     <button id="year_submit">Load Year</button>
+                    <p id="load_year_result"></p>
+                    <div id="progressbar"></div>
                 </div>
             </div>
 
@@ -352,6 +356,7 @@
                     <label for="station-tags">Stations: </label>
                     <input id="station-tags" />
                     <button id="station_submit">Zoom to Station</button>
+                    <button id="station_clear">Clear</button>
                 </div>
             </div>
 
@@ -454,85 +459,79 @@
         }
 
         function load_dataset(csv) {
-            var new_data = [];
-            try {
-                vector_data = d3.csv.parseRows(csv, function(d) {
-                    var station = {
-                        "station": Number(d[0])
-                    };
+            d3.text(csv, function(text) {
+                var new_data = [];
+                try {
+                    vector_data = d3.csv.parseRows(text, function(d) {
+                        var station = {
+                            "station": Number(d[0])
+                        };
 
-                    // The second field is the station direction. Eigenvector coefficients start at third element.
-                    for (var i = 2; i < d.length; i = i + 1) {
-                        var vec = i - 1;
-                        station["v" + vec.toString()] = +d[i];
-                    }
-                    return station;
-                });
-            } catch (err) {
-                d3.select("#load_file_result").text("Could not load file! " + err.toString());
-                console.log(err);
-                return;
-            }
-
-            // Join station data with vector data.
-            vector_data.forEach(function(d) {
-                if (!station_map.has(d.station)) {
-                    console.error("Cannot find station ID " + d.station);
-                } else {
-                    var station = station_map.get(d.station);
-                    new_data.push($.extend(d, station));
+                        // The second field is the station direction. Eigenvector coefficients start at third element.
+                        for (var i = 2; i < d.length; i = i + 1) {
+                            var vec = i - 1;
+                            station["v" + vec.toString()] = +d[i];
+                        }
+                        return station;
+                    });
+                } catch (err) {
+                    d3.select("#load_file_result").text("Could not load file! " + err.toString());
+                    console.log(err);
+                    return;
                 }
+
+                // Join station data with vector data.
+                vector_data.forEach(function(d) {
+                    if (!station_map.has(d.station)) {
+                        console.error("Cannot find station ID " + d.station);
+                    } else {
+                        var station = station_map.get(d.station);
+                        new_data.push($.extend(d, station));
+                    }
+                });
+
+                joined_data = new_data;
+
+
+                cf = crossfilter(joined_data);
+                dim_freeway = cf.dimension(function(d) {
+                    return d.freeway;
+                });
+
+                dim_freeway.filterFunction(function(d) {
+                    return d in selected_freeways;
+                });
+
+                // Determine the freeways in the dataset.
+                var freeway_group = dim_freeway.group();
+
+                all_freeways = {};
+                d3.selectAll("#freeway_select option").remove();
+                freeway_group.all().forEach(function(d) {
+                    d3.select("#freeway_select").append("option").attr("value", d.key).attr("selected", "selected").text(d.key);
+                    all_freeways[d.key] = 1;
+                });
+
+                selected_freeways = jQuery.extend({}, all_freeways); // shallow copy is adequate for this object
+
+                dim_freeway.filterFunction(function(d) {
+                    return d in selected_freeways;
+                });
+
+                $("#freeway_select").multiselect("refresh");
+
+                create_colors();
+
+                d3.select("#load_file_result").text("File load successful. Loaded " + joined_data.length + " stations.");
+                redraw();
+
+                update_slider();
+
+                $("#eig_radio").show();
+                $("#vec_slider").show();
+                $("#freeway_selection_div").show();
+
             });
-
-            joined_data = new_data;
-
-            cf = crossfilter(joined_data);
-            dim_freeway = cf.dimension(function(d) {
-                return d.freeway;
-            });
-            dim_range = cf.dimension(function(d) {
-                return d[current_vec];
-            });
-            dim_direction = cf.dimension(function(d) {
-                return d.direction;
-            });
-
-            dim_freeway.filterFunction(function(d) {
-                return d in selected_freeways;
-            });
-
-            // Determine the freeways in the dataset.
-            var freeway_group = dim_freeway.group();
-
-            all_freeways = {};
-            d3.selectAll("#freeway_select option").remove();
-            freeway_group.all().forEach(function(d) {
-                d3.select("#freeway_select").append("option").attr("value", d.key).attr("selected", "selected").text(d.key);
-                all_freeways[d.key] = 1;
-            });
-
-            selected_freeways = jQuery.extend({}, all_freeways); // shallow copy is adequate for this object
-
-            dim_freeway.filterFunction(function(d) {
-                return d in selected_freeways;
-            });
-
-            $("#freeway_select").multiselect("refresh");
-
-            console.log("Start");
-            console.log("End");
-
-            create_colors();
-
-            d3.select("#load_file_result").text("File load successful. Loaded " + joined_data.length + " stations.");
-            redraw();
-
-            update_slider();
-
-            $("#eig_radio").show();
-            $("#vec_slider").show();
-            $("#freeway_selection_div").show();
-
         }
 
         function update_freeway_filter() {
@@ -602,28 +601,6 @@
             pointer = d3.selectAll("#color_bar").call(colorbar);
 
         }
-
-        // handle upload button
-        function upload_button(el, callback) {
-            var uploader = document.getElementById(el);
-            var reader = new FileReader();
-
-            reader.onload = function(e) {
-                var contents = e.target.result;
-                callback(contents);
-            };
-
-            uploader.addEventListener("change", handleFiles, false);
-
-            function handleFiles() {
-                d3.select("#table").text("loading...");
-                var file = this.files[0];
-                reader.readAsText(file);
-            }
-        }
-
-        // associate the file load button with events
-        upload_button("uploader", load_dataset);
 
         // Define the div for the tooltip
         var div = d3.select("body").append("div")
@@ -866,6 +843,10 @@
                             "\"><br><input chart_id=\"" + d.id + "\" class=\"chart_load\" type=\"submit\" value=\"Load\"><input chart_id=\"" + d.id + "\" class=\"chart_clear\" type=\"submit\" value=\"Clear\"></p></div>").dialog({
                             width: 550,
                             height: 450,
+                            close: function(event, ui) {
+                                // On close, delete the div that represents the popup so if the popup is created again on a subsequent click, it loads correctly.
+                                d3.select("#popup_" + d.id).remove();
+                            },
                         });
 
                         // Generate a chart and bind it to the previously created div.
@@ -923,10 +904,9 @@
                 });
 
             function update_chart(id, date_str) {
-                // console.log("data " + wkday_daily_data.get(Number(id)).get(date));
                 var reconstruction;
                 var date = new Date(date_str);
-                  console.log("Reconstruct " + date);
+                console.log("Reconstruct " + date);
                 if (date.getUTCDay() % 6 === 0) { // 0 = Sunday, 6 = Saturday
                     // Load weekend eigenvectors
                     var wkend_coeff = wkend_daily_data.get(Number(id)).get(date_str);
