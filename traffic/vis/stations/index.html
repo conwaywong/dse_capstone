@@ -58,7 +58,7 @@
 
         div.sidebar-content {
             font-family: "Trebuchet MS", "Helvetica", "Arial", "Verdana", "sans-serif";
-            font-size: 62.5%;
+            font-size: 82.5%;
         }
 
         fieldset {
@@ -143,23 +143,19 @@
                 click: function(event, ui) {
                     if (!ui.checked) {
                         delete selected_freeways[ui.value];
-                        console.log("disabled freeway", ui.value);
                     } else {
                         selected_freeways[ui.value] = 1;
-                        console.log("enabled freeway", ui.value);
                     }
                     update_freeway_filter();
                     redraw();
                 },
                 checkAll: function(event, ui) {
                     selected_freeways = jQuery.extend({}, all_freeways);
-                    console.log("checkall");
                     update_freeway_filter();
                     redraw();
                 },
                 uncheckAll: function(event, ui) {
                     selected_freeways = {};
-                    console.log("uncheckall");
                     update_freeway_filter();
                     redraw();
                 },
@@ -205,7 +201,7 @@
                             wkday_daily_data = wkday_daily;
                             wkend_daily_data = wkend_daily;
                             $("#progressbar").progressbar("destroy");
-                            $("#load_year_result").text("Loaded " + joined_data.length + " stations.");
+                            $("#load_year_result").text("Loaded " + joined_data.length + " station data for " + selected_year);
                         });
                 });
 
@@ -221,7 +217,6 @@
             $("button[id=station_clear]")
                 .button()
                 .click(function(event) {
-                    console.log("Clear clicked");
                     $.each(leafletMap._layers, function(ml) {
                         if (leafletMap._layers[ml]._latlng) {
                             leafletMap.removeLayer(this);
@@ -238,29 +233,15 @@
         <!-- Nav tabs -->
         <div class="sidebar-tabs">
             <ul role="tablist">
-                <li><a href="#home" role="tab"><i class="fa fa-bars"></i></a></li>
                 <li><a href="#load_file" role="tab"><i class="fa fa-file"></i></a></li>
                 <li><a href="#filter_pane" role="tab"><i class="fa fa-check-square"></i></a></li>
                 <li><a href="#search_pane" role="tab"><i class="fa fa-search"></i></a></li>
                 <li><a href="#references" role="tab"><i class="fa fa-bar-chart"></i></a></li>
             </ul>
-
-            <ul role="tablist">
-                <li><a href="#settings" role="tab"><i class="fa fa-gear"></i></a></li>
-            </ul>
         </div>
 
         <!-- Tab panes -->
         <div class="sidebar-content">
-            <div class="sidebar-pane" id="home">
-                <h1 class="sidebar-header">
-                        sidebar-v2
-                        <span class="sidebar-close"><i class="fa fa-caret-left"></i></span>
-                    </h1>
-
-                <p>A responsive sidebar for mapping libraries like <a href="http://leafletjs.com/">Leaflet</a> or <a href="http://openlayers.org/">OpenLayers</a>.</p>
-
-            </div>
 
             <div class="sidebar-pane" id="load_file">
                 <h1 class="sidebar-header">
@@ -335,9 +316,6 @@
                         <!-- it doesn't matter what the options are here. They will be replaced by freeway data when a file is loaded -->
                         <option value="1">Option 1</option>
                         <option value="2">Option 2</option>
-                        <option value="3">Option 3</option>
-                        <option value="4">Option 4</option>
-                        <option value="5">Option 5</option>
                     </select>
                 </div>
             </div>
@@ -345,7 +323,9 @@
             <div class="sidebar-pane" id="references">
                 <h1 class="sidebar-header">Reference<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
                 <svg width="300" height="320">
-                    <g id="color_bar" v></g>
+                    <g id="color_bar"></g>
+                    <text id="colorbar_text_upper" x="25" y="90" fill="white" transform="rotate(-90, 25, 90)"></text>
+                    <text id="colorbar_text_lower" x="25" y="295" fill="white" transform="rotate(-90, 25,295)"></text>
                 </svg>
                 <div id="barchart"></div>
             </div>
@@ -360,9 +340,6 @@
                 </div>
             </div>
 
-            <div class="sidebar-pane" id="settings">
-                <h1 class="sidebar-header">Settings<span class="sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
-            </div>
         </div>
     </div>
 
@@ -593,8 +570,12 @@
 
             if (current_vec === 'v1') {
                 color_scale.range(["red", "yellow", "green"]);
+                $("#colorbar_text_upper").text("Low Volume");
+                $("#colorbar_text_lower").text("High Volume");
             } else {
                 color_scale.range(["#a50026", "#ffffbf", "#006837"]);
+                $("#colorbar_text_upper").text("Morning");
+                $("#colorbar_text_lower").text("Afternoon");
             }
 
             colorbar.scale(color_scale);
@@ -794,12 +775,10 @@
             var topLeft = bounds[0];
             var bottomRight = bounds[1];
 
-
             svg.attr("width", bottomRight[0] - topLeft[0])
                 .attr("height", bottomRight[1] - topLeft[1])
                 .style("left", topLeft[0] + "px")
                 .style("top", topLeft[1] + "px");
-
 
             g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
 
@@ -832,11 +811,6 @@
                 .on("click", function(d) {
 
                     if (selected_year !== undefined) {
-                        // Create coefficient vectors
-
-                        var wkday_coeff = [d.v1, d.v2, d.v3, d.v4, d.v5];
-                        var wkday_reconstruction = numeric.dot(wkday_coeff, wkday_eig_vec);
-                        wkday_reconstruction.unshift("Weekday");
 
                         // Create an JQuery UI dialog with the clicked station ID as the div's ID.
                         $("<div id=\"popup_" + d.id + "\" title=\"" + d.name + " (" + d.id + ")\"><div id=\"chart_div_" + d.id + "\"></div><p align=\"center\">Date: <input type=\"text\" size=\"10\" class=\"datepicker\" id=\"datepicker_" + d.id +
@@ -890,15 +864,13 @@
                         $("input.chart_load[chart_id=" + d.id + "]")
                             .button()
                             .click(function(event) {
-                                // var id = $(this).attr("chart_id");
                                 var date = $("#datepicker_" + d.id).val();
-                                // console.log("Load " + d.id + " " + date);
                                 update_chart(d.id, date);
                             });
                         $("input.chart_clear")
                             .button()
                             .click(function(event) {
-                                var id = $(this).attr("chart_id");
+                              window["chart_" + d.id].unload();
                             });
                     }
                 });
@@ -906,7 +878,6 @@
             function update_chart(id, date_str) {
                 var reconstruction;
                 var date = new Date(date_str);
-                console.log("Reconstruct " + date);
                 if (date.getUTCDay() % 6 === 0) { // 0 = Sunday, 6 = Saturday
                     // Load weekend eigenvectors
                     var wkend_coeff = wkend_daily_data.get(Number(id)).get(date_str);
