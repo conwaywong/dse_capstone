@@ -20,7 +20,7 @@ import org.apache.spark.sql.SQLContext
  *
  * @author dyerke
  */
-class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: PivotColumn, output_parameter: OutputParameter, max_iter: Int= 35, num_clusters: Int= 7) extends Executor[Unit] {
+class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: PivotColumn, output_parameter: OutputParameter, max_iter: Int = 35, num_clusters: Int = 7) extends Executor[Unit] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*): Unit = {
     val working_vectors: List[Vector] = list_vectors.map { v =>
@@ -52,7 +52,7 @@ class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: P
       val vec: Vector = entry._2
       //
       val id = id_arr.map(_.toString).mkString(",")
-      
+
       (id, vec)
     }
     val labeled_pair: PairRDDFunctions[String, Int] = RDD.rddToPairRDDFunctions(rdd_key_labels)
@@ -64,7 +64,17 @@ class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: P
     // obtain kmeans result in original input space
     //
     println("obtain kmeans result in original input space")
-    val kmeans_result_rdd: RDD[(Int, Vector)] = joined.map(_._2).cache()
+    val kmeans_result_rdd: RDD[(Int, Vector)]= joined.map{a_tuple =>
+      val id: String= a_tuple._1
+      val label_vector: Tuple2[Int, Vector]= a_tuple._2
+      //
+      val label: Int= label_vector._1
+      val id_arr: Array[Double]= id.split(",").map(_.toDouble)
+      val dvec_arr: Array[Double]= label_vector._2.toArray
+      val result= Vectors.dense(id_arr ++ dvec_arr)
+      //
+      (label, result)
+    }.cache()
     //
     //
     // obtain cluster fraction
@@ -107,6 +117,9 @@ class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: P
         //
         if (label == current_k) current_vec else broadcast_empty.value
       }.filter { v => v.size > 0 }
+      // take sample
+      val sample_list: Array[Vector] = kmeans_result_rdd.takeSample(false, 1000, 47).map(_._2)
+      IOUtils.dump_vec_to_output(sample_list, s"cluster_${k}_label_sample", output_parameter);
       //
       val summary_stats: MultivariateStatisticalSummary = MLibUtils.summary_stats(working_rdd)
       val stat_target_list: ListBuffer[Vector] = new ListBuffer[Vector]()

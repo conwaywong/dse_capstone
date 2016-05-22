@@ -1,14 +1,10 @@
 package org.ucsd.dse.capstone.traffic
 
 import org.apache.spark.SparkContext
-import org.apache.spark.annotation.Experimental
-import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.types.SQLUserDefinedType
 
 /**
  * Driver that executes PCA, PCA transform, and aggregates eigenvector coefficients
@@ -26,9 +22,9 @@ object StationExtractMain {
   def do_execute(sc: SparkContext) = {
     val sqlContext: SQLContext = new SQLContext(sc)
     //
-//    val station_ids: Array[Int] = Array(2351, 2322, 2479, 15683, 17240, 17241, 17252)
-    val station_ids: Array[Int] = Array(1215252, 400028, 1108427, 402633, 402719)
-    val path = "/home/dyerke/Documents/DSE/capstone_project/traffic/data/parquet"
+    //    val station_ids: Array[Int] = Array(2351, 2322, 2479, 15683, 17240, 17241, 17252)
+    val station_id_range: Array[Int] = Array(340, 39923)
+    val path = "/home/dyerke/Documents/DSE/capstone_project/traffic/data/parquet_2008"
     val pivot_df: DataFrame = IOUtils.read_pivot_df2(sqlContext, path)
     pivot_df.sample(false, 0.01).collect().foreach(println)
     //
@@ -43,7 +39,7 @@ object StationExtractMain {
     //    val s3_param = new S3Parameter(client, bucket_name)
     //
     //    val executor: Executor[PCAResults] = new PCAExecutor(paths, output_parameter, s3_param)
-    val executor: Executor[_] = new StationExtractExecutor(rdd_results(0), station_ids, op)
+    val executor: Executor[_] = new StationExtractExecutor(rdd_results(0), station_id_range, op)
     executor.execute(sc, sqlContext)
   }
 }
