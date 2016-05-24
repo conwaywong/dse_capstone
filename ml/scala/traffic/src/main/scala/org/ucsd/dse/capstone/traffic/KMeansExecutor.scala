@@ -52,7 +52,6 @@ class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: P
       val vec: Vector = entry._2
       //
       val id = id_arr.map(_.toString).mkString(",")
-
       (id, vec)
     }
     val labeled_pair: PairRDDFunctions[String, Int] = RDD.rddToPairRDDFunctions(rdd_key_labels)
@@ -118,7 +117,7 @@ class KMeansExecutor(list_vectors: List[Vector], pivot_df: DataFrame, colEnum: P
         if (label == current_k) current_vec else broadcast_empty.value
       }.filter { v => v.size > 0 }
       // take sample
-      val sample_list: Array[Vector] = kmeans_result_rdd.takeSample(false, 1000, 47).map(_._2)
+      val sample_list: Array[Vector] = working_rdd.sample(false, 0.05, 47).collect()
       IOUtils.dump_vec_to_output(sample_list, s"cluster_${k}_label_sample", output_parameter);
       //
       val summary_stats: MultivariateStatisticalSummary = MLibUtils.summary_stats(working_rdd)
