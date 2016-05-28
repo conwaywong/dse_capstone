@@ -3,10 +3,8 @@ package org.ucsd.dse.capstone.traffic
 import org.apache.commons.io.FilenameUtils
 import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Matrix
-import org.apache.spark.mllib.linalg.MatrixUDT
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.VectorUDT
-import org.apache.spark.sql.types.SQLUserDefinedType
 
 import com.amazonaws.services.s3.AmazonS3
 
@@ -25,6 +23,13 @@ class PCAResult(
   val m_mean_vec = meanvector
 
   override def toString(): String = s"(m_eig=$m_eig; m_eig_values=$m_eig_values; m_mean_vec=$m_mean_vec)"
+}
+
+class RegressorResult(r2score: Double, feature_importance: List[(String, Double)]) {
+  val m_r2score = r2score
+  val m_feature_importance = feature_importance
+
+  override def toString(): String = s"(m_r2score=$m_r2score; m_feature_importance=$m_feature_importance"
 }
 
 /**

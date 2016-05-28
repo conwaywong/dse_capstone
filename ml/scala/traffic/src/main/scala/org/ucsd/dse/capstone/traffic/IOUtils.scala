@@ -20,9 +20,13 @@ import java.io.Writer
 import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
+import org.apache.spark.annotation.DeveloperApi
 import org.apache.spark.annotation.Experimental
 import org.apache.spark.annotation.Since
 import org.apache.spark.ml.feature.OneHotEncoder
+import org.apache.spark.ml.feature.VectorAssembler
+import org.apache.spark.mllib.feature.StandardScaler
+import org.apache.spark.mllib.feature.StandardScalerModel
 import org.apache.spark.mllib.linalg.DenseMatrix
 import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.mllib.linalg.Matrix
@@ -189,6 +193,51 @@ object IOUtils {
     val data_rdd: RDD[Vector] = toVectorRDD(pivotDF, colEnum, true)
     val expected_column_count = OBSERVATION_COUNT + DIRECTION_INDEX_COUNT
     data_rdd.map { r => (r.toArray.slice(0, keyFldCnt).map(_.toInt), Vectors.dense(r.toArray.slice(keyFldCnt, expected_column_count + keyFldCnt))) }
+  }
+
+  def parse_preprocessed(sc: SparkContext, sql_context: SQLContext, path: String, whiten: Boolean): Tuple4[DataFrame, String, String, Array[String]] = {
+    var rdd: RDD[Vector] = sc.textFile(path).map { line =>
+      if (line.contains("LEN")) Vectors.zeros(0) else Vectors.dense(line.split(",").map(_.toDouble))
+    }.filter(_.size > 0).cache()
+    //
+    // execute StandardScaler, if desired
+    //
+    if (whiten) {
+      val scaler: StandardScaler = new StandardScaler(withMean = true, withStd = true)
+      val scaler_model: StandardScalerModel = scaler.fit(rdd)
+      //
+      rdd = scaler_model.transform(rdd)
+    }
+    val rdd_source = rdd
+    //
+    // Create Schema
+    //
+    val column_names: ListBuffer[String] = ListBuffer[String](
+      "LEN", "URBAN", "DENSITY", "AVG_VALUE", "CHP_INC", "LAT", "LON", "AGG_TOTAL_FLOW", "Field_sourceCol_NUM_LANES_value_4", "Field_sourceCol_NUM_LANES_value_3", "Field_sourceCol_NUM_LANES_value_5", "Field_sourceCol_NUM_LANES_value_2", "Field_sourceCol_NUM_LANES_value_6", "Field_sourceCol_NUM_LANES_value_1", "Field_sourceCol_NUM_LANES_value_7", "Field_sourceCol_FWY_NUM_value_5", "Field_sourceCol_FWY_NUM_value_101", "Field_sourceCol_FWY_NUM_value_405", "Field_sourceCol_FWY_NUM_value_80", "Field_sourceCol_FWY_NUM_value_10", "Field_sourceCol_FWY_NUM_value_805", "Field_sourceCol_FWY_NUM_value_210", "Field_sourceCol_FWY_NUM_value_91", "Field_sourceCol_FWY_NUM_value_15", "Field_sourceCol_FWY_NUM_value_605", "Field_sourceCol_FWY_NUM_value_880", "Field_sourceCol_FWY_NUM_value_60", "Field_sourceCol_FWY_NUM_value_680", "Field_sourceCol_FWY_NUM_value_280", "Field_sourceCol_FWY_NUM_value_57", "Field_sourceCol_FWY_NUM_value_710", "Field_sourceCol_FWY_NUM_value_50", "Field_sourceCol_FWY_NUM_value_99", "Field_sourceCol_FWY_NUM_value_94", "Field_sourceCol_FWY_NUM_value_105", "Field_sourceCol_FWY_NUM_value_22", "Field_sourceCol_FWY_NUM_value_110", "Field_sourceCol_FWY_NUM_value_8", "Field_sourceCol_FWY_NUM_value_118", "Field_sourceCol_FWY_NUM_value_41", "Field_sourceCol_FWY_NUM_value_85", "Field_sourceCol_FWY_NUM_value_180", "Field_sourceCol_FWY_NUM_value_73", "Field_sourceCol_FWY_NUM_value_241", "Field_sourceCol_FWY_NUM_value_30", "Field_sourceCol_FWY_NUM_value_12", "Field_sourceCol_FWY_NUM_value_55", "Field_sourceCol_FWY_NUM_value_4", "Field_sourceCol_FWY_NUM_value_87", "Field_sourceCol_FWY_NUM_value_51", "Field_sourceCol_FWY_NUM_value_134", "Field_sourceCol_FWY_NUM_value_78", "Field_sourceCol_FWY_NUM_value_92", "Field_sourceCol_FWY_NUM_value_71", "Field_sourceCol_FWY_NUM_value_47", "Field_sourceCol_FWY_NUM_value_2", "Field_sourceCol_FWY_NUM_value_52", "Field_sourceCol_FWY_NUM_value_24", "Field_sourceCol_FWY_NUM_value_125", "Field_sourceCol_FWY_NUM_value_120", "Field_sourceCol_FWY_NUM_value_163", "Field_sourceCol_FWY_NUM_value_67", "Field_sourceCol_FWY_NUM_value_14", "Field_sourceCol_FWY_NUM_value_170", "Field_sourceCol_FWY_NUM_value_104", "Field_sourceCol_FWY_NUM_value_17", "Field_sourceCol_FWY_NUM_value_261", "Field_sourceCol_FWY_NUM_value_37", "Field_sourceCol_FWY_NUM_value_980", "Field_sourceCol_FWY_NUM_value_215", "Field_sourceCol_FWY_NUM_value_205", "Field_sourceCol_FWY_NUM_value_90", "Field_sourceCol_FWY_NUM_value_237", "Field_sourceCol_FWY_NUM_value_133", "Field_sourceCol_FWY_NUM_value_25", "Field_sourceCol_FWY_NUM_value_242", "Field_sourceCol_FWY_NUM_value_23", "Field_sourceCol_FWY_NUM_value_238", "Field_sourceCol_FWY_NUM_value_56", "Field_sourceCol_FWY_NUM_value_65", "Field_sourceCol_FWY_NUM_value_1", "Field_sourceCol_FWY_NUM_value_29", "Field_sourceCol_FWY_NUM_value_126", "Field_sourceCol_FWY_NUM_value_54", "Field_sourceCol_FWY_NUM_value_140", "Field_sourceCol_FWY_NUM_value_70", "Field_sourceCol_FWY_NUM_value_160", "Field_sourceCol_FWY_NUM_value_948", "Field_sourceCol_FWY_NUM_value_905", "Field_sourceCol_FWY_NUM_value_780", "Field_sourceCol_FWY_NUM_value_33", "Field_sourceCol_FWY_NUM_value_113", "Field_sourceCol_FWY_NUM_value_275", "Field_sourceCol_FWY_NUM_value_108", "Field_sourceCol_FWY_NUM_value_13", "Field_sourceCol_FWY_NUM_value_580", "Field_sourceCol_FWY_DIR_value_2", "Field_sourceCol_FWY_DIR_value_1", "Field_sourceCol_FWY_DIR_value_4", "Field_sourceCol_FWY_DIR_value_3", "Field_sourceCol_DAY_OF_WEEK_value_4", "Field_sourceCol_DAY_OF_WEEK_value_2", "Field_sourceCol_DAY_OF_WEEK_value_1", "Field_sourceCol_DAY_OF_WEEK_value_3", "Field_sourceCol_DAY_OF_WEEK_value_0", "Field_sourceCol_DISTRICT_ID_value_7", "Field_sourceCol_DISTRICT_ID_value_4", "Field_sourceCol_DISTRICT_ID_value_12", "Field_sourceCol_DISTRICT_ID_value_11", "Field_sourceCol_DISTRICT_ID_value_8", "Field_sourceCol_DISTRICT_ID_value_3", "Field_sourceCol_DISTRICT_ID_value_10", "Field_sourceCol_DISTRICT_ID_value_6", "Field_sourceCol_DISTRICT_ID_value_5")
+    val label_column_name = "AGG_TOTAL_FLOW"
+    var schema = new StructType()
+    for (c <- column_names) {
+      schema = schema.add(new StructField(c, DoubleType))
+    }
+    //
+    // Create RDD[Row]
+    //
+    val row_rdd: RDD[Row] = rdd_source.map { v => Row.fromSeq(v.toArray) }
+    //
+    // Create DataFrame
+    //
+    val source_df = sql_context.createDataFrame(row_rdd, schema)
+    //
+    // create DF with vector column and label
+    //
+    column_names.remove(column_names.indexOf(label_column_name))
+    val ouput_column_name = "FEATURES"
+    //
+    (new VectorAssembler()
+      .setInputCols(column_names.toArray)
+      .setOutputCol(ouput_column_name)
+      .transform(source_df)
+      .select(ouput_column_name, label_column_name), ouput_column_name, label_column_name, column_names.toArray)
   }
 
   def toVectorRDD(pivotDF: DataFrame, colEnum: PivotColumn, includeKeys: Boolean = false): RDD[Vector] = {

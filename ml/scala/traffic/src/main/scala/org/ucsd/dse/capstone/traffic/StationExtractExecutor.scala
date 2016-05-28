@@ -13,25 +13,25 @@ import org.apache.spark.sql.SQLContext
  *
  * @author dyerke
  */
-class StationExtractExecutor(m_pair_rdd: RDD[(Array[Int], Vector)], station_id_range: Array[Int], output_parameter: OutputParameter) extends Executor[Unit] {
+class StationExtractExecutor(m_pair_rdd: RDD[(Array[Int], Vector)], station_ids: Array[Int], output_parameter: OutputParameter) extends Executor[Unit] {
 
   override def execute(sc: SparkContext, sql_context: SQLContext, args: String*): Unit = {
-    do_execute(sc, m_pair_rdd, station_id_range, output_parameter)
+    do_execute(sc, m_pair_rdd, station_ids, output_parameter)
   }
 
-  private def do_execute(sc: SparkContext, m_pair_rdd: RDD[(Array[Int], Vector)], station_id_range: Array[Int], output_parameter: OutputParameter): Unit = {
-    val broadcast_station_id_range = sc.broadcast(station_id_range)
+  private def do_execute(sc: SparkContext, m_pair_rdd: RDD[(Array[Int], Vector)], station_ids: Array[Int], output_parameter: OutputParameter): Unit = {
+    val broadcast_station_ids = sc.broadcast(station_ids)
     val broadcast_empty = sc.broadcast(Vectors.zeros(0))
 
     val vec_rdd: RDD[Vector] = m_pair_rdd.map { entry =>
       val id_arr: Array[Int] = entry._1
       val vec: Vector = entry._2
       //
-      val l_station_id_range: Array[Int] = broadcast_station_id_range.value
+      val l_station_ids: Array[Int] = broadcast_station_ids.value
       var a_result: Vector = null
       val sid= id_arr(0)
       println("sid= " + sid)
-      if (sid >= l_station_id_range(0) && sid <= l_station_id_range(1)) {
+      if (l_station_ids.contains(sid)) {
         val d_arr = vec.toArray
         val result_list: ListBuffer[Double] = new ListBuffer[Double]()
         for (key <- id_arr) {

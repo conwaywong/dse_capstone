@@ -4,16 +4,13 @@ import scala.collection.mutable.ListBuffer
 
 import org.apache.spark.SparkContext
 import org.apache.spark.annotation.Experimental
-import org.apache.spark.annotation.Since
 import org.apache.spark.mllib.linalg.Vector
-import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.Column
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.GroupedData
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.types.SQLUserDefinedType
 
 /**
  * Executes PCA, PCA transform, and aggregates eigenvector coefficients
@@ -72,6 +69,6 @@ class StationPCATranformGroupingExecutor(pivot_df: DataFrame, grouping_output_pa
       //
       results += result_arr
     }
-    null
+    new PCATransformGroupResults(results(0), results(1))
   }
 }
