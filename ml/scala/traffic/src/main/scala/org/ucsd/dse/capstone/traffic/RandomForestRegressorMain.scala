@@ -24,7 +24,6 @@ object RandomForestRegressorMain {
     val sqlContext: SQLContext = new SQLContext(sc)
     //
     val path = "/home/dyerke/Documents/DSE/kdyer/dse_capstone_final/dse_capstone/final/data/regression/preprocessed_2008_wkday.csv"
-    val whiten = true
     //
     //
     //    val output_aws_id = null // replace with access id
@@ -35,7 +34,7 @@ object RandomForestRegressorMain {
     //    val s3_param = new S3Parameter(client, bucket_name)
     //
     //    val executor: Executor[PCAResults] = new PCAExecutor(paths, output_parameter, s3_param)
-    val executor: Executor[RegressorResult] = new RandomForestRegressorExecutor(path, whiten)
+    val executor: Executor[RegressorResult] = new RandomForestRegressorExecutor(path)
     val result: RegressorResult = executor.execute(sc, sqlContext)
     //
     println(s"result=$result")
