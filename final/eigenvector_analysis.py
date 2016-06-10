@@ -3,7 +3,7 @@
 Scrub the sliders to change the properties of the ``sin`` curve, or
 type into the title text box to update the title of the plot.
 
-Use the ``bokeh serve`` command to run the example by executing:
+Use the ``bokeh serve`` command to run the example by executing from the local directory (ex: /home/dyerke/Documents/DSE/kdyer/dse_capstone_final/dse_capstone/final):
 
     bokeh serve eigenvector_analysis.py
 
