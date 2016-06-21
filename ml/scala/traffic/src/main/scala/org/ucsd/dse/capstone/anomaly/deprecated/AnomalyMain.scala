@@ -1,11 +1,11 @@
 package org.ucsd.dse.capstone.anomaly.deprecated
 
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.SQLContext
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.rdd.RDD
-import org.ucsd.dse.capstone.traffic.deprecated._
+import org.apache.spark.sql.SQLContext
+import org.ucsd.dse.capstone.traffic._
 
 object AnomalyMain {
   private def parseVector(line: String): Vector =
@@ -27,7 +27,7 @@ object AnomalyMain {
     val pivot_executor: Executor[_] = new PivotExecutor(files, output_dir, false)
     pivot_executor.execute(sc, sqlContext)
 
-    val data_rdd: RDD[(Array[Int], Vector)] = IOUtils.toVectorRDD_withKeys(IOUtils.read_pivot_df(sc, sqlContext, output_dir), SPEED)
+    val data_rdd: RDD[(Array[Int], Vector)] = IOUtils.toVectorRDD_withKeys(IOUtils.read_pivot_df(sc, sqlContext, output_dir), TOTAL_FLOW)
 
     //val files:List[String] = List("/Users/johngill/Documents/DSE/jgilliii/dse_capstone/ml/notebooks/t_data.csv")
     //val data_rdd:RDD[(Array[Int], Vector)] = sc.textFile(files.mkString(",")).zipWithIndex().map{ case(o,i) => (Array(i.toInt), parseVector(o)) }

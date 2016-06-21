@@ -1,4 +1,4 @@
-package org.ucsd.dse.capstone.traffic.deprecated
+package org.ucsd.dse.capstone.traffic
 
 import org.apache.spark.Logging
 import org.apache.spark.SparkContext
