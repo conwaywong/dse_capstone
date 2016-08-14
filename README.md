@@ -14,6 +14,14 @@ factors that contribute to traffic volume is explored using Elastic Net Regressi
 inform business decision makers and the general public of traffic patterns that exist in California, with the hope 
 being that additional insight can guide solutions to address high traffic volume. 
 
+Group Members
+* John Gill
+* Kevin Dyer
+* Conway Wong
+
+Advisor:
+* Yoav Freund
+
 Reports
 ---------
 | Location      | Description   
