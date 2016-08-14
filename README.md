@@ -16,12 +16,11 @@ being that additional insight can guide solutions to address high traffic volume
 
 Buckets
 ---------
-- s3://dse-team2-2014/dse_traffic		==> Directory containing original downloaded traffic files
-- s3://dse-team2-2014/pivot_output_#{year}	==> Directory containing Pivot Output Files from parsing downloaded traffic files
-- s3://dse-team2-2014/regression		==> Directory containing files used for Elastic Net Regression
-- The [Akka Team Blog](http://blog.akka.io)
-- [@akkateam](https://twitter.com/akkateam) on Twitter
-- Questions tagged [#akka on StackOverflow](http://stackoverflow.com/questions/tagged/akka)
+| Location      | Description   
+| ------------- | -------------  
+| s3://dse-team2-2014/dse_traffic | Directory containing original downloaded traffic files
+| s3://dse-team2-2014/pivot_output_#{year} | Directory containing Pivot Output Files from parsing downloaded traffic files      
+| s3://dse-team2-2014/regression | Directory containing files used for Elastic Net Regression      
 
 Source Code
 ------------
