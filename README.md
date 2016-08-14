@@ -14,6 +14,13 @@ factors that contribute to traffic volume is explored using Elastic Net Regressi
 inform business decision makers and the general public of traffic patterns that exist in California, with the hope 
 being that additional insight can guide solutions to address high traffic volume. 
 
+Reports
+---------
+| Location      | Description   
+| ------------- | -------------  
+| final/doc/FinalReport.pdf | Final Report
+| final/doc/FinalPresentation.pdf | Final Presentation      
+
 Buckets
 ---------
 | Location      | Description   
