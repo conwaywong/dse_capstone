@@ -1,4 +1,4 @@
-Akka
+DSE Cohort 1 - Traffic Capstone Project
 ====
 
 Traffic modeling and prediction is a field that has been researched and studied for many years. With the 
