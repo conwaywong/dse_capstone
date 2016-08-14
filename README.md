@@ -39,5 +39,3 @@ Source Code
 | traffic/src/scraper.py | Web Scraper Python Source Code
 | traffic/jsg_test | Directory Containing CloverETL graphs, transformers for Postgres DB ETL
 | traffic/traffic_etl_spark.py | PySpark Job to extract traffic data from S3 into Postrgres DB
-
-S
