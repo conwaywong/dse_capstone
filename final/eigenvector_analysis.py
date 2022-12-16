@@ -38,7 +38,29 @@ sourcetranspath= './data/weekday/total_flow_transformed.pivot_2009_grouping_week
 transpath= './total_flow_transformed.pivot_2009_grouping_weekday_pca_transform_tmp.csv'
 
 with tarfile.open(sourcetranspath) as tar:
-    tar.extractall()
+    
+    import os
+    
+    def is_within_directory(directory, target):
+        
+        abs_directory = os.path.abspath(directory)
+        abs_target = os.path.abspath(target)
+    
+        prefix = os.path.commonprefix([abs_directory, abs_target])
+        
+        return prefix == abs_directory
+    
+    def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+    
+        for member in tar.getmembers():
+            member_path = os.path.join(path, member.name)
+            if not is_within_directory(path, member_path):
+                raise Exception("Attempted Path Traversal in Tar File")
+    
+        tar.extractall(path, members, numeric_owner=numeric_owner) 
+        
+    
+    safe_extract(tar)
 
 m_eigs = pd.read_csv(eigfilepath, header=None).values
 m_eigs_t = m_eigs.T
